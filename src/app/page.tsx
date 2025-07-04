@@ -1,6 +1,7 @@
 import { BarcodeColumnGenerator } from "@/components/barcode-column-generator";
 import { BarcodeGridGenerator } from "@/components/barcode-grid-generator";
 import { Logo } from "@/components/logo";
+import { SettingsSheet } from "@/components/settings-sheet";
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
       <header className="sticky top-0 z-10 w-full border-b border-border bg-background/95 backdrop-blur-sm">
         <div className="container mx-auto flex h-16 items-center justify-between p-4">
           <Logo />
+          <SettingsSheet />
         </div>
       </header>
       <main className="flex-grow container mx-auto p-4 sm:p-6 md:p-8">

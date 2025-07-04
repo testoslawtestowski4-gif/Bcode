@@ -9,12 +9,18 @@ interface InteractiveBarcodeProps {
   value: string;
   isActive: boolean;
   onClick: () => void;
+  width: number;
+  height: number;
+  margin: number;
 }
 
 export function InteractiveBarcode({
   value,
   isActive,
   onClick,
+  width = 2,
+  height = 80,
+  margin = 10,
 }: InteractiveBarcodeProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
@@ -26,9 +32,9 @@ export function InteractiveBarcode({
           displayValue: false,
           background: 'transparent',
           lineColor: 'hsl(var(--foreground))',
-          margin: 0,
-          height: 80,
-          width: 2,
+          margin: margin,
+          height: height,
+          width: width,
         });
       } catch (e) {
         if (svgRef.current) {
@@ -36,7 +42,7 @@ export function InteractiveBarcode({
         }
       }
     }
-  }, [value]);
+  }, [value, width, height, margin]);
 
   return (
     <Card

@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { InteractiveBarcode } from '@/components/interactive-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
+import { useSettings } from '@/context/settings-context';
 
 interface BarcodeData {
   id: string;
@@ -12,6 +13,7 @@ interface BarcodeData {
 }
 
 export function BarcodeColumnGenerator() {
+  const { rows, width, height, margin } = useSettings();
   const [inputValue, setInputValue] = useState('');
   const [barcodes, setBarcodes] = useState<BarcodeData[]>([]);
   const [activeBarcode, setActiveBarcode] = useState<string | null>(null);
@@ -29,7 +31,7 @@ export function BarcodeColumnGenerator() {
     if (!activeBarcode || !newBarcodes.some(b => b.id === activeBarcode)) {
       setActiveBarcode(newBarcodes.length > 0 ? newBarcodes[0].id : null);
     }
-  }, [debouncedValue]);
+  }, [debouncedValue, activeBarcode]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement> | React.ClipboardEvent<HTMLTextAreaElement>) => {
     const value = 'target' in event ? event.target.value : event.clipboardData.getData('text');
@@ -43,7 +45,7 @@ export function BarcodeColumnGenerator() {
           <Textarea
             placeholder="Paste your list of numbers here, one per line..."
             className="w-full resize-none"
-            rows={5}
+            rows={rows}
             value={inputValue}
             onChange={handleInputChange}
             onPaste={handleInputChange}
@@ -58,6 +60,9 @@ export function BarcodeColumnGenerator() {
                 value={item.value}
                 isActive={activeBarcode === item.id}
                 onClick={() => setActiveBarcode(item.id)}
+                width={width}
+                height={height}
+                margin={margin}
               />
             ))
           ) : (

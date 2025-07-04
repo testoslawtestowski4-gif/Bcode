@@ -3,15 +3,17 @@
 import { useEffect, useRef, useState } from 'react';
 import JsBarcode from 'jsbarcode';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
 import { AlertTriangle } from 'lucide-react';
 
 interface GridBarcodeProps {
   value: string;
   index: number;
+  width: number;
+  height: number;
+  margin: number;
 }
 
-export function GridBarcode({ value, index }: GridBarcodeProps) {
+export function GridBarcode({ value, index, width = 1.5, height = 40, margin = 10 }: GridBarcodeProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [isValid, setIsValid] = useState(true);
 
@@ -23,9 +25,9 @@ export function GridBarcode({ value, index }: GridBarcodeProps) {
           displayValue: false,
           background: 'transparent',
           lineColor: 'hsl(var(--foreground))',
-          margin: 10,
-          height: 40,
-          width: 1.5,
+          margin: margin,
+          height: height,
+          width: width,
         });
         setIsValid(true);
       } catch (e) {
@@ -35,7 +37,7 @@ export function GridBarcode({ value, index }: GridBarcodeProps) {
         }
       }
     }
-  }, [value]);
+  }, [value, width, height, margin]);
 
   return (
     <Card className="flex flex-col items-center justify-between">

@@ -5,8 +5,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { GridBarcode } from '@/components/grid-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
+import { useSettings } from '@/context/settings-context';
 
 export function BarcodeGridGenerator() {
+  const { rows, width, height, margin } = useSettings();
   const [inputValue, setInputValue] = useState('');
   const debouncedValue = useDebounce(inputValue, 500);
 
@@ -26,7 +28,7 @@ export function BarcodeGridGenerator() {
         <Textarea
           placeholder="Paste another list of numbers here..."
           className="w-full resize-none"
-          rows={5}
+          rows={rows}
           value={inputValue}
           onChange={handleInputChange}
           onPaste={handleInputChange}
@@ -36,7 +38,14 @@ export function BarcodeGridGenerator() {
           {barcodes.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {barcodes.map((value, index) => (
-                <GridBarcode key={`${value}-${index}`} value={value} index={index} />
+                <GridBarcode 
+                  key={`${value}-${index}`} 
+                  value={value} 
+                  index={index}
+                  width={width / 2}
+                  height={height / 2}
+                  margin={margin / 2}
+                />
               ))}
             </div>
           ) : (
