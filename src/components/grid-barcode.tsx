@@ -56,7 +56,7 @@ export function GridBarcode({ value, index, width, height, margin }: GridBarcode
         )}
       </CardContent>
       <CardFooter className="p-2 pt-0">
-        <p className="text-center font-code text-[10px] text-muted-foreground truncate">{value}</p>
+        <p className="text-center font-code text-xs text-foreground truncate">{value}</p>
       </CardFooter>
     </Card>
   );

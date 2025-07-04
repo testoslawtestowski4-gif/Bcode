@@ -46,7 +46,7 @@ export function InteractiveBarcode({
     }
   }, [value, width, height, margin]);
 
-  const showActiveState = isInteractive && isActive;
+  const showActiveState = !isInteractive || isActive;
 
   return (
     <Card
@@ -60,7 +60,7 @@ export function InteractiveBarcode({
       <div
         className={cn(
           'transition-all duration-300',
-          !showActiveState && isInteractive ? 'opacity-40 blur-sm' : 'opacity-100 blur-none'
+          !showActiveState ? 'opacity-40 blur-md' : 'opacity-100 blur-none'
         )}
       >
         <CardContent className="p-4 pt-4">
@@ -72,9 +72,9 @@ export function InteractiveBarcode({
           </p>
         </CardFooter>
       </div>
-      {!showActiveState && isInteractive && (
-        <div className="absolute inset-0 flex items-center justify-center p-4 backdrop-blur-[2px]">
-          <span className="text-2xl font-bold text-center break-all font-code text-foreground">
+      {!showActiveState && (
+        <div className="absolute inset-0 flex items-center justify-center p-4 backdrop-blur-md">
+          <span className="text-4xl font-bold text-center break-all font-code text-foreground">
             {value}
           </span>
         </div>
