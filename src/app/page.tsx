@@ -13,12 +13,12 @@ export default function Home() {
         </div>
       </header>
       <main className="flex-grow container mx-auto p-4 sm:p-6 md:p-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mt-8">
-            <div className="space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 items-start mt-8">
+            <div className="space-y-4 lg:col-span-3">
                 <h3 className="text-2xl font-semibold text-center">Column View</h3>
                 <BarcodeColumnGenerator />
             </div>
-            <div className="space-y-4">
+            <div className="space-y-4 lg:col-span-7">
                 <h3 className="text-2xl font-semibold text-center">Grid View</h3>
                 <BarcodeGridGenerator />
             </div>
