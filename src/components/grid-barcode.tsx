@@ -13,7 +13,7 @@ interface GridBarcodeProps {
   margin: number;
 }
 
-export function GridBarcode({ value, index, width = 1.5, height = 40, margin = 10 }: GridBarcodeProps) {
+export function GridBarcode({ value, index, width, height, margin }: GridBarcodeProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [isValid, setIsValid] = useState(true);
 

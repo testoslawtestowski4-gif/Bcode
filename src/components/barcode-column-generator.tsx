@@ -13,7 +13,7 @@ interface BarcodeData {
 }
 
 export function BarcodeColumnGenerator() {
-  const { rows, width, height, margin } = useSettings();
+  const { columnRows, columnWidth, columnHeight, columnMargin } = useSettings();
   const [inputValue, setInputValue] = useState('');
   const [barcodes, setBarcodes] = useState<BarcodeData[]>([]);
   const [activeBarcode, setActiveBarcode] = useState<string | null>(null);
@@ -45,7 +45,7 @@ export function BarcodeColumnGenerator() {
           <Textarea
             placeholder="Paste your list of numbers here, one per line..."
             className="w-full resize-none"
-            rows={rows}
+            rows={columnRows}
             value={inputValue}
             onChange={handleInputChange}
             onPaste={handleInputChange}
@@ -60,9 +60,9 @@ export function BarcodeColumnGenerator() {
                 value={item.value}
                 isActive={activeBarcode === item.id}
                 onClick={() => setActiveBarcode(item.id)}
-                width={width}
-                height={height}
-                margin={margin}
+                width={columnWidth}
+                height={columnHeight}
+                margin={columnMargin}
                 isInteractive={barcodes.length > 1}
               />
             ))

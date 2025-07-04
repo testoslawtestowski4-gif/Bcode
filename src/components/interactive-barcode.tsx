@@ -52,9 +52,9 @@ export function InteractiveBarcode({
     <Card
       onClick={isInteractive ? onClick : undefined}
       className={cn(
-        'transition-all duration-300 overflow-hidden',
+        'transition-all duration-300 overflow-hidden relative',
         isInteractive && 'cursor-pointer',
-        showActiveState ? 'border-destructive shadow-lg' : (isInteractive ? 'hover:border-destructive/50' : '')
+        showActiveState ? 'border-primary shadow-lg' : (isInteractive ? 'hover:border-primary/50' : '')
       )}
     >
       <div
@@ -72,6 +72,13 @@ export function InteractiveBarcode({
           </p>
         </CardFooter>
       </div>
+      {!showActiveState && isInteractive && (
+        <div className="absolute inset-0 flex items-center justify-center p-4 backdrop-blur-[2px]">
+          <span className="text-2xl font-bold text-center break-all font-code text-foreground">
+            {value}
+          </span>
+        </div>
+      )}
     </Card>
   );
 }
