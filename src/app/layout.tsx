@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'Barcode Symphony',
-  description: 'Generate and manage Code128 barcodes with AI-powered format correction.',
+  title: "Damian and Shukri's Workflow",
+  description: "A workflow application for Damian and Shukri.",
 };
 
 export default function RootLayout({
