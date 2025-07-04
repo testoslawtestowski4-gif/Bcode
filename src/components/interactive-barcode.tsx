@@ -36,21 +36,21 @@ export function InteractiveBarcode({
         }
       }
     }
-  }, [value, isActive]);
+  }, [value]);
 
   return (
     <Card
       onClick={onClick}
       className={cn(
         'cursor-pointer transition-all duration-300 overflow-hidden',
-        isActive ? 'border-primary shadow-lg' : 'hover:border-primary/50'
+        isActive ? 'border-destructive shadow-lg' : 'hover:border-destructive/50'
       )}
     >
       <CardContent className="p-4 relative">
         <div
           className={cn(
             'transition-all duration-300 ease-in-out',
-            !isActive && 'blur-md'
+            isActive && 'blur-md'
           )}
         >
           <svg ref={svgRef} className="w-full" />
@@ -58,7 +58,7 @@ export function InteractiveBarcode({
         <div
           className={cn(
             'absolute inset-0 flex items-center justify-center bg-card/70 backdrop-blur-sm transition-opacity duration-300 ease-in-out',
-            isActive ? 'opacity-0' : 'opacity-100'
+            isActive ? 'opacity-100' : 'opacity-0'
           )}
         >
           <span className="text-2xl font-bold text-foreground truncate px-2">
@@ -69,7 +69,7 @@ export function InteractiveBarcode({
       <CardFooter className="flex flex-col items-center p-2 pt-0">
         <p className={cn(
             'text-center font-code text-sm text-muted-foreground transition-opacity duration-300',
-            isActive ? 'opacity-100' : 'opacity-0 h-0'
+            isActive ? 'opacity-0 h-0' : 'opacity-100'
         )}>
             {value}
         </p>

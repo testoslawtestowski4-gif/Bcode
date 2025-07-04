@@ -12,21 +12,21 @@ export default function Home() {
       </header>
       <main className="flex-grow container mx-auto p-4 sm:p-6 md:p-8">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl font-headline">
+          <h2 className="text-3xl font-bold tracking-tight text-destructive sm:text-4xl font-headline">
             Barcode Generator
           </h2>
           <p className="mt-2 text-muted-foreground max-w-md mx-auto">
-            Wklej swoje dane, aby natychmiast wygenerować kody kreskowe.
+            Paste your data to instantly generate barcodes.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
             <div className="space-y-4">
-                <h3 className="text-2xl font-semibold text-center">Widok kolumnowy</h3>
+                <h3 className="text-2xl font-semibold text-center">Column View</h3>
                 <BarcodeColumnGenerator />
             </div>
             <div className="space-y-4">
-                <h3 className="text-2xl font-semibold text-center">Widok siatki</h3>
+                <h3 className="text-2xl font-semibold text-center">Grid View</h3>
                 <BarcodeGridGenerator />
             </div>
         </div>
@@ -34,7 +34,7 @@ export default function Home() {
       <footer className="border-t mt-12 py-6">
         <div className="container flex flex-col items-center justify-center gap-4 md:h-24 md:flex-row">
           <p className="text-balance text-center text-sm leading-loose text-muted-foreground">
-            Zbudowano z Next.js i ShadCN.
+            Built with Next.js and ShadCN.
           </p>
         </div>
       </footer>
