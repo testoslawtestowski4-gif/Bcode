@@ -57,34 +57,21 @@ export function InteractiveBarcode({
         showActiveState ? 'border-destructive shadow-lg' : (isInteractive ? 'hover:border-destructive/50' : '')
       )}
     >
-      <CardContent className="p-4 relative">
-        <div
-          className={cn(
-            'transition-all duration-300 ease-in-out',
-            showActiveState && 'blur-md'
-          )}
-        >
+      <div
+        className={cn(
+          'transition-all duration-300',
+          !showActiveState && isInteractive ? 'opacity-40 blur-sm' : 'opacity-100 blur-none'
+        )}
+      >
+        <CardContent className="p-4 pt-4">
           <svg ref={svgRef} className="w-full" />
-        </div>
-        <div
-          className={cn(
-            'absolute inset-0 flex items-center justify-center bg-card/70 backdrop-blur-sm transition-opacity duration-300 ease-in-out',
-            showActiveState ? 'opacity-100' : 'opacity-0'
-          )}
-        >
-          <span className="text-2xl font-bold text-foreground truncate px-2">
-            {value || '...'}
-          </span>
-        </div>
-      </CardContent>
-      <CardFooter className="flex flex-col items-center p-2 pt-0">
-        <p className={cn(
-            'text-center font-code text-sm text-muted-foreground transition-opacity duration-300',
-            showActiveState ? 'opacity-0 h-0' : 'opacity-100'
-        )}>
-            {value}
-        </p>
-      </CardFooter>
+        </CardContent>
+        <CardFooter className="flex flex-col items-center p-2 pt-0">
+          <p className="text-center font-code text-sm text-muted-foreground">
+              {value}
+          </p>
+        </CardFooter>
+      </div>
     </Card>
   );
 }
