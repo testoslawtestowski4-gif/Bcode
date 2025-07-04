@@ -1,64 +1,39 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { InteractiveBarcode } from '@/components/interactive-barcode';
-import { correctBarcodeFormat } from '@/app/actions';
 import { useDebounce } from '@/hooks/use-debounce';
-import { Loader2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
 
 interface BarcodeData {
   id: string;
-  original: string;
-  corrected: string;
-  correction: string;
+  value: string;
 }
 
 export function BarcodeColumnGenerator() {
   const [inputValue, setInputValue] = useState('');
   const [barcodes, setBarcodes] = useState<BarcodeData[]>([]);
   const [activeBarcode, setActiveBarcode] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
   const debouncedValue = useDebounce(inputValue, 500);
-  const { toast } = useToast();
+
+  useEffect(() => {
+    const lines = debouncedValue.split('\n').filter(line => line.trim() !== '');
+    const newBarcodes = lines.map((line, index) => ({
+      id: `${line.trim()}-${index}`,
+      value: line.trim(),
+    }));
+    
+    setBarcodes(newBarcodes);
+
+    if (!activeBarcode || !newBarcodes.some(b => b.id === activeBarcode)) {
+      setActiveBarcode(newBarcodes.length > 0 ? newBarcodes[0].id : null);
+    }
+  }, [debouncedValue]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement> | React.ClipboardEvent<HTMLTextAreaElement>) => {
     const value = 'target' in event ? event.target.value : event.clipboardData.getData('text');
     setInputValue(value);
-
-    startTransition(async () => {
-      if (!value.trim()) {
-        setBarcodes([]);
-        return;
-      }
-
-      const lines = value.split('\n').filter(line => line.trim() !== '');
-      try {
-        const promises = lines.map(async (line, index) => {
-          const result = await correctBarcodeFormat({ inputString: line.trim() });
-          return {
-            id: `${line.trim()}-${index}`,
-            original: line.trim(),
-            corrected: result.correctedString,
-            correction: result.correctionsApplied,
-          };
-        });
-
-        const newBarcodes = await Promise.all(promises);
-        setBarcodes(newBarcodes);
-        if (newBarcodes.length > 0 && !activeBarcode) {
-            setActiveBarcode(newBarcodes[0].id)
-        }
-      } catch (error) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to generate barcodes. Please try again.",
-        })
-      }
-    });
   };
 
   return (
@@ -73,11 +48,6 @@ export function BarcodeColumnGenerator() {
             onChange={handleInputChange}
             onPaste={handleInputChange}
           />
-          {isPending && (
-            <div className="absolute bottom-2 right-2">
-              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-            </div>
-          )}
         </div>
 
         <div className="mt-6 space-y-4">
@@ -85,9 +55,7 @@ export function BarcodeColumnGenerator() {
             barcodes.map((item) => (
               <InteractiveBarcode
                 key={item.id}
-                value={item.corrected}
-                originalValue={item.original}
-                correction={item.correction}
+                value={item.value}
                 isActive={activeBarcode === item.id}
                 onClick={() => setActiveBarcode(item.id)}
               />

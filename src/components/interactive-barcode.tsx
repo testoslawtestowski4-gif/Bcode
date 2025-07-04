@@ -4,25 +4,19 @@ import { useEffect, useRef } from 'react';
 import JsBarcode from 'jsbarcode';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { AlertCircle } from 'lucide-react';
 
 interface InteractiveBarcodeProps {
   value: string;
-  originalValue: string;
-  correction: string;
   isActive: boolean;
   onClick: () => void;
 }
 
 export function InteractiveBarcode({
   value,
-  originalValue,
-  correction,
   isActive,
   onClick,
 }: InteractiveBarcodeProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
-  const hasCorrection = correction && correction !== 'No changes needed';
 
   useEffect(() => {
     if (svgRef.current && value) {
@@ -68,7 +62,7 @@ export function InteractiveBarcode({
           )}
         >
           <span className="text-2xl font-bold text-foreground truncate px-2">
-            {originalValue || '...'}
+            {value || '...'}
           </span>
         </div>
       </CardContent>
@@ -79,14 +73,6 @@ export function InteractiveBarcode({
         )}>
             {value}
         </p>
-        {hasCorrection && (
-           <p className={cn(
-            'mt-1 text-center text-xs text-amber-600 flex items-center gap-1 transition-opacity duration-300',
-            isActive ? 'opacity-100' : 'opacity-0 h-0'
-            )}>
-             <AlertCircle className="w-3 h-3"/> {correction}
-          </p>
-        )}
       </CardFooter>
     </Card>
   );
