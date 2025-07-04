@@ -60,20 +60,20 @@ export function InteractiveBarcode({
       <div
         className={cn(
           'transition-all duration-300',
-          !showActiveState ? 'opacity-40 blur-md' : 'opacity-100 blur-none'
+          showActiveState ? 'opacity-100 blur-none' : 'opacity-40 blur-lg'
         )}
       >
         <CardContent className="p-4 pt-4">
           <svg ref={svgRef} className="w-full" />
         </CardContent>
         <CardFooter className="flex flex-col items-center p-2 pt-0">
-          <p className="text-center font-code text-sm text-muted-foreground">
+          <p className="text-center font-code text-lg text-muted-foreground">
               {value}
           </p>
         </CardFooter>
       </div>
       {!showActiveState && (
-        <div className="absolute inset-0 flex items-center justify-center p-4 backdrop-blur-md">
+        <div className="absolute inset-0 flex items-center justify-center p-4">
           <span className="text-4xl font-bold text-center break-all font-code text-foreground">
             {value}
           </span>
