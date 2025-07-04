@@ -6,7 +6,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { GridBarcode } from '@/components/grid-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
-import { Logo } from './logo';
 
 export function BarcodeGridGenerator() {
   const { gridRows, gridWidth, gridHeight, gridMargin, gridColumns } = useSettings();
@@ -34,10 +33,6 @@ export function BarcodeGridGenerator() {
           onChange={handleInputChange}
           onPaste={handleInputChange}
         />
-
-        <div className="flex justify-center my-4">
-          <Logo />
-        </div>
 
         <div className="mt-6">
           {barcodes.length > 0 ? (
