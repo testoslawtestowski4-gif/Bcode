@@ -63,6 +63,7 @@ export function BarcodeColumnGenerator() {
                 width={width}
                 height={height}
                 margin={margin}
+                isInteractive={barcodes.length > 1}
               />
             ))
           ) : (

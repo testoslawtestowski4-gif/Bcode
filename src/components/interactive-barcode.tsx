@@ -12,6 +12,7 @@ interface InteractiveBarcodeProps {
   width: number;
   height: number;
   margin: number;
+  isInteractive?: boolean;
 }
 
 export function InteractiveBarcode({
@@ -21,6 +22,7 @@ export function InteractiveBarcode({
   width = 2,
   height = 80,
   margin = 10,
+  isInteractive = true,
 }: InteractiveBarcodeProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
@@ -44,19 +46,22 @@ export function InteractiveBarcode({
     }
   }, [value, width, height, margin]);
 
+  const showActiveState = isInteractive && isActive;
+
   return (
     <Card
-      onClick={onClick}
+      onClick={isInteractive ? onClick : undefined}
       className={cn(
-        'cursor-pointer transition-all duration-300 overflow-hidden',
-        isActive ? 'border-destructive shadow-lg' : 'hover:border-destructive/50'
+        'transition-all duration-300 overflow-hidden',
+        isInteractive && 'cursor-pointer',
+        showActiveState ? 'border-destructive shadow-lg' : (isInteractive ? 'hover:border-destructive/50' : '')
       )}
     >
       <CardContent className="p-4 relative">
         <div
           className={cn(
             'transition-all duration-300 ease-in-out',
-            isActive && 'blur-md'
+            showActiveState && 'blur-md'
           )}
         >
           <svg ref={svgRef} className="w-full" />
@@ -64,7 +69,7 @@ export function InteractiveBarcode({
         <div
           className={cn(
             'absolute inset-0 flex items-center justify-center bg-card/70 backdrop-blur-sm transition-opacity duration-300 ease-in-out',
-            isActive ? 'opacity-100' : 'opacity-0'
+            showActiveState ? 'opacity-100' : 'opacity-0'
           )}
         >
           <span className="text-2xl font-bold text-foreground truncate px-2">
@@ -75,7 +80,7 @@ export function InteractiveBarcode({
       <CardFooter className="flex flex-col items-center p-2 pt-0">
         <p className={cn(
             'text-center font-code text-sm text-muted-foreground transition-opacity duration-300',
-            isActive ? 'opacity-0 h-0' : 'opacity-100'
+            showActiveState ? 'opacity-0 h-0' : 'opacity-100'
         )}>
             {value}
         </p>
