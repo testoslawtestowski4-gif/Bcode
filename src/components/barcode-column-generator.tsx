@@ -7,6 +7,7 @@ import { InteractiveBarcode } from '@/components/interactive-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
 import { Button } from './ui/button';
+import { ListChecks } from 'lucide-react';
 
 interface BarcodeData {
   id: string;
@@ -88,7 +89,10 @@ export function BarcodeColumnGenerator() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl font-semibold text-center">Consignment View</CardTitle>
+        <CardTitle className="text-2xl font-semibold text-center flex items-center justify-center gap-2">
+            <ListChecks className="w-7 h-7" />
+            Consignment View
+        </CardTitle>
       </CardHeader>
       <CardContent className="p-6 pt-0">
         <div className="relative">

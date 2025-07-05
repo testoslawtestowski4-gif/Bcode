@@ -7,6 +7,7 @@ import { GridBarcode } from '@/components/grid-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
 import { Button } from './ui/button';
+import { Boxes } from 'lucide-react';
 
 export function BarcodeGridGenerator() {
   const { gridRows, gridWidth, gridHeight, gridMargin, gridColumns, setGridColumns } = useSettings();
@@ -31,18 +32,21 @@ export function BarcodeGridGenerator() {
         '1-c4-web-dropoff', 'apr-web-dropoff', 'web-dropoff'
       ];
 
-      // Find if any part of the line matches a keyword
+      // First, try to find the keyword pattern
       for (let i = 0; i < parts.length; i++) {
         if (dropoffKeywords.includes(parts[i])) {
-          // If it is, and it's not the first part, and the part before it is a number
           if (i > 0 && /^\d+$/.test(parts[i - 1])) {
-            // Return the corresponding part from the original line parts
             return originalParts[i - 1];
           }
         }
       }
+      
+      // If no keyword pattern was found, check if the whole line is ONLY a number.
+      if (parts.length === 1 && /^\d+$/.test(trimmedLine)) {
+          return trimmedLine;
+      }
 
-      // If no match is found, ignore the line
+      // Otherwise, this line is invalid.
       return null;
     })
     .filter((value): value is string => value !== null && value !== '')));
@@ -55,7 +59,10 @@ export function BarcodeGridGenerator() {
   return (
     <Card>
       <CardHeader className="flex-col items-center gap-4 sm:flex-row sm:justify-between">
-        <CardTitle className="text-2xl font-semibold">Container View</CardTitle>
+        <CardTitle className="text-2xl font-semibold flex items-center gap-2">
+            <Boxes className="w-7 h-7" />
+            Container View
+        </CardTitle>
         <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground hidden md:inline">Columns:</span>
             {PREDEFINED_COLUMNS.map((cols) => (
