@@ -12,7 +12,7 @@ export function BarcodeGridGenerator() {
   const { gridRows, gridWidth, gridHeight, gridMargin, gridColumns, setGridColumns } = useSettings();
   const [inputValue, setInputValue] = useState('');
   const debouncedValue = useDebounce(inputValue, 500);
-  const PREDEFINED_COLUMNS = [3, 5, 8, 10];
+  const PREDEFINED_COLUMNS = [3, 5, 7];
 
   const barcodes = Array.from(new Set(debouncedValue
     .split('\n')
