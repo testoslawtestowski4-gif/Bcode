@@ -16,8 +16,29 @@ export function BarcodeGridGenerator() {
 
   const barcodes = Array.from(new Set(debouncedValue
     .split('\n')
-    .map(line => line.trim())
-    .filter(line => line !== '')));
+    .map(line => {
+      const trimmedLine = line.trim();
+      if (!trimmedLine) return null;
+
+      // Handle multi-column paste with 'inship01'
+      if (trimmedLine.toLowerCase().includes('inship01')) {
+        const parts = trimmedLine.split(/\s+/);
+        const inshipIndex = parts.findIndex(part => part.toLowerCase() === 'inship01');
+        if (inshipIndex > 0) {
+          return parts[inshipIndex - 1]; // Return the part before 'inship01'
+        }
+        return null; // Invalid format if 'inship01' is not present or is the first word
+      }
+      
+      // Handle simple, single-column paste (no spaces assumed)
+      if (!trimmedLine.includes(' ')) {
+        return trimmedLine;
+      }
+      
+      // Ignore other multi-column formats
+      return null;
+    })
+    .filter((value): value is string => value !== null && value !== '')));
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement> | React.ClipboardEvent<HTMLTextAreaElement>) => {
     const value = 'target' in event ? event.target.value : event.clipboardData.getData('text');
