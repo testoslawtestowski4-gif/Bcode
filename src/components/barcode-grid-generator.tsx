@@ -2,20 +2,22 @@
 
 import { useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { GridBarcode } from '@/components/grid-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
+import { Button } from './ui/button';
 
 export function BarcodeGridGenerator() {
-  const { gridRows, gridWidth, gridHeight, gridMargin, gridColumns } = useSettings();
+  const { gridRows, gridWidth, gridHeight, gridMargin, gridColumns, setGridColumns } = useSettings();
   const [inputValue, setInputValue] = useState('');
   const debouncedValue = useDebounce(inputValue, 500);
+  const PREDEFINED_COLUMNS = [3, 5, 8, 10];
 
-  const barcodes = debouncedValue
+  const barcodes = Array.from(new Set(debouncedValue
     .split('\n')
     .map(line => line.trim())
-    .filter(line => line !== '');
+    .filter(line => line !== '')));
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement> | React.ClipboardEvent<HTMLTextAreaElement>) => {
     const value = 'target' in event ? event.target.value : event.clipboardData.getData('text');
@@ -24,7 +26,24 @@ export function BarcodeGridGenerator() {
     
   return (
     <Card>
-      <CardContent className="p-6">
+      <CardHeader className="flex-col items-center gap-4 sm:flex-row sm:justify-between">
+        <CardTitle className="text-2xl font-semibold">Container View</CardTitle>
+        <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground hidden md:inline">Columns:</span>
+            {PREDEFINED_COLUMNS.map((cols) => (
+              <Button
+                key={cols}
+                variant={gridColumns === cols ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setGridColumns(cols)}
+                className="px-4"
+              >
+                {cols}
+              </Button>
+            ))}
+          </div>
+      </CardHeader>
+      <CardContent className="p-6 pt-0">
         <Textarea
           placeholder="Paste another list of numbers here..."
           className="w-full resize-none"

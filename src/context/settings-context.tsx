@@ -30,17 +30,17 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 
 export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   // Column settings
-  const [columnRows, setColumnRows] = useState(2);
-  const [columnMargin, setColumnMargin] = useState(0);
-  const [columnWidth, setColumnWidth] = useState(2);
-  const [columnHeight, setColumnHeight] = useState(40);
+  const [columnRows, setColumnRows] = useState(10);
+  const [columnMargin, setColumnMargin] = useState(20);
+  const [columnWidth, setColumnWidth] = useState(2.5);
+  const [columnHeight, setColumnHeight] = useState(85);
 
   // Grid settings
-  const [gridRows, setGridRows] = useState(1);
-  const [gridColumns, setGridColumns] = useState(3);
+  const [gridRows, setGridRows] = useState(10);
+  const [gridColumns, setGridColumns] = useState(5);
   const [gridMargin, setGridMargin] = useState(10);
   const [gridWidth, setGridWidth] = useState(1.8);
-  const [gridHeight, setGridHeight] = useState(35);
+  const [gridHeight, setGridHeight] = useState(55);
 
   return (
     <SettingsContext.Provider value={{

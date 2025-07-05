@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { InteractiveBarcode } from '@/components/interactive-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
@@ -20,7 +20,7 @@ export function BarcodeColumnGenerator() {
   const debouncedValue = useDebounce(inputValue, 500);
 
   useEffect(() => {
-    const lines = debouncedValue.split('\n').filter(line => line.trim() !== '');
+    const lines = Array.from(new Set(debouncedValue.split('\n').filter(line => line.trim() !== '')));
     const newBarcodes = lines.map((line, index) => ({
       id: `${line.trim()}-${index}`,
       value: line.trim(),
@@ -31,7 +31,8 @@ export function BarcodeColumnGenerator() {
     if (!activeBarcode || !newBarcodes.some(b => b.id === activeBarcode)) {
       setActiveBarcode(newBarcodes.length > 0 ? newBarcodes[0].id : null);
     }
-  }, [debouncedValue, activeBarcode]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedValue]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement> | React.ClipboardEvent<HTMLTextAreaElement>) => {
     const value = 'target' in event ? event.target.value : event.clipboardData.getData('text');
@@ -40,7 +41,10 @@ export function BarcodeColumnGenerator() {
 
   return (
     <Card>
-      <CardContent className="p-6">
+      <CardHeader>
+        <CardTitle className="text-2xl font-semibold text-center">Consignment View</CardTitle>
+      </CardHeader>
+      <CardContent className="p-6 pt-0">
         <div className="relative">
           <Textarea
             placeholder="Paste your list of numbers here, one per line..."
