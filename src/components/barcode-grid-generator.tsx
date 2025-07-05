@@ -20,25 +20,29 @@ export function BarcodeGridGenerator() {
       const trimmedLine = line.trim();
       if (!trimmedLine) return null;
 
-      // Handle multi-column paste with 'inship01'
-      if (trimmedLine.toLowerCase().includes('inship01')) {
-        const parts = trimmedLine.split(/\s+/);
+      const lowercasedLine = trimmedLine.toLowerCase();
+      const parts = trimmedLine.split(/\s+/);
+
+      // Rule: Handle multi-column paste with 'inship01'
+      if (lowercasedLine.includes('inship01')) {
         const inshipIndex = parts.findIndex(part => part.toLowerCase() === 'inship01');
+        // Ensure 'inship01' is not the first word
         if (inshipIndex > 0) {
-          return parts[inshipIndex - 1]; // Return the part before 'inship01'
+          return parts[inshipIndex - 1];
         }
-        return null; // 'inship01' is the first word or not found as a separate word
+        return null;
+      }
+
+      // Rule: Handle simple, single-column paste.
+      // It must be a single word and contain at least one number.
+      if (parts.length === 1) {
+        const singleWord = parts[0];
+        if (/[0-9]/.test(singleWord)) {
+          return singleWord;
+        }
       }
       
-      // Handle simple, single-column paste. It must not contain spaces and must contain at least one number.
-      if (!trimmedLine.includes(' ')) {
-        const hasNumbers = /[0-9]/.test(trimmedLine);
-        if (hasNumbers) {
-            return trimmedLine;
-        }
-      }
-      
-      // Ignore all other formats (e.g., multi-word lines without 'inship01', or text-only single words)
+      // All other formats are ignored
       return null;
     })
     .filter((value): value is string => value !== null && value !== '')));
