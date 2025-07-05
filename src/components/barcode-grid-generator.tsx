@@ -27,15 +27,18 @@ export function BarcodeGridGenerator() {
         if (inshipIndex > 0) {
           return parts[inshipIndex - 1]; // Return the part before 'inship01'
         }
-        return null; // Invalid format if 'inship01' is not present or is the first word
+        return null; // 'inship01' is the first word or not found as a separate word
       }
       
-      // Handle simple, single-column paste (no spaces assumed)
+      // Handle simple, single-column paste. It must not contain spaces and must contain at least one number.
       if (!trimmedLine.includes(' ')) {
-        return trimmedLine;
+        const hasNumbers = /[0-9]/.test(trimmedLine);
+        if (hasNumbers) {
+            return trimmedLine;
+        }
       }
       
-      // Ignore other multi-column formats
+      // Ignore all other formats (e.g., multi-word lines without 'inship01', or text-only single words)
       return null;
     })
     .filter((value): value is string => value !== null && value !== '')));
