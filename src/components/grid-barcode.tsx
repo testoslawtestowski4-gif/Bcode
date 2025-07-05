@@ -24,7 +24,7 @@ export function GridBarcode({ value, index, width, height, margin }: GridBarcode
           format: 'CODE128',
           displayValue: false,
           background: 'transparent',
-          lineColor: 'hsl(var(--foreground))',
+          lineColor: 'hsl(var(--card-foreground))',
           margin: margin,
           height: height,
           width: width,
@@ -40,7 +40,7 @@ export function GridBarcode({ value, index, width, height, margin }: GridBarcode
   }, [value, width, height, margin]);
 
   return (
-    <Card className="flex flex-col items-center justify-between">
+    <Card className="flex flex-col items-center justify-between barcode-card">
       <CardHeader className="p-2 pb-0">
         <CardTitle className="text-xs font-semibold text-muted-foreground">
           #{index + 1}

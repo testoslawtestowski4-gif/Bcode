@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 interface SettingsContextType {
   // Column View Settings
@@ -24,6 +24,10 @@ interface SettingsContextType {
   setGridWidth: (width: number) => void;
   gridHeight: number;
   setGridHeight: (height: number) => void;
+
+  // Theme Settings
+  theme: string;
+  setTheme: (theme: string) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -41,6 +45,29 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const [gridMargin, setGridMargin] = useState(10);
   const [gridWidth, setGridWidth] = useState(1.8);
   const [gridHeight, setGridHeight] = useState(55);
+
+  // Theme settings
+  const [theme, _setTheme] = useState('light');
+
+  useEffect(() => {
+    const storedTheme = localStorage.getItem('app-theme') || 'light';
+    _setTheme(storedTheme);
+  }, []);
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    root.classList.remove('light', 'dark', 'pink-theme');
+
+    if (theme !== 'light') {
+      root.classList.add(theme);
+    }
+  }, [theme]);
+
+  const setTheme = (newTheme: string) => {
+    localStorage.setItem('app-theme', newTheme);
+    _setTheme(newTheme);
+  };
+
 
   return (
     <SettingsContext.Provider value={{
@@ -61,7 +88,9 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       gridWidth,
       setGridWidth,
       gridHeight,
-      setGridHeight
+      setGridHeight,
+      theme,
+      setTheme
     }}>
       {children}
     </SettingsContext.Provider>

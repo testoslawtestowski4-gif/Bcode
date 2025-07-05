@@ -2,6 +2,7 @@ import { BarcodeColumnGenerator } from "@/components/barcode-column-generator";
 import { BarcodeGridGenerator } from "@/components/barcode-grid-generator";
 import { Logo } from "@/components/logo";
 import { SettingsSheet } from "@/components/settings-sheet";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 
 export default function Home() {
   return (
@@ -14,7 +15,8 @@ export default function Home() {
             <div className="absolute left-1/2 -translate-x-1/2">
                 <Logo />
             </div>
-            <div className="absolute right-4">
+            <div className="absolute right-4 flex items-center gap-2">
+                <ThemeSwitcher />
                 <SettingsSheet />
             </div>
         </div>

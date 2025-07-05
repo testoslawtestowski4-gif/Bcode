@@ -33,7 +33,7 @@ export function InteractiveBarcode({
           format: 'CODE128',
           displayValue: false,
           background: 'transparent',
-          lineColor: 'hsl(var(--foreground))',
+          lineColor: 'hsl(var(--card-foreground))',
           margin: margin,
           height: height,
           width: width,
@@ -52,6 +52,7 @@ export function InteractiveBarcode({
     <Card
       onClick={isInteractive ? onClick : undefined}
       className={cn(
+        'barcode-card',
         'transition-all duration-300 overflow-hidden relative',
         isInteractive && 'cursor-pointer',
         showActiveState ? 'border-primary shadow-lg' : (isInteractive ? 'hover:border-primary/50' : '')

@@ -72,6 +72,41 @@
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 0 84.2% 60.2%;
   }
+  .pink-theme {
+    --background: 350 100% 98%;
+    --foreground: 345 50% 25%;
+    --card: 350 80% 99%;
+    --card-foreground: 345 50% 25%;
+    --popover: 350 80% 99%;
+    --popover-foreground: 345 50% 25%;
+    --primary: 340 90% 70%;
+    --primary-foreground: 345 50% 15%;
+    --secondary: 350 100% 95%;
+    --secondary-foreground: 345 50% 25%;
+    --muted: 350 100% 95%;
+    --muted-foreground: 350 30% 60%;
+    --accent: 340 90% 70%;
+    --accent-foreground: 345 50% 15%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 350 100% 92%;
+    --input: 350 100% 92%;
+    --ring: 340 90% 70%;
+    --chart-1: 340 80% 70%;
+    --chart-2: 340 70% 60%;
+    --chart-3: 340 60% 50%;
+    --chart-4: 340, 90%, 80%;
+    --chart-5: 340, 100%, 85%;
+    --radius: 0.8rem;
+    --sidebar-background: 350 100% 95%;
+    --sidebar-foreground: 345 50% 25%;
+    --sidebar-primary: 340 90% 70%;
+    --sidebar-primary-foreground: 345 50% 15%;
+    --sidebar-accent: 350 100% 92%;
+    --sidebar-accent-foreground: 345 50% 25%;
+    --sidebar-border: 350 100% 90%;
+    --sidebar-ring: 340 90% 70%;
+  }
 }
 
 @layer base {
@@ -80,5 +115,11 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  .dark .barcode-card,
+  .pink-theme .barcode-card {
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --muted-foreground: 240 3.8% 46.1%;
   }
 }
