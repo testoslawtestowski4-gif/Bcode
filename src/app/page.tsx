@@ -10,7 +10,7 @@ export default function Home() {
       <header className="sticky top-0 z-10 w-full border-b border-border bg-background/95 backdrop-blur-sm">
         <div className="container mx-auto flex h-16 items-center justify-center p-4 relative">
             <div className="absolute left-4">
-                <h1 className="text-2xl font-bold text-destructive">B-code Generator</h1>
+                <h1 className="text-3xl font-bold text-destructive">B-code Generator</h1>
             </div>
             <div className="absolute left-1/2 -translate-x-1/2">
                 <Logo />
