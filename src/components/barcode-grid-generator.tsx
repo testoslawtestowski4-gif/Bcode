@@ -26,18 +26,18 @@ export function BarcodeGridGenerator() {
       // Rule: Handle multi-column paste with 'inship01'
       if (lowercasedLine.includes('inship01')) {
         const inshipIndex = parts.findIndex(part => part.toLowerCase() === 'inship01');
-        // Ensure 'inship01' is not the first word
-        if (inshipIndex > 0) {
+        // Ensure 'inship01' is not the first word and the part before it is strictly a number.
+        if (inshipIndex > 0 && /^\d+$/.test(parts[inshipIndex - 1])) {
           return parts[inshipIndex - 1];
         }
         return null;
       }
 
       // Rule: Handle simple, single-column paste.
-      // It must be a single word and contain at least one number.
+      // It must be a single word and contain only numbers.
       if (parts.length === 1) {
         const singleWord = parts[0];
-        if (/[0-9]/.test(singleWord)) {
+        if (/^\d+$/.test(singleWord)) {
           return singleWord;
         }
       }
