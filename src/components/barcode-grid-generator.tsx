@@ -21,28 +21,28 @@ export function BarcodeGridGenerator() {
       if (!trimmedLine) return null;
 
       const lowercasedLine = trimmedLine.toLowerCase();
-      const parts = trimmedLine.split(/\s+/);
+      const parts = lowercasedLine.split(/\s+/);
+      const originalParts = trimmedLine.split(/\s+/);
 
-      // Rule: Handle multi-column paste with 'inship01'
-      if (lowercasedLine.includes('inship01')) {
-        const inshipIndex = parts.findIndex(part => part.toLowerCase() === 'inship01');
-        // Ensure 'inship01' is not the first word and the part before it is strictly a number.
-        if (inshipIndex > 0 && /^\d+$/.test(parts[inshipIndex - 1])) {
-          return parts[inshipIndex - 1];
+      const dropoffKeywords = [
+        '1-b1-web-dropoff', '2-b2-web-dropoff', '2-b3-web-dropoff',
+        '2-c1-web-dropoff', '2-c2-web-dropoff', '2-c3-web-dropoff',
+        '1-c1-web-dropoff', '1-c2-web-dropoff', '1-c3-web-dropoff',
+        '1-c4-web-dropoff', 'apr-web-dropoff', 'web-dropoff'
+      ];
+
+      // Find if any part of the line matches a keyword
+      for (let i = 0; i < parts.length; i++) {
+        if (dropoffKeywords.includes(parts[i])) {
+          // If it is, and it's not the first part, and the part before it is a number
+          if (i > 0 && /^\d+$/.test(parts[i - 1])) {
+            // Return the corresponding part from the original line parts
+            return originalParts[i - 1];
+          }
         }
-        return null;
       }
 
-      // Rule: Handle simple, single-column paste.
-      // It must be a single word and contain only numbers.
-      if (parts.length === 1) {
-        const singleWord = parts[0];
-        if (/^\d+$/.test(singleWord)) {
-          return singleWord;
-        }
-      }
-      
-      // All other formats are ignored
+      // If no match is found, ignore the line
       return null;
     })
     .filter((value): value is string => value !== null && value !== '')));
@@ -73,7 +73,7 @@ export function BarcodeGridGenerator() {
       </CardHeader>
       <CardContent className="p-6 pt-0">
         <Textarea
-          placeholder="Paste another list of numbers here..."
+          placeholder="Paste your list of codes here..."
           className="w-full resize-none"
           rows={gridRows}
           value={inputValue}
