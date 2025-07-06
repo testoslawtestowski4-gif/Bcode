@@ -7,12 +7,12 @@ import { GridBarcode } from '@/components/grid-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
 import { Button } from './ui/button';
-import { Boxes } from 'lucide-react';
+import { Boxes, BarChart2 } from 'lucide-react';
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 
 export function BarcodeGridGenerator() {
-  const { gridRows, gridWidth, gridHeight, gridMargin, gridColumns, setGridColumns } = useSettings();
+  const { gridWidth, gridHeight, gridMargin, gridColumns, setGridColumns } = useSettings();
   const [inputValue, setInputValue] = useState('');
   const debouncedValue = useDebounce(inputValue, 500);
   const PREDEFINED_COLUMNS = [1, 3, 5, 7];
@@ -122,14 +122,48 @@ export function BarcodeGridGenerator() {
         </div>
       </CardHeader>
       <CardContent className="p-6 pt-0">
-        <Textarea
-          placeholder="Paste your list of codes here..."
-          className="w-full resize-none"
-          rows={gridRows}
-          value={inputValue}
-          onChange={handleInputChange}
-          onPaste={handleInputChange}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Textarea
+            placeholder="Paste your list of codes here..."
+            className="w-full resize-none"
+            rows={5}
+            value={inputValue}
+            onChange={handleInputChange}
+            onPaste={handleInputChange}
+          />
+          <Card>
+            <CardHeader className="p-4">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <BarChart2 className="w-5 h-5" />
+                Statistics
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0">
+              <ul className="space-y-2 text-sm">
+                <li className="flex justify-between">
+                  <span>Total Barcodes:</span>
+                  <span className="font-semibold">{barcodes.length}</span>
+                </li>
+                <li className="flex justify-between">
+                  <span>Level I&J:</span>
+                  <span className="font-semibold">0</span>
+                </li>
+                <li className="flex justify-between">
+                  <span>Level K&M:</span>
+                  <span className="font-semibold">0</span>
+                </li>
+                 <li className="flex justify-between">
+                  <span>Level C:</span>
+                  <span className="font-semibold">0</span>
+                </li>
+                 <li className="flex justify-between">
+                  <span>Ground Floor:</span>
+                  <span className="font-semibold">0</span>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
 
         <div className="mt-6">
           {barcodes.length > 0 ? (
