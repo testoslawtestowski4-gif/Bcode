@@ -35,7 +35,10 @@ export default function Home() {
       <div className="flex flex-col min-h-screen bg-background text-foreground">
         <header className={`sticky top-0 z-10 w-full border-b border-border bg-background/95 backdrop-blur-sm transition-transform duration-300 ${isHeaderVisible ? 'translate-y-0' : '-translate-y-full'}`}>
           <div className="container mx-auto flex h-16 items-center justify-between p-4">
-              <h1 className="text-3xl font-bold text-destructive">BCode Maker</h1>
+              <div className="flex items-center gap-3">
+                <Barcode className="h-8 w-8 text-primary" />
+                <h1 className="text-3xl font-bold text-primary">BCode Maker</h1>
+              </div>
               <div className="flex items-center gap-2">
                   <Button variant="outline" size="icon" onClick={() => setShowDraggableBarcode(true)}>
                     <Barcode className="h-4 w-4" />
