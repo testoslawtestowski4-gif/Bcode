@@ -7,7 +7,7 @@ import { InteractiveBarcode } from '@/components/interactive-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
 import { Button } from './ui/button';
-import { ListChecks } from 'lucide-react';
+import { ListChecks, Printer } from 'lucide-react';
 
 interface BarcodeData {
   id: string;
@@ -86,13 +86,77 @@ export function BarcodeColumnGenerator() {
     setInputValue(value);
   };
 
+  const handlePrintAll = () => {
+    if (barcodes.length === 0) return;
+
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+        const barcodeHtml = barcodes.map(barcode => 
+            `<div class="printable-content">${barcode.value}</div>`
+        ).join('');
+
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Print All Barcodes</title>
+                    <style>
+                        @media print {
+                            @page { size: auto; margin: 0mm; }
+                            body { margin: 0; font-family: sans-serif; }
+                            .printable-content {
+                                page-break-after: always;
+                                font-size: 140pt;
+                                font-weight: bold;
+                                text-align: center;
+                                height: 100vh;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                            }
+                            .printable-content:last-child {
+                                page-break-after: auto;
+                            }
+                        }
+                        body { font-family: sans-serif; }
+                        .printable-content {
+                            font-size: 40pt;
+                            font-weight: bold;
+                            text-align: center;
+                            padding: 40px 0;
+                            border-bottom: 2px solid #ccc;
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${barcodeHtml}
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            window.close();
+                        }
+                    </script>
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+  };
+
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="text-2xl font-semibold text-center flex items-center justify-center gap-2">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle className="text-2xl font-semibold flex items-center gap-2">
             <ListChecks className="w-7 h-7" />
             Consignment View
         </CardTitle>
+        <Button 
+            variant="outline"
+            onClick={handlePrintAll} 
+            disabled={barcodes.length === 0}
+        >
+            <Printer className="w-4 h-4" />
+            Print All
+        </Button>
       </CardHeader>
       <CardContent className="p-6 pt-0">
         <div className="relative">
