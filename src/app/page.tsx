@@ -1,6 +1,6 @@
-'use client'; // This is necessary for useState and event handlers
+'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BarcodeColumnGenerator } from "@/components/barcode-column-generator";
 import { BarcodeGridGenerator } from "@/components/barcode-grid-generator";
 import { SettingsSheet } from "@/components/settings-sheet";
@@ -11,13 +11,31 @@ import { Barcode } from 'lucide-react';
 
 export default function Home() {
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setIsHeaderVisible(false);
+      } else {
+        setIsHeaderVisible(true);
+      }
+      lastScrollY = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <>
       <div className="flex flex-col min-h-screen bg-background text-foreground">
-        <header className="sticky top-0 z-10 w-full border-b border-border bg-background/95 backdrop-blur-sm">
+        <header className={`sticky top-0 z-10 w-full border-b border-border bg-background/95 backdrop-blur-sm transition-transform duration-300 ${isHeaderVisible ? 'translate-y-0' : '-translate-y-full'}`}>
           <div className="container mx-auto flex h-16 items-center justify-between p-4">
-              <h1 className="text-3xl font-bold text-destructive">B-code Generator</h1>
+              <h1 className="text-3xl font-bold text-destructive">BCode Maker</h1>
               <div className="flex items-center gap-2">
                   <Button variant="outline" size="icon" onClick={() => setShowDraggableBarcode(true)}>
                     <Barcode className="h-4 w-4" />

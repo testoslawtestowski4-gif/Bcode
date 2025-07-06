@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { SettingsProvider } from '@/context/settings-context';
 
 export const metadata: Metadata = {
-  title: "Damian and Shukri's Workflow",
+  title: "BCode Maker",
   description: "A modern barcode generator.",
 };
 
