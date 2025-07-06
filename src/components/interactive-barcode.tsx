@@ -141,16 +141,14 @@ export function InteractiveBarcode({
         )}
       </div>
 
-      {showActiveState && (
-        <Button
-          variant="ghost"
-          onClick={handlePrint}
-          className="h-auto w-20 rounded-none border-l text-muted-foreground hover:bg-primary/10 hover:text-primary flex-shrink-0"
-          aria-label={`Print barcode value ${value}`}
-        >
-          <Printer className="h-8 w-8" />
-        </Button>
-      )}
+      <Button
+        variant="ghost"
+        onClick={handlePrint}
+        className="h-auto w-20 rounded-none border-l text-muted-foreground hover:bg-primary/10 hover:text-primary flex-shrink-0"
+        aria-label={`Print barcode value ${value}`}
+      >
+        <Printer className="h-8 w-8" />
+      </Button>
     </Card>
   );
 }
