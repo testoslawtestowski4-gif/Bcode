@@ -47,7 +47,7 @@ export function GridBarcode({ value, index, width, height, margin, isBlurred = f
       isBlurred && "blur-md opacity-40"
     )}>
       <CardHeader className="p-2 pb-0">
-        <CardTitle className="text-xs font-semibold text-muted-foreground">
+        <CardTitle className="text-xs font-semibold text-card-foreground">
           #{index + 1}
         </CardTitle>
       </CardHeader>
@@ -61,7 +61,7 @@ export function GridBarcode({ value, index, width, height, margin, isBlurred = f
         )}
       </CardContent>
       <CardFooter className="p-2 pt-0">
-        <p className="text-center font-code text-sm text-foreground truncate">{value}</p>
+        <p className="text-center font-code text-sm text-card-foreground truncate">{value}</p>
       </CardFooter>
     </Card>
   );

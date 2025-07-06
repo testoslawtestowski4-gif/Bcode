@@ -137,14 +137,14 @@ export function InteractiveBarcode({
           <svg ref={svgRef} className="w-full" />
         </CardContent>
         <CardFooter className="flex flex-col items-center p-2 pt-0">
-          <p className="text-center font-code text-lg text-muted-foreground">
+          <p className="text-center font-code text-lg text-card-foreground">
               {value}
           </p>
         </CardFooter>
       </div>
       {!showActiveState && (
         <div className="absolute inset-0 flex items-center justify-center p-4">
-          <span className="text-4xl font-bold text-center break-all font-code text-foreground">
+          <span className="text-4xl font-bold text-center break-all font-code text-card-foreground">
             {value}
           </span>
         </div>
