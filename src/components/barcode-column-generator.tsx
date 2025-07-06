@@ -14,14 +14,14 @@ interface BarcodeData {
   value: string;
 }
 
-// Validation helpers
-const hasLetters = (str: string) => /[a-zA-Z]/.test(str);
-const hasNumbers = (str: string) => /[0-9]/.test(str);
-
+// Validation helper
 const isValidBarcode = (line: string) => {
   const trimmed = line.trim();
-  if (trimmed.toLowerCase().startsWith('web')) return false;
-  return hasLetters(trimmed) && hasNumbers(trimmed);
+  if (trimmed.toLowerCase().startsWith('web')) {
+    return false;
+  }
+  // Must start with a letter and contain at least one number.
+  return /^[a-zA-Z]/.test(trimmed) && /[0-9]/.test(trimmed);
 };
 
 export function BarcodeColumnGenerator() {
@@ -145,7 +145,7 @@ export function BarcodeColumnGenerator() {
           ) : (
             <div className="text-center py-10 text-muted-foreground">
               <p>Your generated barcodes will appear here.</p>
-              <p className="text-xs mt-2">(Codes must contain letters and numbers, e.g., EX1234)</p>
+              <p className="text-xs mt-2">(Codes must start with a letter and contain numbers, e.g., EX1234)</p>
             </div>
           )}
         </div>
