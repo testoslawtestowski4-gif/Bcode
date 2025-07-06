@@ -151,11 +151,13 @@ export function BarcodeColumnGenerator() {
         </CardTitle>
         <Button 
             variant="outline"
+            size="icon"
             onClick={handlePrintAll} 
             disabled={barcodes.length === 0}
+            title="Print All"
         >
             <Printer className="w-4 h-4" />
-            Print All
+            <span className="sr-only">Print All</span>
         </Button>
       </CardHeader>
       <CardContent className="p-6 pt-0">
