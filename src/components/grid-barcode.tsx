@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import JsBarcode from 'jsbarcode';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface GridBarcodeProps {
   value: string;
@@ -11,9 +12,10 @@ interface GridBarcodeProps {
   width: number;
   height: number;
   margin: number;
+  isBlurred?: boolean;
 }
 
-export function GridBarcode({ value, index, width, height, margin }: GridBarcodeProps) {
+export function GridBarcode({ value, index, width, height, margin, isBlurred = false }: GridBarcodeProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [isValid, setIsValid] = useState(true);
 
@@ -40,7 +42,10 @@ export function GridBarcode({ value, index, width, height, margin }: GridBarcode
   }, [value, width, height, margin]);
 
   return (
-    <Card className="flex flex-col items-center justify-between barcode-card">
+    <Card className={cn(
+      "flex flex-col items-center justify-between barcode-card transition-all duration-300 ease-in-out",
+      isBlurred && "blur-md opacity-40"
+    )}>
       <CardHeader className="p-2 pb-0">
         <CardTitle className="text-xs font-semibold text-muted-foreground">
           #{index + 1}

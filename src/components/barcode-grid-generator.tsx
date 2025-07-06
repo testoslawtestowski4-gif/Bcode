@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { GridBarcode } from '@/components/grid-barcode';
@@ -8,12 +8,17 @@ import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
 import { Button } from './ui/button';
 import { Boxes } from 'lucide-react';
+import { Switch } from './ui/switch';
+import { Label } from './ui/label';
 
 export function BarcodeGridGenerator() {
   const { gridRows, gridWidth, gridHeight, gridMargin, gridColumns, setGridColumns } = useSettings();
   const [inputValue, setInputValue] = useState('');
   const debouncedValue = useDebounce(inputValue, 500);
   const PREDEFINED_COLUMNS = [1, 3, 5, 7];
+
+  const [isFocusMode, setIsFocusMode] = useState(false);
+  const [focusedRow, setFocusedRow] = useState(0);
 
   const barcodes = Array.from(new Set(debouncedValue
     .split('\n')
@@ -32,7 +37,6 @@ export function BarcodeGridGenerator() {
         '1-c4-web-dropoff', 'apr-web-dropoff', 'web-dropoff'
       ];
 
-      // First, try to find the keyword pattern
       for (let i = 0; i < parts.length; i++) {
         if (dropoffKeywords.includes(parts[i])) {
           if (i > 0 && /^\d+$/.test(parts[i - 1])) {
@@ -41,15 +45,43 @@ export function BarcodeGridGenerator() {
         }
       }
       
-      // If no keyword pattern was found, check if the whole line is ONLY a number.
       if (parts.length === 1 && /^\d+$/.test(trimmedLine)) {
           return trimmedLine;
       }
 
-      // Otherwise, this line is invalid.
       return null;
     })
     .filter((value): value is string => value !== null && value !== '')));
+
+  useEffect(() => {
+    if (barcodes.length > 15) {
+      setIsFocusMode(true);
+    } else {
+      setIsFocusMode(false);
+    }
+    setFocusedRow(0);
+  }, [barcodes.length]);
+
+  useEffect(() => {
+    if (!isFocusMode || barcodes.length === 0) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.code === 'Space') {
+        event.preventDefault();
+        const totalRows = Math.ceil(barcodes.length / gridColumns);
+        if (totalRows > 0) {
+          setFocusedRow(prevRow => (prevRow + 1) % totalRows);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isFocusMode, barcodes.length, gridColumns]);
+
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement> | React.ClipboardEvent<HTMLTextAreaElement>) => {
     const value = 'target' in event ? event.target.value : event.clipboardData.getData('text');
@@ -63,20 +95,31 @@ export function BarcodeGridGenerator() {
             <Boxes className="w-7 h-7" />
             Container View
         </CardTitle>
-        <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground hidden md:inline">Columns:</span>
-            {PREDEFINED_COLUMNS.map((cols) => (
-              <Button
-                key={cols}
-                variant={gridColumns === cols ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setGridColumns(cols)}
-                className="px-4"
-              >
-                {cols}
-              </Button>
-            ))}
-          </div>
+        <div className="flex items-center gap-4 flex-wrap justify-center">
+            <div className="flex items-center space-x-2">
+                <Switch
+                    id="focus-mode"
+                    checked={isFocusMode}
+                    onCheckedChange={setIsFocusMode}
+                    disabled={barcodes.length === 0}
+                />
+                <Label htmlFor="focus-mode">Focus Mode</Label>
+            </div>
+            <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground hidden md:inline">Columns:</span>
+                {PREDEFINED_COLUMNS.map((cols) => (
+                  <Button
+                    key={cols}
+                    variant={gridColumns === cols ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setGridColumns(cols)}
+                    className="px-4"
+                  >
+                    {cols}
+                  </Button>
+                ))}
+            </div>
+        </div>
       </CardHeader>
       <CardContent className="p-6 pt-0">
         <Textarea
@@ -94,16 +137,21 @@ export function BarcodeGridGenerator() {
               className="grid gap-4"
               style={{ gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))` }}
             >
-              {barcodes.map((value, index) => (
-                <GridBarcode 
-                  key={`${value}-${index}`} 
-                  value={value} 
-                  index={index}
-                  width={gridWidth}
-                  height={gridHeight}
-                  margin={gridMargin}
-                />
-              ))}
+              {barcodes.map((value, index) => {
+                const rowIndex = Math.floor(index / gridColumns);
+                const isBlurred = isFocusMode && rowIndex !== focusedRow;
+                return (
+                  <GridBarcode 
+                    key={`${value}-${index}`} 
+                    value={value} 
+                    index={index}
+                    width={gridWidth}
+                    height={gridHeight}
+                    margin={gridMargin}
+                    isBlurred={isBlurred}
+                  />
+                );
+              })}
             </div>
           ) : (
             <div className="text-center py-10 text-muted-foreground">
