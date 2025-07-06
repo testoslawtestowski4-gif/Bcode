@@ -4,6 +4,8 @@ import { useEffect, useRef } from 'react';
 import JsBarcode from 'jsbarcode';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Button } from './ui/button';
+import { Printer } from 'lucide-react';
 
 interface InteractiveBarcodeProps {
   value: string;
@@ -48,6 +50,62 @@ export function InteractiveBarcode({
 
   const showActiveState = !isInteractive || isActive;
 
+  const handlePrint = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card's onClick from firing
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Print</title>
+            <style>
+              @media print {
+                @page { size: auto; margin: 0mm; }
+                body {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  height: 100vh;
+                  margin: 0;
+                  font-family: sans-serif;
+                }
+                .printable-content {
+                  font-size: 140pt;
+                  font-weight: bold;
+                  text-align: center;
+                }
+              }
+              body {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  height: 100vh;
+                  margin: 0;
+                  font-family: sans-serif;
+              }
+              .printable-content {
+                  font-size: 140pt;
+                  font-weight: bold;
+                  text-align: center;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="printable-content">${value}</div>
+            <script>
+              window.onload = function() {
+                window.print();
+                window.close();
+              }
+            </script>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+    }
+  };
+
+
   return (
     <Card
       onClick={isInteractive ? onClick : undefined}
@@ -58,6 +116,17 @@ export function InteractiveBarcode({
         showActiveState ? 'border-primary shadow-lg' : (isInteractive ? 'hover:border-primary/50' : '')
       )}
     >
+      {showActiveState && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handlePrint}
+          className="absolute top-1 right-1 h-8 w-8 z-20 text-muted-foreground hover:bg-primary/10 hover:text-primary"
+          aria-label={`Print barcode value ${value}`}
+        >
+          <Printer className="h-5 w-5" />
+        </Button>
+      )}
       <div
         className={cn(
           'transition-all duration-300',
