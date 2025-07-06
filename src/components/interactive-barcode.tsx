@@ -21,7 +21,7 @@ export function InteractiveBarcode({
   value,
   isActive,
   onClick,
-  width = 2,
+  width = 2.5,
   height = 80,
   margin = 10,
   isInteractive = true,
@@ -111,43 +111,45 @@ export function InteractiveBarcode({
       onClick={isInteractive ? onClick : undefined}
       className={cn(
         'barcode-card',
-        'transition-all duration-300 overflow-hidden relative',
+        'transition-all duration-300 overflow-hidden relative flex items-stretch',
         isInteractive && 'cursor-pointer',
         showActiveState ? 'border-primary shadow-lg' : (isInteractive ? 'hover:border-primary/50' : '')
       )}
     >
+      <div className="relative flex-grow">
+        <div
+          className={cn(
+            'transition-all duration-300 h-full flex flex-col',
+            showActiveState ? 'opacity-100 blur-none' : 'opacity-40 blur-lg'
+          )}
+        >
+          <CardContent className="p-4 pt-4 flex-grow flex items-center">
+            <svg ref={svgRef} className="w-full" />
+          </CardContent>
+          <CardFooter className="flex flex-col items-center p-2 pt-0">
+            <p className="text-center font-code text-lg text-card-foreground">
+                {value}
+            </p>
+          </CardFooter>
+        </div>
+        {!showActiveState && (
+          <div className="absolute inset-0 flex items-center justify-center p-4">
+            <span className="text-4xl font-bold text-center break-all font-code text-card-foreground">
+              {value}
+            </span>
+          </div>
+        )}
+      </div>
+
       {showActiveState && (
         <Button
           variant="ghost"
-          size="icon"
           onClick={handlePrint}
-          className="absolute top-1 right-1 h-8 w-8 z-20 text-muted-foreground hover:bg-primary/10 hover:text-primary"
+          className="h-auto w-20 rounded-none border-l text-muted-foreground hover:bg-primary/10 hover:text-primary flex-shrink-0"
           aria-label={`Print barcode value ${value}`}
         >
-          <Printer className="h-5 w-5" />
+          <Printer className="h-8 w-8" />
         </Button>
-      )}
-      <div
-        className={cn(
-          'transition-all duration-300',
-          showActiveState ? 'opacity-100 blur-none' : 'opacity-40 blur-lg'
-        )}
-      >
-        <CardContent className="p-4 pt-4">
-          <svg ref={svgRef} className="w-full" />
-        </CardContent>
-        <CardFooter className="flex flex-col items-center p-2 pt-0">
-          <p className="text-center font-code text-lg text-card-foreground">
-              {value}
-          </p>
-        </CardFooter>
-      </div>
-      {!showActiveState && (
-        <div className="absolute inset-0 flex items-center justify-center p-4">
-          <span className="text-4xl font-bold text-center break-all font-code text-card-foreground">
-            {value}
-          </span>
-        </div>
       )}
     </Card>
   );
