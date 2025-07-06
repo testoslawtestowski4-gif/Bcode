@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { GridBarcode } from '@/components/grid-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
 import { Button } from './ui/button';
-import { Boxes, BarChart2 } from 'lucide-react';
+import { Boxes, BarChart2, ArrowDownToLine } from 'lucide-react';
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 
@@ -19,6 +19,8 @@ export function BarcodeGridGenerator() {
 
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [focusedRow, setFocusedRow] = useState(0);
+  
+  const gridContainerRef = useRef<HTMLDivElement>(null);
 
   const barcodes = Array.from(new Set(debouncedValue
     .split('\n')
@@ -87,6 +89,10 @@ export function BarcodeGridGenerator() {
     const value = 'target' in event ? event.target.value : event.clipboardData.getData('text');
     setInputValue(value);
   };
+
+  const handleScrollToGrid = () => {
+    gridContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
     
   return (
     <Card>
@@ -96,6 +102,16 @@ export function BarcodeGridGenerator() {
             Container View
         </CardTitle>
         <div className="flex items-center gap-4 flex-wrap justify-center">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleScrollToGrid}
+              disabled={barcodes.length === 0}
+              title="Scroll to grid"
+            >
+              <ArrowDownToLine className="w-4 h-4" />
+              <span className="sr-only">Scroll to grid</span>
+            </Button>
             <div className="flex items-center space-x-2">
                 <Switch
                     id="focus-mode"
@@ -165,7 +181,7 @@ export function BarcodeGridGenerator() {
           </Card>
         </div>
 
-        <div className="mt-6">
+        <div className="mt-6" ref={gridContainerRef}>
           {barcodes.length > 0 ? (
             <div 
               className="grid gap-4"
