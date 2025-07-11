@@ -7,8 +7,16 @@
  * - FormatBarcodesOutput - The return type for the formatBarcodes function.
  */
 
-import {ai} from '@/ai/genkit';
+import { genkit } from '@genkit-ai/core';
+import { googleAI } from '@genkit-ai/googleai';
 import {z} from 'zod';
+
+const ai = genkit({
+  plugins: [
+    googleAI(),
+  ],
+});
+
 
 const FormatBarcodesInputSchema = z.string();
 export type FormatBarcodesInput = z.infer<typeof FormatBarcodesInputSchema>;
