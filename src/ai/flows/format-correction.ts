@@ -7,33 +7,29 @@
  * - FormatBarcodesOutput - The return type for the formatBarcodes function.
  */
 
-import { genkit } from '@genkit-ai/core';
-import { googleAI } from '@genkit-ai/googleai';
-import {z} from 'zod';
-
-const ai = genkit({
-  plugins: [
-    googleAI(),
-  ],
-});
-
+import { ai } from '@/ai/genkit';
+import { z } from 'zod';
 
 const FormatBarcodesInputSchema = z.string();
 export type FormatBarcodesInput = z.infer<typeof FormatBarcodesInputSchema>;
 
 const FormatBarcodesOutputSchema = z.object({
-  formattedText: z.string().describe('The formatted text, with each valid barcode on a new line.'),
+  formattedText: z
+    .string()
+    .describe('The formatted text, with each valid barcode on a new line.'),
 });
 export type FormatBarcodesOutput = z.infer<typeof FormatBarcodesOutputSchema>;
 
-export async function formatBarcodes(input: FormatBarcodesInput): Promise<FormatBarcodesOutput> {
+export async function formatBarcodes(
+  input: FormatBarcodesInput
+): Promise<FormatBarcodesOutput> {
   return formatBarcodesFlow(input);
 }
 
 const prompt = ai.definePrompt({
   name: 'formatBarcodesPrompt',
-  input: {schema: FormatBarcodesInputSchema},
-  output: {schema: FormatBarcodesOutputSchema},
+  input: { schema: FormatBarcodesInputSchema },
+  output: { schema: FormatBarcodesOutputSchema },
   prompt: `You are an expert at parsing and cleaning up text to extract barcode numbers.
 The user will provide a block of text that may contain valid barcode numbers mixed with other text, notes, or incorrect formats.
 Your task is to identify and extract only the valid barcode numbers.
@@ -52,7 +48,7 @@ const formatBarcodesFlow = ai.defineFlow(
     outputSchema: FormatBarcodesOutputSchema,
   },
   async (input) => {
-    const {output} = await prompt(input);
+    const { output } = await prompt(input);
     if (!output) {
       throw new Error('Failed to get a response from the AI model.');
     }
