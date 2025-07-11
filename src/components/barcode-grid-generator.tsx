@@ -7,9 +7,11 @@ import { GridBarcode } from '@/components/grid-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
 import { Button } from './ui/button';
-import { Boxes, BarChart2, ArrowDownToLine } from 'lucide-react';
+import { Boxes, BarChart2, ArrowDownToLine, Wand2 } from 'lucide-react';
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
+import { formatBarcodes } from '@/ai/flows/format-correction';
+import { useToast } from '@/hooks/use-toast';
 
 export function BarcodeGridGenerator() {
   const { gridWidth, gridHeight, gridMargin, gridColumns, setGridColumns } = useSettings();
@@ -19,41 +21,41 @@ export function BarcodeGridGenerator() {
 
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [focusedRow, setFocusedRow] = useState(0);
+  const [isFormatting, setIsFormatting] = useState(false);
   
   const gridContainerRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
-  const barcodes = Array.from(new Set(debouncedValue
-    .split('\n')
-    .map(line => {
-      const trimmedLine = line.trim();
-      if (!trimmedLine) return null;
+  const parseBarcodes = (input: string) => {
+    return Array.from(new Set(input
+      .split('\n')
+      .map(line => {
+        const trimmedLine = line.trim();
+        if (!trimmedLine) return null;
 
-      const lowercasedLine = trimmedLine.toLowerCase();
-      const parts = lowercasedLine.split(/\s+/);
-      const originalParts = trimmedLine.split(/\s+/);
-
-      const dropoffKeywords = [
-        '1-b1-web-dropoff', '2-b2-web-dropoff', '2-b3-web-dropoff',
-        '2-c1-web-dropoff', '2-c2-web-dropoff', '2-c3-web-dropoff',
-        '1-c1-web-dropoff', '1-c2-web-dropoff', '1-c3-web-dropoff',
-        '1-c4-web-dropoff', 'apr-web-dropoff', 'web-dropoff'
-      ];
-
-      for (let i = 0; i < parts.length; i++) {
-        if (dropoffKeywords.includes(parts[i])) {
-          if (i > 0 && /^\d+$/.test(parts[i - 1])) {
-            return originalParts[i - 1];
-          }
+        // New logic to handle cases like '12345 2-b3-web-dropoff' or '2-b3-web-dropoff 12345'
+        const lowercasedLine = trimmedLine.toLowerCase();
+        const dropoffRegex = /(\d+)\s+.*web-dropoff|.*web-dropoff\s+(\d+)/;
+        const match = lowercasedLine.match(dropoffRegex);
+        if (match) {
+            // Find the original number from the untampered line to preserve case if needed, though numbers don't have case.
+            // It's good practice in case the requirements change.
+            const number = match[1] || match[2];
+            const originalMatch = trimmedLine.match(new RegExp(number));
+            if(originalMatch) return originalMatch[0];
         }
-      }
-      
-      if (parts.length === 1 && /^\d+$/.test(trimmedLine)) {
-          return trimmedLine;
-      }
 
-      return null;
-    })
-    .filter((value): value is string => value !== null && value !== '')));
+        // Handle simple numeric lines
+        if (/^\d+$/.test(trimmedLine)) {
+            return trimmedLine;
+        }
+
+        return null;
+      })
+      .filter((value): value is string => value !== null && value !== '')));
+  };
+
+  const barcodes = parseBarcodes(debouncedValue);
 
   useEffect(() => {
     if (barcodes.length > 15) {
@@ -93,6 +95,39 @@ export function BarcodeGridGenerator() {
   const handleScrollToGrid = () => {
     gridContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
+
+  const handleAiFormat = async () => {
+    if (!inputValue.trim()) {
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Input is empty. Please paste some data first.",
+        });
+        return;
+    }
+    setIsFormatting(true);
+    try {
+        const result = await formatBarcodes(inputValue);
+        if (result && result.formattedText) {
+            setInputValue(result.formattedText);
+            toast({
+                title: "Formatting successful",
+                description: "The input has been reformatted by AI.",
+            });
+        } else {
+            throw new Error("Invalid response from AI.");
+        }
+    } catch (error) {
+        console.error("AI Formatting Error:", error);
+        toast({
+            variant: "destructive",
+            title: "AI Formatting Failed",
+            description: "Could not format the text. Please check the input or try again later.",
+        });
+    } finally {
+        setIsFormatting(false);
+    }
+};
     
   return (
     <Card>
@@ -139,14 +174,27 @@ export function BarcodeGridGenerator() {
       </CardHeader>
       <CardContent className="p-6 pt-0">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Textarea
-            placeholder="Paste your list of codes here..."
-            className="w-full resize-none"
-            rows={5}
-            value={inputValue}
-            onChange={handleInputChange}
-            onPaste={handleInputChange}
-          />
+          <div className="relative">
+            <Textarea
+              placeholder="Paste your list of codes here..."
+              className="w-full resize-none pr-12"
+              rows={5}
+              value={inputValue}
+              onChange={handleInputChange}
+              onPaste={handleInputChange}
+            />
+            <Button
+                variant="outline"
+                size="icon"
+                onClick={handleAiFormat}
+                disabled={isFormatting}
+                className="absolute top-2 right-2"
+                title="Format with AI"
+            >
+                <Wand2 className={`w-4 h-4 ${isFormatting ? 'animate-spin' : ''}`} />
+                <span className="sr-only">Format with AI</span>
+            </Button>
+          </div>
           <Card>
             <CardHeader className="p-4">
               <CardTitle className="text-lg flex items-center gap-2">
