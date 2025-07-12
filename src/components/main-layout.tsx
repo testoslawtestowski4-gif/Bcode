@@ -33,7 +33,7 @@ export function MainLayout({ children, isCollapsed }: MainLayoutProps) {
                 </div>
                 {isCollapsed && (
                     <div className="hidden lg:block absolute top-0 left-0 w-[120px] h-full">
-                         <div className="h-full w-full">
+                         <div className="h-full w-full" style={{height: 'calc(100vh - 12rem)'}}>
                             <VerticalBarcode value="INSHIP01" />
                         </div>
                     </div>
