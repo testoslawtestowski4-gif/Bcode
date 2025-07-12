@@ -6,6 +6,7 @@ import { BarcodeGridGenerator } from "@/components/barcode-grid-generator";
 import { SettingsSheet } from "@/components/settings-sheet";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { DraggableBarcode } from '@/components/draggable-barcode';
+import { VerticalBarcode } from '@/components/vertical-barcode';
 import { Button } from '@/components/ui/button';
 import { Barcode, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -72,7 +73,7 @@ export default function Home() {
           </div>
         </header>
         <main className="flex-grow container mx-auto p-4 sm:p-6 md:p-8">
-          <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 items-start mt-8">
+          <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 items-start mt-8 relative">
               <div 
                 id="consignment-view"
                 className={cn(
@@ -87,6 +88,13 @@ export default function Home() {
                     setIsLocked={setIsConsignmentLocked}
                   />
               </div>
+
+              {isConsignmentCollapsed && (
+                <div className="absolute top-0 left-0 lg:col-span-3 h-full w-[250px] transition-opacity duration-500 ease-in-out">
+                    <VerticalBarcode value="INSHIP01" />
+                </div>
+              )}
+
               <div 
                 id="container-view"
                 className={cn(
