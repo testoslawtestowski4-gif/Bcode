@@ -23,49 +23,35 @@ export function BarcodeGridGenerator() {
   const gridContainerRef = useRef<HTMLDivElement>(null);
 
   const parseBarcodes = (input: string) => {
-    const lines = input.split('\n');
-    const results: string[] = [];
-
-    for (let i = 0; i < lines.length; i++) {
-        const trimmedLine = lines[i].trim();
-        if (!trimmedLine) continue;
-
-        const lowercasedLine = trimmedLine.toLowerCase();
-        
-        // Case 1: Number is on the same line as web-dropoff
-        const sameLineRegex = /(\d+)\s+.*web-dropoff|.*web-dropoff\s+(\d+)/;
-        const sameLineMatch = lowercasedLine.match(sameLineRegex);
-        if (sameLineMatch) {
-            const number = sameLineMatch[1] || sameLineMatch[2];
-            // Find the original number in the non-lowercased line to preserve casing if needed, though it's numeric
-            const originalMatch = trimmedLine.match(new RegExp(number));
-            if(originalMatch) {
-                results.push(originalMatch[0]);
-                continue; // Move to the next line
-            }
-        }
-        
-        // Case 2: web-dropoff is on one line, number is on the next
-        if (lowercasedLine.includes('web-dropoff')) {
-            if (i + 1 < lines.length) {
-                const nextLine = lines[i + 1].trim();
-                // Check if the next line is purely numeric
-                if (/^\d+$/.test(nextLine)) {
-                    results.push(nextLine);
-                    i++; // Skip the next line as it's already processed
-                    continue;
-                }
-            }
-        }
-        
-        // Case 3: Line is purely numeric
-        if (/^\d+$/.test(trimmedLine)) {
-            results.push(trimmedLine);
-        }
+    if (!input) {
+      return [];
     }
-
-    // Return unique values
-    return Array.from(new Set(results));
+  
+    // 1. Find all purely numeric sequences in the entire input.
+    const allNumbers = input.match(/\d+/g) || [];
+  
+    // 2. Find numbers that are associated with "web-dropoff" to exclude them.
+    // This regex finds "web-dropoff" and captures a number on the same line or the next line.
+    const webDropoffRegex = /web-dropoff[^\n]*?(\d+)|(\d+)[^\n]*?web-dropoff|web-dropoff\s*\n\s*(\d+)/gi;
+    const excludedNumbers = new Set<string>();
+    let match;
+    while ((match = webDropoffRegex.exec(input)) !== null) {
+      // The captured number can be in group 1, 2 or 3
+      const num = match[1] || match[2] || match[3];
+      if (num) {
+        excludedNumbers.add(num.trim());
+      }
+    }
+  
+    // 3. Filter out the excluded numbers and get unique values.
+    const uniqueValidNumbers = new Set<string>();
+    for (const num of allNumbers) {
+      if (!excludedNumbers.has(num)) {
+        uniqueValidNumbers.add(num);
+      }
+    }
+    
+    return Array.from(uniqueValidNumbers);
   };
 
   const barcodes = parseBarcodes(debouncedValue);
