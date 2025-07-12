@@ -3,14 +3,16 @@
 
 import { cn } from '@/lib/utils';
 import { ReactNode } from 'react';
-import { VerticalBarcode } from './vertical-barcode';
+import { Button } from './ui/button';
+import { Eye } from 'lucide-react';
 
 interface MainLayoutProps {
     children: [ReactNode, ReactNode];
     isCollapsed: boolean;
+    setIsCollapsed: (isCollapsed: boolean) => void;
 }
 
-export function MainLayout({ children, isCollapsed }: MainLayoutProps) {
+export function MainLayout({ children, isCollapsed, setIsCollapsed }: MainLayoutProps) {
     const [consignmentView, containerView] = children;
 
     return (
@@ -34,7 +36,14 @@ export function MainLayout({ children, isCollapsed }: MainLayoutProps) {
                 {isCollapsed && (
                     <div className="hidden lg:block absolute top-0 left-0 w-[120px] h-full">
                          <div className="h-full w-full" style={{height: 'calc(100vh - 12rem)'}}>
-                            <VerticalBarcode value="INSHIP01" />
+                            <Button 
+                                className="w-full h-full text-lg"
+                                variant="outline"
+                                onClick={() => setIsCollapsed(false)}
+                            >
+                                <Eye className="w-6 h-6 mr-2" />
+                                Show List
+                            </Button>
                         </div>
                     </div>
                 )}

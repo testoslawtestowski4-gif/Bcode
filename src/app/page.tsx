@@ -7,8 +7,7 @@ import { SettingsSheet } from "@/components/settings-sheet";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { DraggableBarcode } from '@/components/draggable-barcode';
 import { Button } from '@/components/ui/button';
-import { Barcode, Eye } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Barcode } from 'lucide-react';
 import { MainLayout } from '@/components/main-layout';
 
 export default function Home() {
@@ -72,7 +71,7 @@ export default function Home() {
           </div>
         </header>
         <main className="flex-grow container mx-auto p-4 sm:p-6 md:p-8">
-            <MainLayout isCollapsed={isConsignmentCollapsed}>
+            <MainLayout isCollapsed={isConsignmentCollapsed} setIsCollapsed={setIsConsignmentCollapsed}>
                 <BarcodeColumnGenerator 
                     isCollapsed={isConsignmentCollapsed}
                     setIsCollapsed={setIsConsignmentCollapsed}
@@ -88,22 +87,6 @@ export default function Home() {
         </footer>
       </div>
       {showDraggableBarcode && <DraggableBarcode onClose={() => setShowDraggableBarcode(false)} />}
-      
-      <div 
-        className={cn(
-          "fixed bottom-4 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ease-in-out",
-          isConsignmentCollapsed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
-        )}
-      >
-        <Button 
-            size="lg" 
-            className="text-lg px-8 py-6 shadow-2xl"
-            onClick={() => setIsConsignmentCollapsed(false)}
-        >
-            <Eye className="w-6 h-6 mr-2" />
-            Show List
-        </Button>
-      </div>
     </>
   );
 }
