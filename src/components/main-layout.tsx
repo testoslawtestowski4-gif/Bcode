@@ -33,7 +33,7 @@ export function MainLayout({ children, isCollapsed, setIsCollapsed }: MainLayout
                     {consignmentView}
                 </div>
                 {isCollapsed && (
-                    <div className="hidden lg:block absolute top-0 left-0 w-[120px] h-full">
+                    <div className="hidden lg:block sticky top-20 w-[120px]">
                          <div className="h-full w-full" style={{height: 'calc(100vh - 12rem)'}}>
                             <Button 
                                 className="w-full h-full text-lg"

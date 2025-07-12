@@ -7,12 +7,14 @@ import { SettingsSheet } from "@/components/settings-sheet";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { DraggableBarcode } from '@/components/draggable-barcode';
 import { Button } from '@/components/ui/button';
-import { Barcode } from 'lucide-react';
+import { Barcode, ArrowUp } from 'lucide-react';
 import { MainLayout } from '@/components/main-layout';
+import { cn } from '@/lib/utils';
 
 export default function Home() {
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   const [isConsignmentCollapsed, setIsConsignmentCollapsed] = useState(false);
   const [isConsignmentLocked, setIsConsignmentLocked] = useState(false);
@@ -28,6 +30,12 @@ export default function Home() {
         setIsHeaderVisible(true);
       }
       lastScrollY = currentScrollY;
+
+      if (currentScrollY > 300) {
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -49,6 +57,13 @@ export default function Home() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isConsignmentLocked]);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
 
 
   return (
@@ -87,6 +102,18 @@ export default function Home() {
         </footer>
       </div>
       {showDraggableBarcode && <DraggableBarcode onClose={() => setShowDraggableBarcode(false)} />}
+      <Button
+        variant="default"
+        size="icon"
+        onClick={scrollToTop}
+        className={cn(
+          "fixed bottom-6 right-6 z-50 rounded-full shadow-lg transition-opacity duration-300",
+          showScrollTop ? "opacity-100" : "opacity-0 pointer-events-none"
+        )}
+        aria-label="Scroll to top"
+      >
+        <ArrowUp className="h-6 w-6" />
+      </Button>
     </>
   );
 }
