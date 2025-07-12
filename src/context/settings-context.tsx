@@ -36,8 +36,8 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   // Column settings
   const [columnRows, setColumnRows] = useState(1);
   const [columnMargin, setColumnMargin] = useState(0);
-  const [columnWidth, setColumnWidth] = useState(2.5);
-  const [columnHeight, setColumnHeight] = useState(80);
+  const [columnWidth, setColumnWidth] = useState(1.5);
+  const [columnHeight, setColumnHeight] = useState(60);
 
   // Grid settings
   const [gridRows, setGridRows] = useState(1);
