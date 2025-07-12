@@ -246,6 +246,7 @@ export function BarcodeGridGenerator() {
                     height={currentGridHeight}
                     margin={currentGridMargin}
                     isBlurred={isBlurred}
+                    onClick={() => isFocusMode && setFocusedRow(rowIndex)}
                   />
                 );
               })}

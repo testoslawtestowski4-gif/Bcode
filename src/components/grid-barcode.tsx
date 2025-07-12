@@ -13,10 +13,11 @@ interface GridBarcodeProps {
   height: number;
   margin: number;
   isBlurred?: boolean;
+  onClick?: () => void;
 }
 
 export const GridBarcode = forwardRef<HTMLDivElement, GridBarcodeProps>(
-  ({ value, index, width, height, margin, isBlurred = false }, ref) => {
+  ({ value, index, width, height, margin, isBlurred = false, onClick }, ref) => {
     const svgRef = useRef<SVGSVGElement | null>(null);
     const [isValid, setIsValid] = useState(true);
 
@@ -45,9 +46,10 @@ export const GridBarcode = forwardRef<HTMLDivElement, GridBarcodeProps>(
     return (
       <Card
         ref={ref}
+        onClick={onClick}
         className={cn(
           "flex flex-col items-center justify-between barcode-card transition-all duration-300 ease-in-out",
-          isBlurred && "blur-md opacity-40"
+          isBlurred && "blur-md opacity-40 cursor-pointer"
         )}
       >
         <CardHeader className="p-2 pb-0">
