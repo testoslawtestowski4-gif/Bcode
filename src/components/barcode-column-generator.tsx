@@ -15,14 +15,20 @@ interface BarcodeData {
 }
 
 // Validation helper
-const isValidBarcode = (line: string) => {
-  const trimmed = line.trim();
+const isValidBarcode = (code: string) => {
   // Must be composed of only letters and numbers
-  if (!/^[a-zA-Z0-9]+$/.test(trimmed)) {
+  if (!/^[a-zA-Z0-9]+$/.test(code)) {
     return false;
   }
   // Must contain at least one letter and at least one number
-  return /[a-zA-Z]/.test(trimmed) && /[0-9]/.test(trimmed);
+  if (!(/[a-zA-Z]/.test(code) && /[0-9]/.test(code))) {
+    return false;
+  }
+  // Must not contain "web" (case-insensitive)
+  if (code.toLowerCase().includes('web')) {
+    return false;
+  }
+  return true;
 };
 
 export function BarcodeColumnGenerator() {
@@ -39,17 +45,20 @@ export function BarcodeColumnGenerator() {
   const debouncedValue = useDebounce(inputValue, 500);
 
   useEffect(() => {
-    const lines = debouncedValue.split('\n').map(line => line.trim()).filter(Boolean);
-    const uniqueValidLines = Array.from(new Set(lines.filter(isValidBarcode)));
+    // Find all alphanumeric sequences in the input text
+    const potentialCodes = debouncedValue.match(/[a-zA-Z0-9]+/g) || [];
+    
+    // Filter them based on validation rules and ensure uniqueness
+    const uniqueValidCodes = Array.from(new Set(potentialCodes.filter(isValidBarcode)));
 
-    const newAllBarcodes = uniqueValidLines.map((line, index) => ({
-      id: `${line}-${index}`,
-      value: line,
+    const newAllBarcodes = uniqueValidCodes.map((code, index) => ({
+      id: `${code}-${index}`,
+      value: code,
     }));
     setAllBarcodes(newAllBarcodes);
 
     const prefixes = new Set(
-      uniqueValidLines
+      uniqueValidCodes
         .map(line => (line.match(/[a-zA-Z]+/) || [''])[0].toUpperCase())
         .filter(Boolean)
     );
