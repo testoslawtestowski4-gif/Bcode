@@ -1,4 +1,3 @@
-
 'use client';
 
 import { cn } from '@/lib/utils';
@@ -41,8 +40,10 @@ export function MainLayout({ children, isCollapsed, setIsCollapsed }: MainLayout
                                 variant="outline"
                                 onClick={() => setIsCollapsed(false)}
                             >
-                                <Eye className="w-6 h-6 mr-2" />
-                                Show List
+                                <div className="flex flex-col items-center justify-center gap-2">
+                                    <Eye className="w-8 h-8" />
+                                    <span>Show List</span>
+                                </div>
                             </Button>
                         </div>
                     </div>
