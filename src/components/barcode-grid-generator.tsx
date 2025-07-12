@@ -7,7 +7,7 @@ import { GridBarcode } from '@/components/grid-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
 import { Button } from './ui/button';
-import { Boxes, BarChart2, ArrowDownToLine, ExternalLink } from 'lucide-react';
+import { Boxes, BarChart2, ArrowDownToLine } from 'lucide-react';
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 import { Separator } from './ui/separator';
@@ -154,67 +154,6 @@ export function BarcodeGridGenerator() {
     gridContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  const handleOpenStatsPage = () => {
-    if (!parsedBarcodes || parsedBarcodes.length === 0) return;
-
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      const generationTime = new Date();
-      const tableRows = parsedBarcodes.map(barcode => `
-        <tr>
-          <td>${barcode.value}</td>
-          <td>${barcode.context}</td>
-          <td>${getBarcodeLevel(barcode.context)}</td>
-        </tr>
-      `).join('');
-
-      const pageContent = `
-        <html>
-          <head>
-            <title>Barcode Statistics</title>
-            <style>
-              body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 2rem; background-color: #f8f9fa; color: #212529; }
-              .container { max-width: 800px; margin: auto; background-color: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-              h1, h2 { color: #007bff; }
-              h1 { border-bottom: 2px solid #dee2e6; padding-bottom: 0.5rem; margin-bottom: 1rem; }
-              table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; }
-              th, td { text-align: left; padding: 0.75rem; border-bottom: 1px solid #dee2e6; }
-              th { background-color: #e9ecef; }
-              tr:nth-child(even) { background-color: #f8f9fa; }
-              .info { margin-bottom: 1.5rem; }
-              .info p { margin: 0.25rem 0; }
-              .info strong { color: #495057; }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              <h1>Barcode Generation Report</h1>
-              <div class="info">
-                <p><strong>Generated on:</strong> ${generationTime.toLocaleDateString()} at ${generationTime.toLocaleTimeString()}</p>
-                <p><strong>Total Codes:</strong> ${parsedBarcodes.length}</p>
-              </div>
-              <h2>Detailed List</h2>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Barcode</th>
-                    <th>Location</th>
-                    <th>Level</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${tableRows}
-                </tbody>
-              </table>
-            </div>
-          </body>
-        </html>
-      `;
-      printWindow.document.write(pageContent);
-      printWindow.document.close();
-    }
-  };
-
   const currentGridWidth = gridColumns === 1 ? 1.5 : gridWidth;
   const currentGridHeight = gridColumns === 1 ? 40 : gridHeight;
   const currentGridMargin = gridColumns === 1 ? 5 : gridMargin;
@@ -281,14 +220,6 @@ export function BarcodeGridGenerator() {
                     <BarChart2 className="w-5 h-5" />
                     Statistics
                   </CardTitle>
-                  <Button 
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleOpenStatsPage}
-                    title="Open statistics in new tab"
-                  >
-                      <ExternalLink className="w-4 h-4" />
-                  </Button>
               </CardHeader>
               <CardContent className="p-4 pt-0 text-sm">
                 <div className="flex flex-col gap-2 text-center mb-4">
