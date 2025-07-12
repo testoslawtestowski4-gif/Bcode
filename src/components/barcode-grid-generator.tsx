@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { GridBarcode } from '@/components/grid-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
@@ -10,6 +10,7 @@ import { Button } from './ui/button';
 import { Boxes, BarChart2, ArrowDownToLine } from 'lucide-react';
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
+import { Separator } from './ui/separator';
 
 interface ParsedBarcode {
   value: string;
@@ -210,31 +211,32 @@ export function BarcodeGridGenerator() {
           {statistics && (
             <Card>
               <CardHeader className="p-4">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <BarChart2 className="w-5 h-5" />
-                  Statistics
-                </CardTitle>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <BarChart2 className="w-5 h-5" />
+                    Statistics
+                  </CardTitle>
               </CardHeader>
-              <CardContent className="p-4 pt-0">
-                <ul className="space-y-2 text-sm">
+              <CardContent className="p-4 pt-0 text-sm">
+                <div className="flex flex-col gap-2 text-center mb-4">
+                  <span className="text-muted-foreground">Total Containers</span>
+                  <span className="text-3xl font-bold">{barcodes.length}</span>
+                </div>
+                <Separator className="my-4" />
+                <ul className="space-y-2">
                   <li className="flex justify-between">
-                    <span>Total Barcodes:</span>
-                    <span className="font-semibold">{barcodes.length}</span>
-                  </li>
-                  <li className="flex justify-between">
-                    <span>Level I&amp;N:</span>
+                    <span className="text-muted-foreground">Level I&amp;N:</span>
                     <span className="font-semibold">{statistics.levelIN}</span>
                   </li>
                   <li className="flex justify-between">
-                    <span>Level K&amp;M:</span>
+                    <span className="text-muted-foreground">Level K&amp;M:</span>
                     <span className="font-semibold">{statistics.levelKM}</span>
                   </li>
                   <li className="flex justify-between">
-                    <span>Level C:</span>
+                    <span className="text-muted-foreground">Level C:</span>
                     <span className="font-semibold">{statistics.levelC}</span>
                   </li>
                   <li className="flex justify-between">
-                    <span>Ground Floor:</span>
+                    <span className="text-muted-foreground">Ground Floor:</span>
                     <span className="font-semibold">{statistics.groundFloor}</span>
                   </li>
                 </ul>
