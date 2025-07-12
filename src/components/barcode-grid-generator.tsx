@@ -66,14 +66,14 @@ export function BarcodeGridGenerator() {
 
   const barcodes = useMemo(() => parsedBarcodes.map(b => b.value), [parsedBarcodes]);
 
-  const levelINPatterns = ['2-b1-web-dropoff', '2-b2-web-dropoff', '2-b3-web-dropoff'];
-  const levelKMPatterns = ['2-c1-web-dropoff', '2-c2-web-dropoff', '2-c3-web-dropoff'];
+  const levelIJPatterns = ['2-b1-web-dropoff', '2-b2-web-dropoff', '2-b3-web-dropoff'];
+  const levelKLPatterns = ['2-c1-web-dropoff', '2-c2-web-dropoff', '2-c3-web-dropoff'];
   const levelCPatterns = ['1-c1-web-dropoff', '1-c2-web-dropoff', '1-c3-web-dropoff', '1-c4-web-dropoff'];
   const groundFloorPatterns = ['apr-web-dropoff', 'web-dropoff'];
 
   const getBarcodeLevel = (context: string) => {
-    if (levelINPatterns.includes(context)) return 'I&J';
-    if (levelKMPatterns.includes(context)) return 'K&L';
+    if (levelIJPatterns.includes(context)) return 'I&J';
+    if (levelKLPatterns.includes(context)) return 'K&L';
     if (levelCPatterns.includes(context)) return 'Level C';
     if (groundFloorPatterns.includes(context)) return 'Ground Floor';
     return 'Unknown';
@@ -167,10 +167,15 @@ export function BarcodeGridGenerator() {
             tr:last-child td { border-bottom: none; }
             tbody tr:nth-child(even) { background-color: #f8f9fa; }
             tr:hover { background-color: #f1f3f5; }
-            .summary { background-color: #e9ecef; padding: 1.5rem; border-radius: 6px; margin-bottom: 2rem; }
-            .summary ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
-            .summary li { font-size: 1rem; }
-            .summary li strong { color: #343a40; }
+            .summary { background-color: #f0f3f5; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
+            .total-containers { text-align: center; padding: 1rem; border: 2px solid #ced4da; border-radius: 6px; }
+            .total-containers span { display: block; }
+            .total-containers .label { font-size: 1.1rem; color: #495057; margin-bottom: 0.25rem; }
+            .total-containers .count { font-size: 2.5rem; font-weight: bold; color: #343a40; }
+            .level-counts { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 1rem; text-align: center; }
+            .level-counts div { flex: 1; min-width: 80px; }
+            .level-counts .label { color: #6c757d; font-size: 0.9rem;}
+            .level-counts .count { color: #343a40; font-weight: 600; font-size: 1.2rem; }
             .level-group { 
               margin-bottom: 2rem;
               background-color: white;
@@ -194,13 +199,16 @@ export function BarcodeGridGenerator() {
             
             <h2>Level Breakdown</h2>
             <div class="summary">
-                <ul>
-                    <li><strong>Total Containers:</strong> ${barcodes.length}</li>
-                    <li><strong>I&J:</strong> ${statistics.levelIJ}</li>
-                    <li><strong>K&L:</strong> ${statistics.levelKL}</li>
-                    <li><strong>Level C:</strong> ${statistics.levelC}</li>
-                    <li><strong>Ground Floor:</strong> ${statistics.groundFloor}</li>
-                </ul>
+                <div class="total-containers">
+                    <span class="label">Total Containers</span>
+                    <span class="count">${barcodes.length}</span>
+                </div>
+                <div class="level-counts">
+                    <div><span class="label">I&J</span><span class="count">${statistics.levelIJ}</span></div>
+                    <div><span class="label">K&L</span><span class="count">${statistics.levelKL}</span></div>
+                    <div><span class="label">Level C</span><span class="count">${statistics.levelC}</span></div>
+                    <div><span class="label">Ground Floor</span><span class="count">${statistics.groundFloor}</span></div>
+                </div>
             </div>
 
             <h2>Barcode Details</h2>
