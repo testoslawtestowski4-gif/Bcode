@@ -129,6 +129,10 @@ export function BarcodeGridGenerator() {
   const handleScrollToGrid = () => {
     gridContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
+
+  const currentGridWidth = gridColumns === 1 ? 1.5 : gridWidth;
+  const currentGridHeight = gridColumns === 1 ? 40 : gridHeight;
+  const currentGridMargin = gridColumns === 1 ? 5 : gridMargin;
     
   return (
     <Card>
@@ -238,9 +242,9 @@ export function BarcodeGridGenerator() {
                     key={`${value}-${index}`} 
                     value={value} 
                     index={index}
-                    width={gridWidth}
-                    height={gridHeight}
-                    margin={gridMargin}
+                    width={currentGridWidth}
+                    height={currentGridHeight}
+                    margin={currentGridMargin}
                     isBlurred={isBlurred}
                   />
                 );
