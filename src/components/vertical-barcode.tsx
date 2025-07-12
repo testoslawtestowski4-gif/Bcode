@@ -23,10 +23,10 @@ export function VerticalBarcode({ value, className }: VerticalBarcodeProps) {
           textPosition: 'bottom',
           fontSize: 20,
           background: 'transparent',
-          lineColor: '#000000', // Black color
+          lineColor: '#000000',
           margin: 10,
-          height: 800, // Very tall
-          width: 1.5,
+          height: 200, // This becomes the width after rotation
+          width: 4, // This becomes the stroke width
         });
       } catch (e) {
         console.error('Barcode generation failed', e);
@@ -35,8 +35,8 @@ export function VerticalBarcode({ value, className }: VerticalBarcodeProps) {
   }, [value]);
 
   return (
-    <div className={cn("h-full w-full flex items-center justify-center -rotate-90", className)}>
-        <svg ref={svgRef} className="w-[90vh] max-w-none h-[250px]"/>
+    <div className={cn("h-full w-full flex items-center justify-center", className)}>
+        <svg ref={svgRef} className="w-full h-full -rotate-90"/>
     </div>
   );
 }

@@ -19,7 +19,7 @@ export function MainLayout({ children, isCollapsed }: MainLayoutProps) {
                 id="consignment-view-wrapper"
                 className={cn(
                     'w-full lg:w-[35%] lg:flex-shrink-0 transition-all duration-500 ease-in-out',
-                    isCollapsed && 'lg:w-[250px]'
+                    isCollapsed && 'lg:w-[120px]'
                 )}
             >
                 <div
@@ -32,8 +32,8 @@ export function MainLayout({ children, isCollapsed }: MainLayoutProps) {
                     {consignmentView}
                 </div>
                 {isCollapsed && (
-                    <div className="hidden lg:block absolute top-0 left-0 w-[250px] h-full transition-opacity duration-500 ease-in-out">
-                         <div className="h-full w-full" style={{height: 'calc(100vh - 200px)'}}>
+                    <div className="hidden lg:block absolute top-0 left-0 w-[120px] h-full transition-opacity duration-500 ease-in-out">
+                         <div className="h-full w-full" style={{height: 'calc(90vh - 100px)'}}>
                             <VerticalBarcode value="INSHIP01" />
                         </div>
                     </div>
@@ -43,7 +43,7 @@ export function MainLayout({ children, isCollapsed }: MainLayoutProps) {
                 id="container-view"
                 className={cn(
                     'w-full transition-all duration-500 ease-in-out flex-grow',
-                    isCollapsed ? 'lg:w-[calc(100%-250px)]' : 'lg:w-[65%]'
+                    isCollapsed ? 'lg:w-[calc(100% - 120px)]' : 'lg:w-[65%]'
                 )}
             >
                 {containerView}
