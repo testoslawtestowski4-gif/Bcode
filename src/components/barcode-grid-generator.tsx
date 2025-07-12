@@ -106,14 +106,45 @@ export function BarcodeGridGenerator() {
   const handleOpenStatsPage = () => {
     if (!statistics) return;
   
-    const generationTime = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+    const now = new Date();
+    const generationDate = format(now, 'yyyy-MM-dd');
+    const generationTime = format(now, 'HH:mm:ss');
   
-    const barcodeDetails = parsedBarcodes.map(barcode => `
-      <tr>
-        <td>${barcode.value}</td>
-        <td>${barcode.context}</td>
-        <td>${getBarcodeLevel(barcode.context)}</td>
-      </tr>
+    const groupedBarcodes: { [key: string]: ParsedBarcode[] } = {
+      'I&J': [],
+      'K&L': [],
+      'Level C': [],
+      'Ground Floor': [],
+      'Unknown': []
+    };
+  
+    parsedBarcodes.forEach(barcode => {
+      const level = getBarcodeLevel(barcode.context);
+      groupedBarcodes[level].push(barcode);
+    });
+
+    const barcodeDetailsHtml = Object.entries(groupedBarcodes)
+      .filter(([, barcodes]) => barcodes.length > 0)
+      .map(([level, barcodes]) => `
+      <div class="level-group">
+        <h3>${level} (${barcodes.length})</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Barcode</th>
+              <th>Web Dropoff Location</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${barcodes.map(b => `
+              <tr>
+                <td>${b.value}</td>
+                <td>${b.context}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
     `).join('');
   
     const statsHtml = `
@@ -121,44 +152,50 @@ export function BarcodeGridGenerator() {
         <head>
           <title>Barcode Statistics</title>
           <style>
-            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 2rem; background-color: #f7f7f7; }
-            .container { max-width: 800px; margin: auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-            h1, h2 { color: #333; }
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 2rem; background-color: #f8f9fa; color: #212529; }
+            .container { max-width: 900px; margin: auto; background: white; padding: 2.5rem; border-radius: 8px; box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
+            .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e9ecef; padding-bottom: 1rem; margin-bottom: 2rem; }
+            h1 { color: #343a40; margin: 0; }
+            h2 { color: #495057; border-bottom: 1px solid #dee2e6; padding-bottom: 0.5rem; margin-top: 2rem; }
+            h3 { color: #495057; margin-top: 1.5rem; margin-bottom: 1rem; }
+            .time-info { text-align: right; }
+            .time-info .date { font-size: 1rem; color: #6c757d; }
+            .time-info .time { font-size: 2rem; font-weight: bold; color: #343a40; }
             table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-            th, td { text-align: left; padding: 0.75rem; border-bottom: 1px solid #ddd; }
-            th { background-color: #f2f2f2; }
-            tr:hover { background-color: #f5f5f5; }
-            .summary { background-color: #eef; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
-            .summary p { margin: 0.5rem 0; }
+            th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid #e9ecef; }
+            th { background-color: #f8f9fa; font-weight: 600; }
+            tr:hover { background-color: #f1f3f5; }
+            .summary { background-color: #e9ecef; padding: 1.5rem; border-radius: 6px; margin-bottom: 2rem; }
+            .summary ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
+            .summary li { font-size: 1rem; }
+            .summary li strong { color: #343a40; }
+            .level-group { margin-bottom: 2rem; }
+            .level-group table { box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-radius: 4px; overflow: hidden; }
           </style>
         </head>
         <body>
           <div class="container">
-            <h1>Barcode Generation Report</h1>
-            <div class="summary">
-              <p><strong>Generation Time:</strong> ${generationTime}</p>
-              <p><strong>Total Containers:</strong> ${barcodes.length}</p>
+            <div class="header">
+                <h1>Barcode Generation Report</h1>
+                <div class="time-info">
+                    <div class="date">${generationDate}</div>
+                    <div class="time">${generationTime}</div>
+                </div>
             </div>
+            
             <h2>Level Breakdown</h2>
-            <ul>
-              <li><strong>Level I&J:</strong> ${statistics.levelIJ}</li>
-              <li><strong>Level K&L:</strong> ${statistics.levelKL}</li>
-              <li><strong>Level C:</strong> ${statistics.levelC}</li>
-              <li><strong>Ground Floor:</strong> ${statistics.groundFloor}</li>
-            </ul>
+            <div class="summary">
+                <ul>
+                    <li><strong>Total Containers:</strong> ${barcodes.length}</li>
+                    <li><strong>I&J:</strong> ${statistics.levelIJ}</li>
+                    <li><strong>K&L:</strong> ${statistics.levelKL}</li>
+                    <li><strong>Level C:</strong> ${statistics.levelC}</li>
+                    <li><strong>Ground Floor:</strong> ${statistics.groundFloor}</li>
+                </ul>
+            </div>
+
             <h2>Barcode Details</h2>
-            <table>
-              <thead>
-                <tr>
-                  <th>Barcode</th>
-                  <th>Web Dropoff Location</th>
-                  <th>Level</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${barcodeDetails}
-              </tbody>
-            </table>
+            ${barcodeDetailsHtml}
           </div>
         </body>
       </html>
