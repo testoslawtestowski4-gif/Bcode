@@ -27,31 +27,18 @@ export function BarcodeGridGenerator() {
       return [];
     }
   
-    // 1. Find all purely numeric sequences in the entire input.
-    const allNumbers = input.match(/\d+/g) || [];
-  
-    // 2. Find numbers that are associated with "web-dropoff" to exclude them.
-    // This regex finds "web-dropoff" and captures a number on the same line or the next line.
-    const webDropoffRegex = /web-dropoff[^\n]*?(\d+)|(\d+)[^\n]*?web-dropoff|web-dropoff\s*\n\s*(\d+)/gi;
-    const excludedNumbers = new Set<string>();
+    // Regex to find 7-digit numbers that are immediately followed by "web-dropoff"
+    // It captures the 7-digit number.
+    const regex = /(\d{7}).*?web-dropoff/gi;
+    const matches = new Set<string>();
     let match;
-    while ((match = webDropoffRegex.exec(input)) !== null) {
-      // The captured number can be in group 1, 2 or 3
-      const num = match[1] || match[2] || match[3];
-      if (num) {
-        excludedNumbers.add(num.trim());
-      }
-    }
   
-    // 3. Filter out the excluded numbers and get unique values.
-    const uniqueValidNumbers = new Set<string>();
-    for (const num of allNumbers) {
-      if (!excludedNumbers.has(num)) {
-        uniqueValidNumbers.add(num);
-      }
+    while ((match = regex.exec(input)) !== null) {
+      // match[1] contains the captured 7-digit number
+      matches.add(match[1]);
     }
     
-    return Array.from(uniqueValidNumbers);
+    return Array.from(matches);
   };
 
   const barcodes = parseBarcodes(debouncedValue);
