@@ -26,6 +26,7 @@ export function BarcodeGridGenerator() {
   const [focusedRow, setFocusedRow] = useState(0);
   
   const gridContainerRef = useRef<HTMLDivElement>(null);
+  const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const parsedBarcodes = useMemo(() => {
     if (!debouncedValue) {
@@ -107,6 +108,17 @@ export function BarcodeGridGenerator() {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isFocusMode, barcodes.length, gridColumns]);
+
+  useEffect(() => {
+    if (isFocusMode) {
+      const firstIndexOfRow = focusedRow * gridColumns;
+      const rowElement = rowRefs.current[firstIndexOfRow];
+      rowElement?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+  }, [focusedRow, isFocusMode, gridColumns]);
 
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement> | React.ClipboardEvent<HTMLTextAreaElement>) => {
@@ -217,7 +229,12 @@ export function BarcodeGridGenerator() {
                 const rowIndex = Math.floor(index / gridColumns);
                 const isBlurred = isFocusMode && rowIndex !== focusedRow;
                 return (
-                  <GridBarcode 
+                  <GridBarcode
+                    ref={el => {
+                      if (rowRefs.current) {
+                        rowRefs.current[index] = el;
+                      }
+                    }}
                     key={`${value}-${index}`} 
                     value={value} 
                     index={index}
