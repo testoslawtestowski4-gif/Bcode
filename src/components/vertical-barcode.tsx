@@ -3,7 +3,6 @@
 import { useEffect, useRef } from 'react';
 import JsBarcode from 'jsbarcode';
 import { cn } from '@/lib/utils';
-import { Card, CardContent } from '@/components/ui/card';
 
 interface VerticalBarcodeProps {
   value: string;
@@ -24,10 +23,10 @@ export function VerticalBarcode({ value, className }: VerticalBarcodeProps) {
           textPosition: 'bottom',
           fontSize: 20,
           background: 'transparent',
-          lineColor: 'hsl(var(--primary))',
+          lineColor: '#000000', // Black color
           margin: 10,
-          height: 400, // Tall
-          width: 1,  // Thin
+          height: 800, // Very tall
+          width: 1.5,
         });
       } catch (e) {
         console.error('Barcode generation failed', e);
@@ -36,8 +35,8 @@ export function VerticalBarcode({ value, className }: VerticalBarcodeProps) {
   }, [value]);
 
   return (
-    <div className={cn("h-full flex items-center justify-center -rotate-90", className)}>
-        <svg ref={svgRef} className="w-[450px] h-[150px]"/>
+    <div className={cn("h-full w-full flex items-center justify-center -rotate-90", className)}>
+        <svg ref={svgRef} className="w-[90vh] max-w-none h-[250px]"/>
     </div>
   );
 }

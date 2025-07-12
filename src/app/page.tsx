@@ -6,16 +6,15 @@ import { BarcodeGridGenerator } from "@/components/barcode-grid-generator";
 import { SettingsSheet } from "@/components/settings-sheet";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { DraggableBarcode } from '@/components/draggable-barcode';
-import { VerticalBarcode } from '@/components/vertical-barcode';
 import { Button } from '@/components/ui/button';
 import { Barcode, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { MainLayout } from '@/components/main-layout';
 
 export default function Home() {
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
 
-  // State for Consignment View collapse/lock functionality
   const [isConsignmentCollapsed, setIsConsignmentCollapsed] = useState(false);
   const [isConsignmentLocked, setIsConsignmentLocked] = useState(false);
 
@@ -39,9 +38,9 @@ export default function Home() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (isConsignmentLocked) return;
-      // Check if click is outside both column and grid generator
       const columnEl = document.getElementById('consignment-view');
       const gridEl = document.getElementById('container-view');
+      
       if (columnEl && !columnEl.contains(event.target as Node) && gridEl && gridEl.contains(event.target as Node)) {
         setIsConsignmentCollapsed(true);
       }
@@ -73,38 +72,15 @@ export default function Home() {
           </div>
         </header>
         <main className="flex-grow container mx-auto p-4 sm:p-6 md:p-8">
-          <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 items-start mt-8 relative">
-              <div 
-                id="consignment-view"
-                className={cn(
-                  'space-y-4 lg:col-span-3 transition-all duration-500 ease-in-out',
-                  isConsignmentCollapsed && 'opacity-0 -translate-y-10 pointer-events-none'
-                )}
-              >
-                  <BarcodeColumnGenerator 
+            <MainLayout isCollapsed={isConsignmentCollapsed}>
+                <BarcodeColumnGenerator 
                     isCollapsed={isConsignmentCollapsed}
                     setIsCollapsed={setIsConsignmentCollapsed}
                     isLocked={isConsignmentLocked}
                     setIsLocked={setIsConsignmentLocked}
-                  />
-              </div>
-
-              {isConsignmentCollapsed && (
-                <div className="absolute top-0 left-0 lg:col-span-3 h-full w-[250px] transition-opacity duration-500 ease-in-out">
-                    <VerticalBarcode value="INSHIP01" />
-                </div>
-              )}
-
-              <div 
-                id="container-view"
-                className={cn(
-                  'space-y-4 transition-all duration-500 ease-in-out',
-                  isConsignmentCollapsed ? 'lg:col-span-10' : 'lg:col-span-7'
-                )}
-              >
-                  <BarcodeGridGenerator />
-              </div>
-          </div>
+                />
+                <BarcodeGridGenerator />
+            </MainLayout>
         </main>
         <footer className="border-t mt-12 py-6">
           <div className="container flex flex-col items-center justify-center gap-4 md:h-24 md:flex-row">
