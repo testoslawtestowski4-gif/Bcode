@@ -32,17 +32,30 @@ export function BarcodeGridGenerator() {
     if (!debouncedValue) {
       return [];
     }
-  
-    const regex = /(\d{7}).*?((?:\d-\w\d-|\w+-)?web-dropoff)/gi;
+
+    const hasWebDropoff = /web-dropoff/i.test(debouncedValue);
     const matches = new Map<string, ParsedBarcode>();
-    let match;
-  
-    while ((match = regex.exec(debouncedValue)) !== null) {
-      const value = match[1];
-      const context = match[2].toLowerCase();
-      // Use map to ensure unique barcode values, keeping the first context found
-      if (!matches.has(value)) {
-        matches.set(value, { value, context });
+
+    if (hasWebDropoff) {
+      // Mode 1: Parse from "web-dropoff" context
+      const regex = /(\d{7}).*?((?:\d-\w\d-|\w+-)?web-dropoff)/gi;
+      let match;
+      while ((match = regex.exec(debouncedValue)) !== null) {
+        const value = match[1];
+        const context = match[2].toLowerCase();
+        if (!matches.has(value)) {
+          matches.set(value, { value, context });
+        }
+      }
+    } else {
+      // Mode 2: Parse standalone 7-digit numbers
+      const regex = /\b(\d{7})\b/g;
+      let match;
+      while ((match = regex.exec(debouncedValue)) !== null) {
+        const value = match[1];
+        if (!matches.has(value)) {
+          matches.set(value, { value, context: 'direct' });
+        }
       }
     }
     
@@ -52,6 +65,11 @@ export function BarcodeGridGenerator() {
   const barcodes = useMemo(() => parsedBarcodes.map(b => b.value), [parsedBarcodes]);
   
   const statistics = useMemo(() => {
+    // Only calculate stats if not in direct mode
+    if (parsedBarcodes.some(b => b.context === 'direct')) {
+      return null;
+    }
+
     const stats = {
       levelIN: 0,
       levelKM: 0,
@@ -178,7 +196,7 @@ export function BarcodeGridGenerator() {
         </div>
       </CardHeader>
       <CardContent className="p-6 pt-0">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className={`grid grid-cols-1 ${statistics ? 'md:grid-cols-2' : ''} gap-6`}>
           <div className="relative">
             <Textarea
               placeholder="Paste your list of codes here..."
@@ -189,38 +207,40 @@ export function BarcodeGridGenerator() {
               onPaste={handleInputChange}
             />
           </div>
-          <Card>
-            <CardHeader className="p-4">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <BarChart2 className="w-5 h-5" />
-                Statistics
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 pt-0">
-              <ul className="space-y-2 text-sm">
-                <li className="flex justify-between">
-                  <span>Total Barcodes:</span>
-                  <span className="font-semibold">{barcodes.length}</span>
-                </li>
-                <li className="flex justify-between">
-                  <span>Level I&amp;N:</span>
-                  <span className="font-semibold">{statistics.levelIN}</span>
-                </li>
-                <li className="flex justify-between">
-                  <span>Level K&amp;M:</span>
-                  <span className="font-semibold">{statistics.levelKM}</span>
-                </li>
-                 <li className="flex justify-between">
-                  <span>Level C:</span>
-                  <span className="font-semibold">{statistics.levelC}</span>
-                </li>
-                 <li className="flex justify-between">
-                  <span>Ground Floor:</span>
-                  <span className="font-semibold">{statistics.groundFloor}</span>
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
+          {statistics && (
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <BarChart2 className="w-5 h-5" />
+                  Statistics
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 pt-0">
+                <ul className="space-y-2 text-sm">
+                  <li className="flex justify-between">
+                    <span>Total Barcodes:</span>
+                    <span className="font-semibold">{barcodes.length}</span>
+                  </li>
+                  <li className="flex justify-between">
+                    <span>Level I&amp;N:</span>
+                    <span className="font-semibold">{statistics.levelIN}</span>
+                  </li>
+                  <li className="flex justify-between">
+                    <span>Level K&amp;M:</span>
+                    <span className="font-semibold">{statistics.levelKM}</span>
+                  </li>
+                  <li className="flex justify-between">
+                    <span>Level C:</span>
+                    <span className="font-semibold">{statistics.levelC}</span>
+                  </li>
+                  <li className="flex justify-between">
+                    <span>Ground Floor:</span>
+                    <span className="font-semibold">{statistics.groundFloor}</span>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         <div className="mt-6" ref={gridContainerRef}>
