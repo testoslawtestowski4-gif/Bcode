@@ -7,12 +7,19 @@ import { InteractiveBarcode } from '@/components/interactive-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
 import { Button } from './ui/button';
-import { ListChecks, Printer, Lock, Unlock, Eye } from 'lucide-react';
+import { ListChecks, Printer, Lock, Unlock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface BarcodeData {
   id: string;
   value: string;
+}
+
+interface BarcodeColumnGeneratorProps {
+  isCollapsed: boolean;
+  setIsCollapsed: (isCollapsed: boolean) => void;
+  isLocked: boolean;
+  setIsLocked: (isLocked: boolean) => void;
 }
 
 // Validation helper
@@ -36,7 +43,7 @@ const isValidBarcode = (code: string) => {
   return true;
 };
 
-export function BarcodeColumnGenerator() {
+export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, setIsLocked }: BarcodeColumnGeneratorProps) {
   const { columnRows, columnWidth, columnHeight, columnMargin } = useSettings();
   const [inputValue, setInputValue] = useState('');
   
@@ -48,10 +55,6 @@ export function BarcodeColumnGenerator() {
   
   const [activeBarcode, setActiveBarcode] = useState<string | null>(null);
   const debouncedValue = useDebounce(inputValue, 500);
-
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isLocked, setIsLocked] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Find all alphanumeric sequences in the input text
@@ -98,19 +101,6 @@ export function BarcodeColumnGenerator() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeFilter, allBarcodes]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (isLocked) return;
-      if (cardRef.current && !cardRef.current.contains(event.target as Node)) {
-        setIsCollapsed(true);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isLocked]);
 
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement> | React.ClipboardEvent<HTMLTextAreaElement>) => {
@@ -175,112 +165,86 @@ export function BarcodeColumnGenerator() {
   };
 
   return (
-    <>
-      <div 
-        ref={cardRef} 
-        className={cn(
-            'transition-all duration-500 ease-in-out',
-            isCollapsed && 'opacity-0 -translate-y-10 pointer-events-none'
-        )}
-      >
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon" onClick={() => setIsLocked(!isLocked)} className="text-muted-foreground hover:text-primary">
-                {isLocked ? <Lock className="w-5 h-5" /> : <Unlock className="w-5 h-5" />}
-                <span className="sr-only">{isLocked ? 'Unlock View' : 'Lock View'}</span>
-              </Button>
-              <CardTitle className="text-2xl font-semibold flex items-center gap-2">
-                  <ListChecks className="w-7 h-7" />
-                  Consignment View
-              </CardTitle>
-            </div>
-            <Button 
-                variant="outline"
-                size="icon"
-                onClick={handlePrintAll} 
-                disabled={barcodes.length === 0}
-                title="Print All"
-            >
-                <Printer className="w-4 h-4" />
-                <span className="sr-only">Print All</span>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" onClick={() => setIsLocked(!isLocked)} className="text-muted-foreground hover:text-primary">
+              {isLocked ? <Lock className="w-5 h-5" /> : <Unlock className="w-5 h-5" />}
+              <span className="sr-only">{isLocked ? 'Unlock View' : 'Lock View'}</span>
             </Button>
-          </CardHeader>
-          <CardContent className="p-6 pt-0">
-            <div className="relative">
-              <Textarea
-                placeholder="Paste your list of codes here..."
-                className="w-full resize-none"
-                rows={columnRows}
-                value={inputValue}
-                onChange={handleInputChange}
-                onPaste={handleInputChange}
-                onClick={() => setIsCollapsed(false)}
-              />
-            </div>
+            <CardTitle className="text-2xl font-semibold flex items-center gap-2">
+                <ListChecks className="w-7 h-7" />
+                Consignment View
+            </CardTitle>
+          </div>
+          <Button 
+              variant="outline"
+              size="icon"
+              onClick={handlePrintAll} 
+              disabled={barcodes.length === 0}
+              title="Print All"
+          >
+              <Printer className="w-4 h-4" />
+              <span className="sr-only">Print All</span>
+          </Button>
+        </CardHeader>
+        <CardContent className="p-6 pt-0">
+          <div className="relative">
+            <Textarea
+              placeholder="Paste your list of codes here..."
+              className="w-full resize-none"
+              rows={columnRows}
+              value={inputValue}
+              onChange={handleInputChange}
+              onPaste={handleInputChange}
+              onClick={() => setIsCollapsed(false)}
+            />
+          </div>
 
-            {filterPrefixes.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-4">
+          {filterPrefixes.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-4">
+              <Button
+                variant={activeFilter === 'ALL' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveFilter('ALL')}
+              >
+                All
+              </Button>
+              {filterPrefixes.map(prefix => (
                 <Button
-                  variant={activeFilter === 'ALL' ? 'default' : 'outline'}
+                  key={prefix}
+                  variant={activeFilter === prefix ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => setActiveFilter('ALL')}
+                  onClick={() => setActiveFilter(prefix)}
                 >
-                  All
+                  {prefix}
                 </Button>
-                {filterPrefixes.map(prefix => (
-                  <Button
-                    key={prefix}
-                    variant={activeFilter === prefix ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setActiveFilter(prefix)}
-                  >
-                    {prefix}
-                  </Button>
-                ))}
+              ))}
+            </div>
+          )}
+
+          <div className="mt-6 space-y-4">
+            {barcodes.length > 0 ? (
+              barcodes.map((item) => (
+                <InteractiveBarcode
+                  key={item.id}
+                  value={item.value}
+                  isActive={activeBarcode === item.id || barcodes.length === 1}
+                  onClick={() => setActiveBarcode(item.id)}
+                  width={columnWidth}
+                  height={columnHeight}
+                  margin={columnMargin}
+                  isInteractive={barcodes.length > 1}
+                />
+              ))
+            ) : (
+              <div className="text-center py-10 text-muted-foreground">
+                <p>Your generated barcodes will appear here.</p>
+                <p className="text-xs mt-2">(Codes must be alphanumeric, e.g., EX12345)</p>
               </div>
             )}
-
-            <div className="mt-6 space-y-4">
-              {barcodes.length > 0 ? (
-                barcodes.map((item) => (
-                  <InteractiveBarcode
-                    key={item.id}
-                    value={item.value}
-                    isActive={activeBarcode === item.id || barcodes.length === 1}
-                    onClick={() => setActiveBarcode(item.id)}
-                    width={columnWidth}
-                    height={columnHeight}
-                    margin={columnMargin}
-                    isInteractive={barcodes.length > 1}
-                  />
-                ))
-              ) : (
-                <div className="text-center py-10 text-muted-foreground">
-                  <p>Your generated barcodes will appear here.</p>
-                  <p className="text-xs mt-2">(Codes must be alphanumeric, e.g., EX12345)</p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div 
-        className={cn(
-          "fixed bottom-4 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ease-in-out",
-          isCollapsed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
-        )}
-      >
-        <Button 
-            size="lg" 
-            className="text-lg px-8 py-6 shadow-2xl"
-            onClick={() => setIsCollapsed(false)}
-        >
-            <Eye className="w-6 h-6 mr-2" />
-            Show List
-        </Button>
-      </div>
-    </>
+          </div>
+        </CardContent>
+      </Card>
   );
 }

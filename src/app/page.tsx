@@ -7,11 +7,16 @@ import { SettingsSheet } from "@/components/settings-sheet";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { DraggableBarcode } from '@/components/draggable-barcode';
 import { Button } from '@/components/ui/button';
-import { Barcode } from 'lucide-react';
+import { Barcode, Eye } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function Home() {
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+
+  // State for Consignment View collapse/lock functionality
+  const [isConsignmentCollapsed, setIsConsignmentCollapsed] = useState(false);
+  const [isConsignmentLocked, setIsConsignmentLocked] = useState(false);
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -29,6 +34,23 @@ export default function Home() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isConsignmentLocked) return;
+      // Check if click is outside both column and grid generator
+      const columnEl = document.getElementById('consignment-view');
+      const gridEl = document.getElementById('container-view');
+      if (columnEl && !columnEl.contains(event.target as Node) && gridEl && gridEl.contains(event.target as Node)) {
+        setIsConsignmentCollapsed(true);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isConsignmentLocked]);
+
 
   return (
     <>
@@ -51,10 +73,27 @@ export default function Home() {
         </header>
         <main className="flex-grow container mx-auto p-4 sm:p-6 md:p-8">
           <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 items-start mt-8">
-              <div className="space-y-4 lg:col-span-3">
-                  <BarcodeColumnGenerator />
+              <div 
+                id="consignment-view"
+                className={cn(
+                  'space-y-4 lg:col-span-3 transition-all duration-500 ease-in-out',
+                  isConsignmentCollapsed && 'opacity-0 -translate-y-10 pointer-events-none'
+                )}
+              >
+                  <BarcodeColumnGenerator 
+                    isCollapsed={isConsignmentCollapsed}
+                    setIsCollapsed={setIsConsignmentCollapsed}
+                    isLocked={isConsignmentLocked}
+                    setIsLocked={setIsConsignmentLocked}
+                  />
               </div>
-              <div className="space-y-4 lg:col-span-7">
+              <div 
+                id="container-view"
+                className={cn(
+                  'space-y-4 transition-all duration-500 ease-in-out',
+                  isConsignmentCollapsed ? 'lg:col-span-10' : 'lg:col-span-7'
+                )}
+              >
                   <BarcodeGridGenerator />
               </div>
           </div>
@@ -65,6 +104,22 @@ export default function Home() {
         </footer>
       </div>
       {showDraggableBarcode && <DraggableBarcode onClose={() => setShowDraggableBarcode(false)} />}
+      
+      <div 
+        className={cn(
+          "fixed bottom-4 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ease-in-out",
+          isConsignmentCollapsed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
+        )}
+      >
+        <Button 
+            size="lg" 
+            className="text-lg px-8 py-6 shadow-2xl"
+            onClick={() => setIsConsignmentCollapsed(false)}
+        >
+            <Eye className="w-6 h-6 mr-2" />
+            Show List
+        </Button>
+      </div>
     </>
   );
 }
