@@ -23,28 +23,49 @@ export function BarcodeGridGenerator() {
   const gridContainerRef = useRef<HTMLDivElement>(null);
 
   const parseBarcodes = (input: string) => {
-    return Array.from(new Set(input
-      .split('\n')
-      .map(line => {
-        const trimmedLine = line.trim();
-        if (!trimmedLine) return null;
+    const lines = input.split('\n');
+    const results: string[] = [];
+
+    for (let i = 0; i < lines.length; i++) {
+        const trimmedLine = lines[i].trim();
+        if (!trimmedLine) continue;
 
         const lowercasedLine = trimmedLine.toLowerCase();
-        const dropoffRegex = /(\d+)\s+.*web-dropoff|.*web-dropoff\s+(\d+)/;
-        const match = lowercasedLine.match(dropoffRegex);
-        if (match) {
-            const number = match[1] || match[2];
+        
+        // Case 1: Number is on the same line as web-dropoff
+        const sameLineRegex = /(\d+)\s+.*web-dropoff|.*web-dropoff\s+(\d+)/;
+        const sameLineMatch = lowercasedLine.match(sameLineRegex);
+        if (sameLineMatch) {
+            const number = sameLineMatch[1] || sameLineMatch[2];
+            // Find the original number in the non-lowercased line to preserve casing if needed, though it's numeric
             const originalMatch = trimmedLine.match(new RegExp(number));
-            if(originalMatch) return originalMatch[0];
+            if(originalMatch) {
+                results.push(originalMatch[0]);
+                continue; // Move to the next line
+            }
         }
-
+        
+        // Case 2: web-dropoff is on one line, number is on the next
+        if (lowercasedLine.includes('web-dropoff')) {
+            if (i + 1 < lines.length) {
+                const nextLine = lines[i + 1].trim();
+                // Check if the next line is purely numeric
+                if (/^\d+$/.test(nextLine)) {
+                    results.push(nextLine);
+                    i++; // Skip the next line as it's already processed
+                    continue;
+                }
+            }
+        }
+        
+        // Case 3: Line is purely numeric
         if (/^\d+$/.test(trimmedLine)) {
-            return trimmedLine;
+            results.push(trimmedLine);
         }
+    }
 
-        return null;
-      })
-      .filter((value): value is string => value !== null && value !== '')));
+    // Return unique values
+    return Array.from(new Set(results));
   };
 
   const barcodes = parseBarcodes(debouncedValue);
