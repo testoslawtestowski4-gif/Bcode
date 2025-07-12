@@ -28,6 +28,10 @@ const isValidBarcode = (code: string) => {
   if (code.toLowerCase().includes('web')) {
     return false;
   }
+  // Must have more than 3 digits
+  if ((code.match(/\d/g) || []).length <= 3) {
+    return false;
+  }
   return true;
 };
 
@@ -221,7 +225,7 @@ export function BarcodeColumnGenerator() {
           ) : (
             <div className="text-center py-10 text-muted-foreground">
               <p>Your generated barcodes will appear here.</p>
-              <p className="text-xs mt-2">(Codes must be alphanumeric, e.g., EX1234)</p>
+              <p className="text-xs mt-2">(Codes must be alphanumeric, e.g., EX12345)</p>
             </div>
           )}
         </div>
