@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { GridBarcode } from '@/components/grid-barcode';
@@ -10,6 +10,11 @@ import { Button } from './ui/button';
 import { Boxes, BarChart2, ArrowDownToLine } from 'lucide-react';
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
+
+interface ParsedBarcode {
+  value: string;
+  context: string;
+}
 
 export function BarcodeGridGenerator() {
   const { gridWidth, gridHeight, gridMargin, gridColumns, setGridColumns } = useSettings();
@@ -22,26 +27,57 @@ export function BarcodeGridGenerator() {
   
   const gridContainerRef = useRef<HTMLDivElement>(null);
 
-  const parseBarcodes = (input: string) => {
-    if (!input) {
+  const parsedBarcodes = useMemo(() => {
+    if (!debouncedValue) {
       return [];
     }
   
-    // Regex to find 7-digit numbers that are immediately followed by "web-dropoff"
-    // It captures the 7-digit number.
-    const regex = /(\d{7}).*?web-dropoff/gi;
-    const matches = new Set<string>();
+    const regex = /(\d{7}).*?((?:\d-\w\d-|\w+-)?web-dropoff)/gi;
+    const matches = new Map<string, ParsedBarcode>();
     let match;
   
-    while ((match = regex.exec(input)) !== null) {
-      // match[1] contains the captured 7-digit number
-      matches.add(match[1]);
+    while ((match = regex.exec(debouncedValue)) !== null) {
+      const value = match[1];
+      const context = match[2].toLowerCase();
+      // Use map to ensure unique barcode values, keeping the first context found
+      if (!matches.has(value)) {
+        matches.set(value, { value, context });
+      }
     }
     
-    return Array.from(matches);
-  };
+    return Array.from(matches.values());
+  }, [debouncedValue]);
 
-  const barcodes = parseBarcodes(debouncedValue);
+  const barcodes = useMemo(() => parsedBarcodes.map(b => b.value), [parsedBarcodes]);
+  
+  const statistics = useMemo(() => {
+    const stats = {
+      levelIN: 0,
+      levelKM: 0,
+      levelC: 0,
+      groundFloor: 0,
+    };
+
+    const levelINPatterns = ['2-b1-web-dropoff', '2-b2-web-dropoff', '2-b3-web-dropoff'];
+    const levelKMPatterns = ['2-c1-web-dropoff', '2-c2-web-dropoff', '2-c3-web-dropoff'];
+    const levelCPatterns = ['1-c1-web-dropoff', '1-c2-web-dropoff', '1-c3-web-dropoff', '1-c4-web-dropoff'];
+    const groundFloorPatterns = ['apr-web-dropoff', 'web-dropoff'];
+
+    for (const barcode of parsedBarcodes) {
+      if (levelINPatterns.includes(barcode.context)) {
+        stats.levelIN++;
+      } else if (levelKMPatterns.includes(barcode.context)) {
+        stats.levelKM++;
+      } else if (levelCPatterns.includes(barcode.context)) {
+        stats.levelC++;
+      } else if (groundFloorPatterns.includes(barcode.context)) {
+        stats.groundFloor++;
+      }
+    }
+
+    return stats;
+  }, [parsedBarcodes]);
+
 
   useEffect(() => {
     if (barcodes.length > 15) {
@@ -151,20 +187,20 @@ export function BarcodeGridGenerator() {
                   <span className="font-semibold">{barcodes.length}</span>
                 </li>
                 <li className="flex justify-between">
-                  <span>Level I&J:</span>
-                  <span className="font-semibold">0</span>
+                  <span>Level I&amp;N:</span>
+                  <span className="font-semibold">{statistics.levelIN}</span>
                 </li>
                 <li className="flex justify-between">
-                  <span>Level K&M:</span>
-                  <span className="font-semibold">0</span>
+                  <span>Level K&amp;M:</span>
+                  <span className="font-semibold">{statistics.levelKM}</span>
                 </li>
                  <li className="flex justify-between">
                   <span>Level C:</span>
-                  <span className="font-semibold">0</span>
+                  <span className="font-semibold">{statistics.levelC}</span>
                 </li>
                  <li className="flex justify-between">
                   <span>Ground Floor:</span>
-                  <span className="font-semibold">0</span>
+                  <span className="font-semibold">{statistics.groundFloor}</span>
                 </li>
               </ul>
             </CardContent>
