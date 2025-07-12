@@ -67,7 +67,7 @@ export function BarcodeGridGenerator() {
   
   const statistics = useMemo(() => {
     // Only calculate stats if not in direct mode
-    if (parsedBarcodes.some(b => b.context === 'direct')) {
+    if (parsedBarcodes.some(b => b.context === 'direct') || parsedBarcodes.length === 0) {
       return null;
     }
 
@@ -197,7 +197,7 @@ export function BarcodeGridGenerator() {
         </div>
       </CardHeader>
       <CardContent className="p-6 pt-0">
-        <div className={`grid grid-cols-1 ${statistics ? 'md:grid-cols-2' : ''} gap-6`}>
+        <div className={`grid grid-cols-1 ${statistics ? 'sm:grid-cols-2' : ''} gap-6`}>
           <div className="relative">
             <Textarea
               placeholder="Paste your list of codes here..."
