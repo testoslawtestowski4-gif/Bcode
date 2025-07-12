@@ -72,8 +72,8 @@ export function BarcodeGridGenerator() {
   const groundFloorPatterns = ['apr-web-dropoff', 'web-dropoff'];
 
   const getBarcodeLevel = (context: string) => {
-    if (levelINPatterns.includes(context)) return 'Level I&N';
-    if (levelKMPatterns.includes(context)) return 'Level K&M';
+    if (levelINPatterns.includes(context)) return 'I&J';
+    if (levelKMPatterns.includes(context)) return 'K&L';
     if (levelCPatterns.includes(context)) return 'Level C';
     if (groundFloorPatterns.includes(context)) return 'Ground Floor';
     return 'Unknown';
@@ -85,16 +85,16 @@ export function BarcodeGridGenerator() {
     }
 
     const stats = {
-      levelIN: 0,
-      levelKM: 0,
+      levelIJ: 0,
+      levelKL: 0,
       levelC: 0,
       groundFloor: 0,
     };
 
     for (const barcode of parsedBarcodes) {
         const level = getBarcodeLevel(barcode.context);
-        if (level === 'Level I&N') stats.levelIN++;
-        else if (level === 'Level K&M') stats.levelKM++;
+        if (level === 'I&J') stats.levelIJ++;
+        else if (level === 'K&L') stats.levelKL++;
         else if (level === 'Level C') stats.levelC++;
         else if (level === 'Ground Floor') stats.groundFloor++;
     }
@@ -141,8 +141,8 @@ export function BarcodeGridGenerator() {
             </div>
             <h2>Level Breakdown</h2>
             <ul>
-              <li><strong>Level I&N:</strong> ${statistics.levelIN}</li>
-              <li><strong>Level K&M:</strong> ${statistics.levelKM}</li>
+              <li><strong>Level I&J:</strong> ${statistics.levelIJ}</li>
+              <li><strong>Level K&L:</strong> ${statistics.levelKL}</li>
               <li><strong>Level C:</strong> ${statistics.levelC}</li>
               <li><strong>Ground Floor:</strong> ${statistics.groundFloor}</li>
             </ul>
@@ -301,12 +301,12 @@ export function BarcodeGridGenerator() {
                 <Separator className="my-4" />
                 <ul className="space-y-2">
                   <li className="flex justify-between">
-                    <span className="text-muted-foreground">Level I&amp;N:</span>
-                    <span className="font-semibold">{statistics.levelIN}</span>
+                    <span className="text-muted-foreground">I&amp;J:</span>
+                    <span className="font-semibold">{statistics.levelIJ}</span>
                   </li>
                   <li className="flex justify-between">
-                    <span className="text-muted-foreground">Level K&amp;M:</span>
-                    <span className="font-semibold">{statistics.levelKM}</span>
+                    <span className="text-muted-foreground">K&amp;L:</span>
+                    <span className="font-semibold">{statistics.levelKL}</span>
                   </li>
                   <li className="flex justify-between">
                     <span className="text-muted-foreground">Level C:</span>
