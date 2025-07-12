@@ -157,20 +157,29 @@ export function BarcodeGridGenerator() {
             .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e9ecef; padding-bottom: 1rem; margin-bottom: 2rem; }
             h1 { color: #343a40; margin: 0; }
             h2 { color: #495057; border-bottom: 1px solid #dee2e6; padding-bottom: 0.5rem; margin-top: 2rem; }
-            h3 { color: #495057; margin-top: 1.5rem; margin-bottom: 1rem; }
+            h3 { color: #495057; margin-bottom: 1rem; padding-left: 1rem; }
             .time-info { text-align: right; }
             .time-info .date { font-size: 1rem; color: #6c757d; }
             .time-info .time { font-size: 2rem; font-weight: bold; color: #343a40; }
-            table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+            table { width: 100%; border-collapse: collapse; }
             th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid #e9ecef; }
-            th { background-color: #f8f9fa; font-weight: 600; }
+            th { background-color: #f8f9fa; font-weight: 600; border-top-left-radius: 4px; border-top-right-radius: 4px; }
+            tr:last-child td { border-bottom: none; }
+            tbody tr:nth-child(even) { background-color: #f8f9fa; }
             tr:hover { background-color: #f1f3f5; }
             .summary { background-color: #e9ecef; padding: 1.5rem; border-radius: 6px; margin-bottom: 2rem; }
             .summary ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
             .summary li { font-size: 1rem; }
             .summary li strong { color: #343a40; }
-            .level-group { margin-bottom: 2rem; }
-            .level-group table { box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-radius: 4px; overflow: hidden; }
+            .level-group { 
+              margin-bottom: 2rem;
+              background-color: white;
+              border: 1px solid #dee2e6;
+              border-radius: 8px;
+              box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+              padding: 1.5rem;
+            }
+            .level-group table { margin-top: 0; }
           </style>
         </head>
         <body>
