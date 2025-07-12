@@ -7,10 +7,11 @@ import { GridBarcode } from '@/components/grid-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
 import { Button } from './ui/button';
-import { Boxes, BarChart2, ArrowDownToLine } from 'lucide-react';
+import { Boxes, BarChart2, ArrowDownToLine, ExternalLink } from 'lucide-react';
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 import { Separator } from './ui/separator';
+import { format } from 'date-fns';
 
 interface ParsedBarcode {
   value: string;
@@ -79,7 +80,6 @@ export function BarcodeGridGenerator() {
   };
   
   const statistics = useMemo(() => {
-    // Only calculate stats if not in direct mode
     if (parsedBarcodes.some(b => b.context === 'direct') || parsedBarcodes.length === 0) {
       return null;
     }
@@ -102,6 +102,74 @@ export function BarcodeGridGenerator() {
     return stats;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedBarcodes]);
+
+  const handleOpenStatsPage = () => {
+    if (!statistics) return;
+  
+    const generationTime = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+  
+    const barcodeDetails = parsedBarcodes.map(barcode => `
+      <tr>
+        <td>${barcode.value}</td>
+        <td>${barcode.context}</td>
+        <td>${getBarcodeLevel(barcode.context)}</td>
+      </tr>
+    `).join('');
+  
+    const statsHtml = `
+      <html>
+        <head>
+          <title>Barcode Statistics</title>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 2rem; background-color: #f7f7f7; }
+            .container { max-width: 800px; margin: auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+            h1, h2 { color: #333; }
+            table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+            th, td { text-align: left; padding: 0.75rem; border-bottom: 1px solid #ddd; }
+            th { background-color: #f2f2f2; }
+            tr:hover { background-color: #f5f5f5; }
+            .summary { background-color: #eef; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+            .summary p { margin: 0.5rem 0; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1>Barcode Generation Report</h1>
+            <div class="summary">
+              <p><strong>Generation Time:</strong> ${generationTime}</p>
+              <p><strong>Total Containers:</strong> ${barcodes.length}</p>
+            </div>
+            <h2>Level Breakdown</h2>
+            <ul>
+              <li><strong>Level I&N:</strong> ${statistics.levelIN}</li>
+              <li><strong>Level K&M:</strong> ${statistics.levelKM}</li>
+              <li><strong>Level C:</strong> ${statistics.levelC}</li>
+              <li><strong>Ground Floor:</strong> ${statistics.groundFloor}</li>
+            </ul>
+            <h2>Barcode Details</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Barcode</th>
+                  <th>Web Dropoff Location</th>
+                  <th>Level</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${barcodeDetails}
+              </tbody>
+            </table>
+          </div>
+        </body>
+      </html>
+    `;
+  
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(statsHtml);
+      printWindow.document.close();
+    }
+  };
 
 
   useEffect(() => {
@@ -220,6 +288,10 @@ export function BarcodeGridGenerator() {
                     <BarChart2 className="w-5 h-5" />
                     Statistics
                   </CardTitle>
+                  <Button variant="ghost" size="icon" onClick={handleOpenStatsPage} title="Open statistics in new tab">
+                      <ExternalLink className="w-4 h-4" />
+                      <span className="sr-only">Open statistics in new tab</span>
+                  </Button>
               </CardHeader>
               <CardContent className="p-4 pt-0 text-sm">
                 <div className="flex flex-col gap-2 text-center mb-4">
