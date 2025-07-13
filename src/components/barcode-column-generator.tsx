@@ -43,8 +43,12 @@ const isValidBarcode = (code: string) => {
   return true;
 };
 
+const funnyWords = ["BANANA", "POTATO", "GIGGLES", "WOBBLE", "SNICKERDOODLE", "BUMBLEBEE", "FLIBBERTIGIBBET", "SPOON", "NOODLE", "ZEBRA"];
+
+const getRandomFunnyWord = () => funnyWords[Math.floor(Math.random() * funnyWords.length)];
+
 export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, setIsLocked }: BarcodeColumnGeneratorProps) {
-  const { columnRows, columnWidth, columnHeight, columnMargin } = useSettings();
+  const { columnRows, columnWidth, columnHeight, columnMargin, isFunnyMode, toggleFunnyMode, setTheme } = useSettings();
   const [inputValue, setInputValue] = useState('');
   
   const [allBarcodes, setAllBarcodes] = useState<BarcodeData[]>([]);
@@ -57,6 +61,24 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
   const debouncedValue = useDebounce(inputValue, 500);
 
   useEffect(() => {
+    if (debouncedValue.trim().toLowerCase() === 'i love you') {
+      setAllBarcodes([{ id: 'easter-egg', value: 'DOUBLECLICKME' }]);
+      setFilterPrefixes([]);
+      setActiveFilter('ALL');
+      return;
+    }
+
+    if (isFunnyMode) {
+      const funnyBarcodes = Array.from({ length: 10 }, (_, i) => ({
+        id: `funny-${i}`,
+        value: `${getRandomFunnyWord()}${i}`,
+      }));
+      setAllBarcodes(funnyBarcodes);
+      setFilterPrefixes([]);
+      setActiveFilter('ALL');
+      return;
+    }
+
     // Find all alphanumeric sequences in the input text
     const potentialCodes = debouncedValue.match(/[a-zA-Z0-9]+/g) || [];
     
@@ -78,7 +100,7 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
     
     setActiveFilter('ALL'); // Reset filter on new input
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
+  }, [debouncedValue, isFunnyMode]);
 
   useEffect(() => {
     let filteredBarcodes: BarcodeData[];
@@ -101,6 +123,13 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeFilter, allBarcodes]);
+
+  const handleDoubleClick = (value: string) => {
+    if (value === 'DOUBLECLICKME') {
+      toggleFunnyMode();
+      setTheme('clown-theme');
+    }
+  };
 
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement> | React.ClipboardEvent<HTMLTextAreaElement>) => {
@@ -231,6 +260,7 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
                   value={item.value}
                   isActive={activeBarcode === item.id || barcodes.length === 1}
                   onClick={() => setActiveBarcode(item.id)}
+                  onDoubleClick={() => handleDoubleClick(item.value)}
                   width={columnWidth}
                   height={columnHeight}
                   margin={columnMargin}

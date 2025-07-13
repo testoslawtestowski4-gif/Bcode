@@ -18,8 +18,11 @@ interface ParsedBarcode {
   context: string;
 }
 
+const funnyWords = ["BANANA", "POTATO", "GIGGLES", "WOBBLE", "SNICKERDOODLE", "BUMBLEBEE", "FLIBBERTIGIBBET", "SPOON", "NOODLE", "ZEBRA"];
+const getRandomFunnyWord = () => funnyWords[Math.floor(Math.random() * funnyWords.length)];
+
 export function BarcodeGridGenerator() {
-  const { gridWidth, gridHeight, gridMargin, gridColumns, setGridColumns } = useSettings();
+  const { gridWidth, gridHeight, gridMargin, gridColumns, setGridColumns, isFunnyMode } = useSettings();
   const [inputValue, setInputValue] = useState('');
   const debouncedValue = useDebounce(inputValue, 500);
   const PREDEFINED_COLUMNS = [1, 3, 5, 7];
@@ -31,6 +34,13 @@ export function BarcodeGridGenerator() {
   const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const parsedBarcodes = useMemo(() => {
+    if (isFunnyMode) {
+      return Array.from({ length: 50 }, (_, i) => ({
+        value: `${getRandomFunnyWord()}${i}`,
+        context: 'funny',
+      }));
+    }
+
     if (!debouncedValue) {
       return [];
     }
@@ -62,7 +72,7 @@ export function BarcodeGridGenerator() {
     }
     
     return Array.from(matches.values());
-  }, [debouncedValue]);
+  }, [debouncedValue, isFunnyMode]);
 
   const barcodes = useMemo(() => parsedBarcodes.map(b => b.value), [parsedBarcodes]);
 
@@ -80,7 +90,7 @@ export function BarcodeGridGenerator() {
   };
   
   const statistics = useMemo(() => {
-    if (parsedBarcodes.some(b => b.context === 'direct') || parsedBarcodes.length === 0) {
+    if (parsedBarcodes.some(b => b.context === 'direct') || parsedBarcodes.length === 0 || isFunnyMode) {
       return null;
     }
 
@@ -101,7 +111,7 @@ export function BarcodeGridGenerator() {
 
     return stats;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedBarcodes]);
+  }, [parsedBarcodes, isFunnyMode]);
 
   const handleOpenStatsPage = () => {
     if (!statistics) return;
@@ -156,23 +166,25 @@ export function BarcodeGridGenerator() {
           <style>
             body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 2rem; background-color: #f8f9fa; color: #212529; }
             .container { max-width: 900px; margin: auto; background: white; padding: 2.5rem; border-radius: 8px; box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
-            .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e9ecef; padding-bottom: 1rem; margin-bottom: 2rem; }
-            h1 { color: #343a40; margin: 0; }
+            .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e9ecef; padding-bottom: 1.5rem; margin-bottom: 2rem; }
+            h1 { color: #343a40; margin: 0; font-size: 2rem; }
             h2 { color: #495057; border-bottom: 1px solid #dee2e6; padding-bottom: 0.5rem; margin-top: 2.5rem; margin-bottom: 1.5rem; }
             h3 { color: #495057; margin: 0; font-size: 1.2rem; }
             .time-info { text-align: right; }
             .time-info .date { font-size: 1rem; color: #6c757d; }
-            .time-info .time { font-size: 2rem; font-weight: bold; color: #343a40; }
+            .time-info .time { font-size: 2.5rem; font-weight: bold; color: #343a40; }
             table { width: 100%; border-collapse: collapse; }
             th, td { text-align: left; padding: 0.8rem 1rem; border-bottom: 1px solid #e9ecef; }
             th { background-color: #f8f9fa; font-weight: 600; }
             tr:last-child td { border-bottom: none; }
             tbody tr:nth-child(odd) { background-color: #f8f9fa; }
             tr:hover { background-color: #f1f3f5; }
-            .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.5rem; }
-            .summary-card { background-color: #f0f3f5; padding: 1.5rem; border-radius: 8px; text-align: center; border: 1px solid #e0e5e9; }
+            .summary-grid { display: flex; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap;}
+            .summary-card { background-color: #f0f3f5; padding: 1.5rem; border-radius: 8px; text-align: center; border: 1px solid #e0e5e9; flex-grow: 1; }
+            .summary-card.total { background-color: #e3f2fd; border-color: #bbdefb; }
             .summary-card .label { font-size: 1rem; color: #495057; margin-bottom: 0.5rem; display: block; }
             .summary-card .count { font-size: 2.2rem; font-weight: bold; color: #343a40; }
+            .summary-card.total .count { font-size: 2.8rem; color: #1e88e5; }
             .level-group { 
               margin-bottom: 2rem;
               background-color: white;
@@ -201,10 +213,12 @@ export function BarcodeGridGenerator() {
             
             <h2>Summary</h2>
             <div class="summary-grid">
-              <div class="summary-card">
+              <div class="summary-card total">
                 <span class="label">Total Containers</span>
                 <span class="count">${barcodes.length}</span>
               </div>
+            </div>
+            <div class="summary-grid">
               <div class="summary-card">
                 <span class="label">I&J</span>
                 <span class="count">${statistics.levelIJ}</span>

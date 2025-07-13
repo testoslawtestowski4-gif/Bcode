@@ -28,6 +28,10 @@ interface SettingsContextType {
   // Theme Settings
   theme: string;
   setTheme: (theme: string) => void;
+
+  // Easter Egg
+  isFunnyMode: boolean;
+  toggleFunnyMode: () => void;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -49,14 +53,20 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   // Theme settings
   const [theme, _setTheme] = useState('light');
 
+  // Easter egg setting
+  const [isFunnyMode, setIsFunnyMode] = useState(false);
+  const toggleFunnyMode = () => setIsFunnyMode(prev => !prev);
+
   useEffect(() => {
     const storedTheme = localStorage.getItem('app-theme') || 'light';
-    _setTheme(storedTheme);
+    if (storedTheme !== 'clown-theme') {
+      _setTheme(storedTheme);
+    }
   }, []);
 
   useEffect(() => {
     const root = window.document.documentElement;
-    root.classList.remove('light', 'dark', 'pink-theme');
+    root.classList.remove('light', 'dark', 'pink-theme', 'clown-theme');
 
     if (theme !== 'light') {
       root.classList.add(theme);
@@ -64,7 +74,9 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   }, [theme]);
 
   const setTheme = (newTheme: string) => {
-    localStorage.setItem('app-theme', newTheme);
+    if (newTheme !== 'clown-theme') {
+      localStorage.setItem('app-theme', newTheme);
+    }
     _setTheme(newTheme);
   };
 
@@ -90,7 +102,9 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       gridHeight,
       setGridHeight,
       theme,
-      setTheme
+      setTheme,
+      isFunnyMode,
+      toggleFunnyMode
     }}>
       {children}
     </SettingsContext.Provider>

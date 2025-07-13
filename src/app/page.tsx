@@ -10,8 +10,10 @@ import { Button } from '@/components/ui/button';
 import { Barcode, ArrowUp } from 'lucide-react';
 import { MainLayout } from '@/components/main-layout';
 import { cn } from '@/lib/utils';
+import { useSettings } from '@/context/settings-context';
 
 export default function Home() {
+  const { isFunnyMode } = useSettings();
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -73,7 +75,7 @@ export default function Home() {
           <div className="container mx-auto flex h-16 items-center justify-between p-4">
               <div className="flex items-center gap-3">
                 <Barcode className="h-8 w-8 text-primary" />
-                <h1 className="text-3xl font-bold text-primary">BCode Maker</h1>
+                <h1 className="text-3xl font-bold text-primary">{isFunnyMode ? 'B-Code Clown' : 'BCode Maker'}</h1>
               </div>
               <div className="flex items-center gap-2">
                   <Button variant="outline" size="icon" onClick={() => setShowDraggableBarcode(true)}>
