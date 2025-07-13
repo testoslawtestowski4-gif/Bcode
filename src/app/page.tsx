@@ -11,6 +11,7 @@ import { Barcode, ArrowUp } from 'lucide-react';
 import { MainLayout } from '@/components/main-layout';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/context/settings-context';
+import { FunnyModeConfetti } from '@/components/funny-mode-confetti';
 
 export default function Home() {
   const { isFunnyMode } = useSettings();
@@ -70,6 +71,7 @@ export default function Home() {
 
   return (
     <>
+      <FunnyModeConfetti />
       <div className="flex flex-col min-h-screen bg-background text-foreground">
         <header className={`sticky top-0 z-10 w-full border-b border-border bg-background/95 backdrop-blur-sm transition-transform duration-300 ${isHeaderVisible ? 'translate-y-0' : '-translate-y-full'}`}>
           <div className="container mx-auto flex h-16 items-center justify-between p-4">

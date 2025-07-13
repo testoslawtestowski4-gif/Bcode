@@ -59,10 +59,27 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const storedTheme = localStorage.getItem('app-theme') || 'light';
-    if (storedTheme !== 'clown-theme') {
+    const storedFunnyMode = localStorage.getItem('funny-mode') === 'true';
+
+    if (storedFunnyMode) {
+      setIsFunnyMode(true);
+      _setTheme('clown-theme');
+    } else {
       _setTheme(storedTheme);
     }
   }, []);
+
+  const setTheme = (newTheme: string) => {
+    const isClown = newTheme === 'clown-theme';
+    if (!isClown) {
+      localStorage.setItem('app-theme', newTheme);
+      localStorage.removeItem('funny-mode');
+      setIsFunnyMode(false);
+    } else {
+      localStorage.setItem('funny-mode', 'true');
+    }
+    _setTheme(newTheme);
+  };
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -72,13 +89,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       root.classList.add(theme);
     }
   }, [theme]);
-
-  const setTheme = (newTheme: string) => {
-    if (newTheme !== 'clown-theme') {
-      localStorage.setItem('app-theme', newTheme);
-    }
-    _setTheme(newTheme);
-  };
 
 
   return (
