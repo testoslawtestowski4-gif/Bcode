@@ -127,7 +127,9 @@ export function BarcodeGridGenerator() {
       .filter(([, barcodes]) => barcodes.length > 0)
       .map(([level, barcodes]) => `
       <div class="level-group">
-        <h3>${level} (${barcodes.length})</h3>
+        <div class="level-header">
+          <h3>${level} (${barcodes.length})</h3>
+        </div>
         <table>
           <thead>
             <tr>
@@ -156,33 +158,33 @@ export function BarcodeGridGenerator() {
             .container { max-width: 900px; margin: auto; background: white; padding: 2.5rem; border-radius: 8px; box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
             .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e9ecef; padding-bottom: 1rem; margin-bottom: 2rem; }
             h1 { color: #343a40; margin: 0; }
-            h2 { color: #495057; border-bottom: 1px solid #dee2e6; padding-bottom: 0.5rem; margin-top: 2rem; }
-            h3 { color: #495057; margin-bottom: 1rem; padding-left: 1rem; }
+            h2 { color: #495057; border-bottom: 1px solid #dee2e6; padding-bottom: 0.5rem; margin-top: 2.5rem; margin-bottom: 1.5rem; }
+            h3 { color: #495057; margin: 0; font-size: 1.2rem; }
             .time-info { text-align: right; }
             .time-info .date { font-size: 1rem; color: #6c757d; }
             .time-info .time { font-size: 2rem; font-weight: bold; color: #343a40; }
             table { width: 100%; border-collapse: collapse; }
-            th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid #e9ecef; }
-            th { background-color: #f8f9fa; font-weight: 600; border-top-left-radius: 4px; border-top-right-radius: 4px; }
+            th, td { text-align: left; padding: 0.8rem 1rem; border-bottom: 1px solid #e9ecef; }
+            th { background-color: #f8f9fa; font-weight: 600; }
             tr:last-child td { border-bottom: none; }
-            tbody tr:nth-child(even) { background-color: #f8f9fa; }
+            tbody tr:nth-child(odd) { background-color: #f8f9fa; }
             tr:hover { background-color: #f1f3f5; }
-            .summary { background-color: #f0f3f5; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
-            .total-containers { text-align: center; padding: 1rem; border: 2px solid #ced4da; border-radius: 6px; }
-            .total-containers span { display: block; }
-            .total-containers .label { font-size: 1.1rem; color: #495057; margin-bottom: 0.25rem; }
-            .total-containers .count { font-size: 2.5rem; font-weight: bold; color: #343a40; }
-            .level-counts { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 1rem; text-align: center; }
-            .level-counts div { flex: 1; min-width: 80px; }
-            .level-counts .label { color: #6c757d; font-size: 0.9rem;}
-            .level-counts .count { color: #343a40; font-weight: 600; font-size: 1.2rem; }
+            .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.5rem; }
+            .summary-card { background-color: #f0f3f5; padding: 1.5rem; border-radius: 8px; text-align: center; border: 1px solid #e0e5e9; }
+            .summary-card .label { font-size: 1rem; color: #495057; margin-bottom: 0.5rem; display: block; }
+            .summary-card .count { font-size: 2.2rem; font-weight: bold; color: #343a40; }
             .level-group { 
               margin-bottom: 2rem;
               background-color: white;
               border: 1px solid #dee2e6;
               border-radius: 8px;
               box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-              padding: 1.5rem;
+              overflow: hidden;
+            }
+            .level-header {
+              background-color: #f8f9fa;
+              padding: 1rem 1.5rem;
+              border-bottom: 1px solid #dee2e6;
             }
             .level-group table { margin-top: 0; }
           </style>
@@ -197,18 +199,28 @@ export function BarcodeGridGenerator() {
                 </div>
             </div>
             
-            <h2>Level Breakdown</h2>
-            <div class="summary">
-                <div class="total-containers">
-                    <span class="label">Total Containers</span>
-                    <span class="count">${barcodes.length}</span>
-                </div>
-                <div class="level-counts">
-                    <div><span class="label">I&J</span><span class="count">${statistics.levelIJ}</span></div>
-                    <div><span class="label">K&L</span><span class="count">${statistics.levelKL}</span></div>
-                    <div><span class="label">Level C</span><span class="count">${statistics.levelC}</span></div>
-                    <div><span class="label">Ground Floor</span><span class="count">${statistics.groundFloor}</span></div>
-                </div>
+            <h2>Summary</h2>
+            <div class="summary-grid">
+              <div class="summary-card">
+                <span class="label">Total Containers</span>
+                <span class="count">${barcodes.length}</span>
+              </div>
+              <div class="summary-card">
+                <span class="label">I&J</span>
+                <span class="count">${statistics.levelIJ}</span>
+              </div>
+              <div class="summary-card">
+                <span class="label">K&L</span>
+                <span class="count">${statistics.levelKL}</span>
+              </div>
+              <div class="summary-card">
+                <span class="label">Level C</span>
+                <span class="count">${statistics.levelC}</span>
+              </div>
+               <div class="summary-card">
+                <span class="label">Ground Floor</span>
+                <span class="count">${statistics.groundFloor}</span>
+              </div>
             </div>
 
             <h2>Barcode Details</h2>
@@ -338,39 +350,39 @@ export function BarcodeGridGenerator() {
           {statistics && (
             <Card>
               <CardHeader className="p-4 flex flex-row items-center justify-between">
-                  <CardTitle className="text-lg flex items-center gap-2">
+                  <div className='flex items-center gap-2'>
                     <BarChart2 className="w-5 h-5" />
-                    Statistics
-                  </CardTitle>
-                  <Button variant="ghost" size="icon" onClick={handleOpenStatsPage} title="Open statistics in new tab">
-                      <ExternalLink className="w-4 h-4" />
-                      <span className="sr-only">Open statistics in new tab</span>
-                  </Button>
+                    <CardTitle className="text-lg">
+                      Statistics
+                    </CardTitle>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-muted-foreground">Total: {barcodes.length}</span>
+                    <Button variant="ghost" size="icon" onClick={handleOpenStatsPage} title="Open statistics in new tab">
+                        <ExternalLink className="w-4 h-4" />
+                        <span className="sr-only">Open statistics in new tab</span>
+                    </Button>
+                  </div>
               </CardHeader>
               <CardContent className="p-4 pt-0 text-sm">
-                <div className="flex flex-col gap-2 text-center mb-4">
-                  <span className="text-muted-foreground">Total Containers</span>
-                  <span className="text-3xl font-bold">{barcodes.length}</span>
-                </div>
-                <Separator className="my-4" />
-                <ul className="space-y-2">
-                  <li className="flex justify-between">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                  <div className="flex justify-between">
                     <span className="text-muted-foreground">I&amp;J:</span>
                     <span className="font-semibold">{statistics.levelIJ}</span>
-                  </li>
-                  <li className="flex justify-between">
+                  </div>
+                  <div className="flex justify-between">
                     <span className="text-muted-foreground">K&amp;L:</span>
                     <span className="font-semibold">{statistics.levelKL}</span>
-                  </li>
-                  <li className="flex justify-between">
+                  </div>
+                  <div className="flex justify-between">
                     <span className="text-muted-foreground">Level C:</span>
                     <span className="font-semibold">{statistics.levelC}</span>
-                  </li>
-                  <li className="flex justify-between">
-                    <span className="text-muted-foreground">Ground Floor:</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Ground:</span>
                     <span className="font-semibold">{statistics.groundFloor}</span>
-                  </li>
-                </ul>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           )}
