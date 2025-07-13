@@ -11,7 +11,6 @@ interface InteractiveBarcodeProps {
   value: string;
   isActive: boolean;
   onClick: () => void;
-  onDoubleClick?: () => void;
   width: number;
   height: number;
   margin: number;
@@ -22,7 +21,6 @@ export function InteractiveBarcode({
   value,
   isActive,
   onClick,
-  onDoubleClick,
   width = 2.5,
   height = 80,
   margin = 10,
@@ -111,7 +109,6 @@ export function InteractiveBarcode({
   return (
     <Card
       onClick={isInteractive ? onClick : undefined}
-      onDoubleClick={isInteractive ? onDoubleClick : undefined}
       className={cn(
         'barcode-card',
         'transition-all duration-300 overflow-hidden relative flex items-stretch',

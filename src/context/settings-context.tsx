@@ -71,15 +71,16 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
   const setTheme = (newTheme: string) => {
     const isClown = newTheme === 'clown-theme';
-    if (!isClown) {
+    if (isClown) {
+      localStorage.setItem('funny-mode', 'true');
+    } else {
       localStorage.setItem('app-theme', newTheme);
       localStorage.removeItem('funny-mode');
       setIsFunnyMode(false);
-    } else {
-      localStorage.setItem('funny-mode', 'true');
     }
     _setTheme(newTheme);
   };
+
 
   useEffect(() => {
     const root = window.document.documentElement;
