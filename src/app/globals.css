@@ -152,17 +152,11 @@
     --radius: 0.5rem;
   }
 
-  .sleek-theme .barcode-card, .sleek-theme .card {
+  .sleek-theme .card {
     border: 0;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
   }
   
-  .sleek-theme .barcode-card {
-    --card: 222 24% 18%;
-    --card-foreground: 210 40% 98%;
-    --muted-foreground: 215 28% 65%;
-  }
-
 }
 
 @layer base {
@@ -174,7 +168,8 @@
   }
   .dark .barcode-card,
   .pink-theme .barcode-card,
-  .clown-theme .barcode-card {
+  .clown-theme .barcode-card,
+  .sleek-theme .barcode-card {
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
     --muted-foreground: 240 3.8% 46.1%;
