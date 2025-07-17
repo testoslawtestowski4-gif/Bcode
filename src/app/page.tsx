@@ -12,6 +12,7 @@ import { MainLayout } from '@/components/main-layout';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/context/settings-context';
 import { FunnyModeConfetti } from '@/components/funny-mode-confetti';
+import { AnimationSwitcher } from '@/components/animation-switcher';
 
 export default function Home() {
   const { isFunnyMode } = useSettings();
@@ -84,6 +85,7 @@ export default function Home() {
                     <Barcode className="h-4 w-4" />
                     <span className="sr-only">Show Draggable Barcode</span>
                   </Button>
+                  <AnimationSwitcher />
                   <ThemeSwitcher />
                   <SettingsSheet />
               </div>

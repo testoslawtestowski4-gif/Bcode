@@ -32,6 +32,10 @@ interface SettingsContextType {
   // Easter Egg
   isFunnyMode: boolean;
   toggleFunnyMode: () => void;
+  
+  // Performance Settings
+  animationsEnabled: boolean;
+  setAnimationsEnabled: (enabled: boolean) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -56,10 +60,18 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   // Easter egg setting
   const [isFunnyMode, setIsFunnyMode] = useState(false);
   const toggleFunnyMode = () => setIsFunnyMode(prev => !prev);
+  
+  // Performance settings
+  const [animationsEnabled, _setAnimationsEnabled] = useState(true);
 
   useEffect(() => {
     const storedTheme = localStorage.getItem('app-theme') || 'light';
     const storedFunnyMode = localStorage.getItem('funny-mode') === 'true';
+    const storedAnimations = localStorage.getItem('animations-enabled');
+
+    if (storedAnimations !== null) {
+        _setAnimationsEnabled(storedAnimations === 'true');
+    }
 
     if (storedFunnyMode) {
       setIsFunnyMode(true);
@@ -81,6 +93,11 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     _setTheme(newTheme);
   };
 
+  const setAnimationsEnabled = (enabled: boolean) => {
+    localStorage.setItem('animations-enabled', String(enabled));
+    _setAnimationsEnabled(enabled);
+  }
+
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -90,6 +107,15 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       root.classList.add(theme);
     }
   }, [theme]);
+  
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (animationsEnabled) {
+      root.classList.remove('no-animations');
+    } else {
+      root.classList.add('no-animations');
+    }
+  }, [animationsEnabled]);
 
 
   return (
@@ -115,7 +141,9 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       theme,
       setTheme,
       isFunnyMode,
-      toggleFunnyMode
+      toggleFunnyMode,
+      animationsEnabled,
+      setAnimationsEnabled
     }}>
       {children}
     </SettingsContext.Provider>
