@@ -22,7 +22,7 @@ const funnyWords = ["BANANA", "POTATO", "GIGGLES", "WOBBLE", "SNICKERDOODLE", "B
 const getRandomFunnyWord = () => funnyWords[Math.floor(Math.random() * funnyWords.length)];
 
 export function BarcodeGridGenerator() {
-  const { gridWidth, gridHeight, gridMargin, gridColumns, setGridColumns, isFunnyMode } = useSettings();
+  const { gridWidth, gridHeight, gridMargin, gridColumns, setGridColumns, isFunnyMode, animationsEnabled } = useSettings();
   const [inputValue, setInputValue] = useState('');
   const debouncedValue = useDebounce(inputValue, 500);
   const PREDEFINED_COLUMNS = [1, 3, 5, 7];
@@ -32,6 +32,7 @@ export function BarcodeGridGenerator() {
   
   const gridContainerRef = useRef<HTMLDivElement>(null);
   const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const isSpeedMode = !animationsEnabled;
 
   const parsedBarcodes = useMemo(() => {
     if (isFunnyMode) {
@@ -90,7 +91,9 @@ export function BarcodeGridGenerator() {
   };
   
   const statistics = useMemo(() => {
-    if (parsedBarcodes.some(b => b.context === 'direct') || parsedBarcodes.length === 0 || isFunnyMode) {
+    const shouldCalculate = !parsedBarcodes.some(b => b.context === 'direct') && !isFunnyMode;
+    
+    if (!shouldCalculate) {
       return null;
     }
 
@@ -176,8 +179,7 @@ export function BarcodeGridGenerator() {
             table { width: 100%; border-collapse: collapse; }
             th, td { text-align: left; padding: 0.8rem 1rem; border-bottom: 1px solid #e9ecef; }
             th { background-color: #f8f9fa; font-weight: 600; }
-            tr:last-child td { border-bottom: none; }
-            tbody tr:nth-child(odd) { background-color: #f8f9fa; }
+            tbody tr:nth-child(even) { background-color: #f8f9fa; }
             tr:hover { background-color: #f1f3f5; }
             .summary-grid { display: flex; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap;}
             .summary-card { background-color: #f0f3f5; padding: 1.5rem; border-radius: 8px; text-align: center; border: 1px solid #e0e5e9; flex-grow: 1; }
@@ -305,6 +307,9 @@ export function BarcodeGridGenerator() {
   const currentGridWidth = gridColumns === 1 ? 1.5 : gridWidth;
   const currentGridHeight = gridColumns === 1 ? 40 : gridHeight;
   const currentGridMargin = gridColumns === 1 ? 5 : gridMargin;
+
+  const showStats = statistics || isSpeedMode;
+  const displayStats = statistics || { levelIJ: 0, levelKL: 0, levelC: 0, groundFloor: 0 };
     
   return (
     <Card>
@@ -350,7 +355,7 @@ export function BarcodeGridGenerator() {
         </div>
       </CardHeader>
       <CardContent className="p-6 pt-0">
-        <div className={`grid grid-cols-1 ${statistics ? 'sm:grid-cols-2' : ''} gap-6`}>
+        <div className={`grid grid-cols-1 ${showStats ? 'sm:grid-cols-2' : ''} gap-6`}>
           <div className="relative">
             <Textarea
               placeholder="Paste your list of codes here..."
@@ -361,7 +366,7 @@ export function BarcodeGridGenerator() {
               onPaste={handleInputChange}
             />
           </div>
-          {statistics && (
+          {showStats && (
             <Card>
               <CardHeader className="p-4 flex flex-row items-center justify-between">
                   <div className='flex items-center gap-2'>
@@ -372,7 +377,7 @@ export function BarcodeGridGenerator() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-bold text-muted-foreground">Total: {barcodes.length}</span>
-                    <Button variant="ghost" size="icon" onClick={handleOpenStatsPage} title="Open statistics in new tab">
+                    <Button variant="ghost" size="icon" onClick={handleOpenStatsPage} title="Open statistics in new tab" disabled={!statistics}>
                         <ExternalLink className="w-4 h-4" />
                         <span className="sr-only">Open statistics in new tab</span>
                     </Button>
@@ -382,19 +387,19 @@ export function BarcodeGridGenerator() {
                 <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">I&amp;J:</span>
-                    <span className="font-semibold">{statistics.levelIJ}</span>
+                    <span className="font-semibold">{displayStats.levelIJ}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">K&amp;L:</span>
-                    <span className="font-semibold">{statistics.levelKL}</span>
+                    <span className="font-semibold">{displayStats.levelKL}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Level C:</span>
-                    <span className="font-semibold">{statistics.levelC}</span>
+                    <span className="font-semibold">{displayStats.levelC}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Ground:</span>
-                    <span className="font-semibold">{statistics.groundFloor}</span>
+                    <span className="font-semibold">{displayStats.groundFloor}</span>
                   </div>
                 </div>
               </CardContent>
