@@ -15,9 +15,11 @@ import { FunnyModeConfetti } from '@/components/funny-mode-confetti';
 import { AnimationSwitcher } from '@/components/animation-switcher';
 
 export default function Home() {
-  const { isFunnyMode, animationsEnabled } = useSettings();
+  const { isFunnyMode, animationsEnabled, theme } = useSettings();
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  
+  const isSleekTheme = theme === 'sleek-theme';
 
   // When animations are disabled, the consignment view is always visible and locked.
   const isSpeedMode = !animationsEnabled;
@@ -73,24 +75,26 @@ export default function Home() {
     <>
       <FunnyModeConfetti />
       <div className="flex flex-col min-h-screen bg-background text-foreground">
-        <header className="w-full border-b border-border bg-background/95 backdrop-blur-sm z-10">
+        <header className={cn("w-full bg-background/95 backdrop-blur-sm z-10", !isSleekTheme && "border-b border-border")}>
           <div className="container mx-auto flex h-16 items-center justify-between p-4">
               <div className="flex items-center gap-3">
                 <Barcode className="h-8 w-8 text-primary" />
                 <h1 className="text-3xl font-bold text-primary">{isFunnyMode ? 'B-Code Clown' : 'BCode Maker'}</h1>
               </div>
               <div className="flex items-center gap-2">
-                  <Button variant="outline" size="icon" onClick={() => setShowDraggableBarcode(!showDraggableBarcode)}>
-                    <Barcode className="h-4 w-4" />
-                    <span className="sr-only">Show Draggable Barcode</span>
-                  </Button>
+                  {!isSleekTheme && (
+                    <Button variant="outline" size="icon" onClick={() => setShowDraggableBarcode(!showDraggableBarcode)}>
+                      <Barcode className="h-4 w-4" />
+                      <span className="sr-only">Show Draggable Barcode</span>
+                    </Button>
+                  )}
                   <AnimationSwitcher />
                   <ThemeSwitcher />
                   <SettingsSheet />
               </div>
           </div>
         </header>
-        <main className={cn("flex-grow container mx-auto p-4 sm:p-6 md:p-8", showDraggableBarcode && "pt-44")}>
+        <main className={cn("flex-grow container mx-auto p-4 sm:p-6 md:p-8", showDraggableBarcode && !isSleekTheme && "pt-44")}>
             <MainLayout isCollapsed={isConsignmentCollapsed} setIsCollapsed={setIsConsignmentCollapsed}>
                 <BarcodeColumnGenerator 
                     isCollapsed={isConsignmentCollapsed}
@@ -101,12 +105,14 @@ export default function Home() {
                 <BarcodeGridGenerator />
             </MainLayout>
         </main>
-        <footer className="border-t mt-12 py-6">
-          <div className="container flex flex-col items-center justify-center gap-4 md:h-24 md:flex-row">
-          </div>
-        </footer>
+        {!isSleekTheme && (
+          <footer className="border-t mt-12 py-6">
+            <div className="container flex flex-col items-center justify-center gap-4 md:h-24 md:flex-row">
+            </div>
+          </footer>
+        )}
       </div>
-      {showDraggableBarcode && <DraggableBarcode onClose={() => setShowDraggableBarcode(false)} />}
+      {showDraggableBarcode && !isSleekTheme && <DraggableBarcode onClose={() => setShowDraggableBarcode(false)} />}
       <Button
         variant="default"
         size="icon"
