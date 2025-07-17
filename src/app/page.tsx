@@ -73,14 +73,14 @@ export default function Home() {
     <>
       <FunnyModeConfetti />
       <div className="flex flex-col min-h-screen bg-background text-foreground">
-        <header className="w-full border-b border-border bg-background/95 backdrop-blur-sm">
+        <header className="w-full border-b border-border bg-background/95 backdrop-blur-sm z-10">
           <div className="container mx-auto flex h-16 items-center justify-between p-4">
               <div className="flex items-center gap-3">
                 <Barcode className="h-8 w-8 text-primary" />
                 <h1 className="text-3xl font-bold text-primary">{isFunnyMode ? 'B-Code Clown' : 'BCode Maker'}</h1>
               </div>
               <div className="flex items-center gap-2">
-                  <Button variant="outline" size="icon" onClick={() => setShowDraggableBarcode(true)}>
+                  <Button variant="outline" size="icon" onClick={() => setShowDraggableBarcode(!showDraggableBarcode)}>
                     <Barcode className="h-4 w-4" />
                     <span className="sr-only">Show Draggable Barcode</span>
                   </Button>
@@ -90,7 +90,7 @@ export default function Home() {
               </div>
           </div>
         </header>
-        <main className="flex-grow container mx-auto p-4 sm:p-6 md:p-8">
+        <main className={cn("flex-grow container mx-auto p-4 sm:p-6 md:p-8", showDraggableBarcode && "pt-44")}>
             <MainLayout isCollapsed={isConsignmentCollapsed} setIsCollapsed={setIsConsignmentCollapsed}>
                 <BarcodeColumnGenerator 
                     isCollapsed={isConsignmentCollapsed}
