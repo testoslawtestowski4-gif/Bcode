@@ -147,7 +147,12 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
                     <style>
                         @media print {
                             @page { size: auto; margin: 0mm; }
-                            body { margin: 0; font-family: sans-serif; }
+                            body {
+                                display: flex;
+                                flex-direction: column;
+                                margin: 0;
+                                font-family: sans-serif;
+                            }
                             .printable-content {
                                 page-break-after: always;
                                 font-size: 140pt;
@@ -169,6 +174,10 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
                             text-align: center;
                             padding: 40px 0;
                             border-bottom: 2px solid #ccc;
+                            height: 100vh;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
                         }
                     </style>
                 </head>
@@ -255,7 +264,6 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
                   isActive={activeBarcode === item.id || barcodes.length === 1}
                   onClick={() => setActiveBarcode(item.id)}
                   height={columnHeight}
-                  margin={columnMargin}
                   isInteractive={barcodes.length > 1}
                 />
               ))

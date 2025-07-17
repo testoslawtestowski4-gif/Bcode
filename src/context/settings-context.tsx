@@ -6,18 +6,12 @@ interface SettingsContextType {
   // Column View Settings
   columnRows: number;
   setColumnRows: (rows: number) => void;
-  columnMargin: number;
-  setColumnMargin: (margin: number) => void;
   columnHeight: number;
   setColumnHeight: (height: number) => void;
   
   // Grid View Settings
-  gridRows: number;
-  setGridRows: (rows: number) => void;
   gridColumns: number;
   setGridColumns: (columns: number) => void;
-  gridMargin: number;
-  setGridMargin: (margin: number) => void;
   gridHeight: number;
   setGridHeight: (height: number) => void;
 
@@ -39,13 +33,10 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   // Column settings
   const [columnRows, setColumnRows] = useState(1);
-  const [columnMargin, setColumnMargin] = useState(0);
   const [columnHeight, setColumnHeight] = useState(40);
 
   // Grid settings
-  const [gridRows, setGridRows] = useState(1);
   const [gridColumns, setGridColumns] = useState(6);
-  const [gridMargin, setGridMargin] = useState(10);
   const [gridHeight, setGridHeight] = useState(55);
 
   // Theme settings
@@ -65,6 +56,10 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
     if (storedAnimations !== null) {
         _setAnimationsEnabled(storedAnimations === 'true');
+    } else {
+        // Default to speed mode
+        _setAnimationsEnabled(false);
+        localStorage.setItem('animations-enabled', 'false');
     }
 
     if (storedFunnyMode) {
@@ -116,16 +111,10 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     <SettingsContext.Provider value={{
       columnRows,
       setColumnRows,
-      columnMargin,
-      setColumnMargin,
       columnHeight,
       setColumnHeight,
-      gridRows,
-      setGridRows,
       gridColumns,
       setGridColumns,
-      gridMargin,
-      setGridMargin,
       gridHeight,
       setGridHeight,
       theme,

@@ -7,7 +7,7 @@ import { GridBarcode } from '@/components/grid-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
 import { Button } from './ui/button';
-import { Boxes, BarChart2, ArrowDownToLine, ExternalLink } from 'lucide-react';
+import { Boxes, BarChart2, ArrowDownToLine, ExternalLink, Printer } from 'lucide-react';
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 import { Separator } from './ui/separator';
@@ -22,7 +22,7 @@ const funnyWords = ["BANANA", "POTATO", "GIGGLES", "WOBBLE", "SNICKERDOODLE", "B
 const getRandomFunnyWord = () => funnyWords[Math.floor(Math.random() * funnyWords.length)];
 
 export function BarcodeGridGenerator() {
-  const { gridHeight, gridMargin, gridColumns, setGridColumns, isFunnyMode, animationsEnabled } = useSettings();
+  const { gridHeight, gridColumns, setGridColumns, isFunnyMode, animationsEnabled } = useSettings();
   const [inputValue, setInputValue] = useState('');
   const debouncedValue = useDebounce(inputValue, 500);
   const PREDEFINED_COLUMNS = [1, 4, 6];
@@ -255,6 +255,83 @@ export function BarcodeGridGenerator() {
     }
   };
 
+  const handlePrintStats = () => {
+    const now = new Date();
+    const generationDate = format(now, 'yyyy-MM-dd');
+    const generationTime = format(now, 'HH:mm:ss');
+    const displayStats = statistics || { levelIJ: 0, levelKL: 0, levelC: 0, groundFloor: 0 };
+    const total = barcodes.length;
+
+    const statsHtml = `
+      <html>
+        <head>
+          <title>Barcode Statistics - Print</title>
+          <style>
+            @media print {
+              @page { size: A4; margin: 2cm; }
+              body { -webkit-print-color-adjust: exact; }
+            }
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 1rem; color: #212529; }
+            .container { max-width: 800px; margin: auto; }
+            h1, h2 { color: #343a40; text-align: center; border-bottom: 2px solid #dee2e6; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+            h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.4rem; margin-top: 2rem; }
+            .time-info { text-align: center; margin-bottom: 2rem; color: #6c757d; }
+            .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+            .summary-card { background-color: #f8f9fa; border: 1px solid #e9ecef; padding: 1rem; border-radius: 8px; }
+            .summary-card.total { grid-column: 1 / -1; background-color: #e3f2fd; }
+            .summary-card .label { font-size: 1rem; color: #495057; margin-bottom: 0.25rem; }
+            .summary-card .count { font-size: 1.8rem; font-weight: bold; color: #343a40; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1>Barcode Statistics</h1>
+            <div class="time-info">
+              ${generationDate} &mdash; ${generationTime}
+            </div>
+            
+            <h2>Summary</h2>
+            <div class="summary-grid">
+              <div class="summary-card total">
+                <div class="label">Total Containers</div>
+                <div class="count">${total}</div>
+              </div>
+              <div class="summary-card">
+                <div class="label">I&J</div>
+                <div class="count">${displayStats.levelIJ}</div>
+              </div>
+              <div class="summary-card">
+                <div class="label">K&L</div>
+                <div class="count">${displayStats.levelKL}</div>
+              </div>
+              <div class="summary-card">
+                <div class="label">Level C</div>
+                <div class="count">${displayStats.levelC}</div>
+              </div>
+              <div class="summary-card">
+                <div class="label">Ground Floor</div>
+                <div class="count">${displayStats.groundFloor}</div>
+              </div>
+            </div>
+          </div>
+          <script>
+            window.onload = function() {
+              window.print();
+              window.close();
+            }
+          </script>
+        </body>
+      </html>
+    `;
+
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(statsHtml);
+      printWindow.document.close();
+    }
+  };
+
 
   useEffect(() => {
     if (barcodes.length > 15) {
@@ -312,7 +389,6 @@ export function BarcodeGridGenerator() {
   };
 
   const currentGridHeight = gridColumns === 1 ? 86 : gridHeight;
-  const currentGridMargin = gridColumns === 1 ? 10 : gridMargin;
 
   const showStats = statistics || isSpeedMode;
   const displayStats = statistics || { levelIJ: 0, levelKL: 0, levelC: 0, groundFloor: 0 };
@@ -383,6 +459,10 @@ export function BarcodeGridGenerator() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-bold text-muted-foreground">Total: {barcodes.length}</span>
+                    <Button variant="ghost" size="icon" onClick={handlePrintStats} title="Print statistics" disabled={!statistics}>
+                        <Printer className="w-4 h-4" />
+                        <span className="sr-only">Print statistics</span>
+                    </Button>
                     <Button variant="ghost" size="icon" onClick={handleOpenStatsPage} title="Open statistics in new tab" disabled={!statistics}>
                         <ExternalLink className="w-4 h-4" />
                         <span className="sr-only">Open statistics in new tab</span>
@@ -435,7 +515,6 @@ export function BarcodeGridGenerator() {
                     value={value} 
                     index={index}
                     height={currentGridHeight}
-                    margin={currentGridMargin}
                     isBlurred={isBlurred}
                     onClick={() => isFocusMode && setFocusedRow(rowIndex)}
                     isOneColumn={isOneColumn}
