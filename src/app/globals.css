@@ -129,6 +129,28 @@
     --ring: 340 100% 50%;
     --radius: 1.5rem;
   }
+  .sleek-theme {
+    --background: 220 20% 97%;
+    --foreground: 220 10% 20%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 10% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 10% 15%;
+    --primary: 215 90% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 15% 94%;
+    --secondary-foreground: 220 10% 20%;
+    --muted: 220 15% 94%;
+    --muted-foreground: 220 8% 45%;
+    --accent: 220 15% 90%;
+    --accent-foreground: 220 10% 15%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 15% 90%;
+    --input: 220 15% 90%;
+    --ring: 215 90% 55%;
+    --radius: 0.5rem;
+  }
 }
 
 @layer base {
@@ -140,7 +162,8 @@
   }
   .dark .barcode-card,
   .pink-theme .barcode-card,
-  .clown-theme .barcode-card {
+  .clown-theme .barcode-card,
+  .sleek-theme .barcode-card {
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
     --muted-foreground: 240 3.8% 46.1%;
