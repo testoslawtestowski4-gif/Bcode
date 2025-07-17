@@ -25,7 +25,7 @@ export function BarcodeGridGenerator() {
   const { gridWidth, gridHeight, gridMargin, gridColumns, setGridColumns, isFunnyMode, animationsEnabled } = useSettings();
   const [inputValue, setInputValue] = useState('');
   const debouncedValue = useDebounce(inputValue, 500);
-  const PREDEFINED_COLUMNS = [1, 3, 5, 7];
+  const PREDEFINED_COLUMNS = [1, 4, 6];
 
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [focusedRow, setFocusedRow] = useState(0);
@@ -304,9 +304,9 @@ export function BarcodeGridGenerator() {
     gridContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  const currentGridWidth = gridColumns === 1 ? 1.5 : gridWidth;
-  const currentGridHeight = gridColumns === 1 ? 40 : gridHeight;
-  const currentGridMargin = gridColumns === 1 ? 5 : gridMargin;
+  const currentGridWidth = gridColumns === 1 ? 1.7 : gridWidth;
+  const currentGridHeight = gridColumns === 1 ? 86 : gridHeight;
+  const currentGridMargin = gridColumns === 1 ? 10 : gridMargin;
 
   const showStats = statistics || isSpeedMode;
   const displayStats = statistics || { levelIJ: 0, levelKL: 0, levelC: 0, groundFloor: 0 };
@@ -431,6 +431,7 @@ export function BarcodeGridGenerator() {
                     margin={currentGridMargin}
                     isBlurred={isBlurred}
                     onClick={() => isFocusMode && setFocusedRow(rowIndex)}
+                    isOneColumn={gridColumns === 1}
                   />
                 );
               })}

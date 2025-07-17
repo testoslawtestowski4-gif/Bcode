@@ -14,10 +14,11 @@ interface GridBarcodeProps {
   margin: number;
   isBlurred?: boolean;
   onClick?: () => void;
+  isOneColumn?: boolean;
 }
 
 export const GridBarcode = forwardRef<HTMLDivElement, GridBarcodeProps>(
-  ({ value, index, width, height, margin, isBlurred = false, onClick }, ref) => {
+  ({ value, index, width, height, margin, isBlurred = false, onClick, isOneColumn = false }, ref) => {
     const svgRef = useRef<SVGSVGElement | null>(null);
     const [isValid, setIsValid] = useState(true);
 
@@ -50,7 +51,7 @@ export const GridBarcode = forwardRef<HTMLDivElement, GridBarcodeProps>(
         className={cn(
           "flex flex-col items-center justify-between barcode-card",
           "transition-all duration-300 ease-in-out",
-          isBlurred && "blur-md opacity-40 cursor-pointer"
+          isBlurred && "blur-md opacity-40 cursor-pointer",
         )}
       >
         <CardHeader className="p-2 pb-0">
@@ -58,7 +59,13 @@ export const GridBarcode = forwardRef<HTMLDivElement, GridBarcodeProps>(
             #{index + 1}
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-2 w-full aspect-[2/1] flex items-center justify-center">
+        <CardContent 
+          className={cn(
+            "p-2 w-full flex items-center justify-center",
+            !isOneColumn && "aspect-[2/1]"
+          )}
+          style={{ minHeight: isOneColumn ? '86px' : undefined }}
+        >
           {isValid ? (
             <svg ref={svgRef} className="w-full h-full" />
           ) : (
