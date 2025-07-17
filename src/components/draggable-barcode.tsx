@@ -25,7 +25,6 @@ export function DraggableBarcode({ onClose }: DraggableBarcodeProps) {
         lineColor: '#000000',
         margin: 20,
         height: 80,
-        width: 4,
         fontSize: 24,
       });
     }
@@ -43,7 +42,7 @@ export function DraggableBarcode({ onClose }: DraggableBarcodeProps) {
         className="w-96 shadow-2xl bg-white border-2 border-muted rounded-t-none rounded-b-lg"
       >
         <CardHeader 
-            className="flex flex-row items-center justify-between p-2 bg-muted/50"
+            className="flex flex-row items-center justify-between p-2"
         >
           <div className="flex items-center gap-2 text-muted-foreground">
             <span className="font-semibold text-xs">Floating Barcode</span>

@@ -25,9 +25,6 @@ export function ThemeSwitcher() {
         <DropdownMenuItem onClick={() => setTheme('light')}>
           Default
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('dark')}>
-          Dark
-        </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme('sleek-theme')}>
           Sleek
         </DropdownMenuItem>

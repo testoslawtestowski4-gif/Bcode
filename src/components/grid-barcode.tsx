@@ -79,7 +79,7 @@ export const GridBarcode = forwardRef<HTMLDivElement, GridBarcodeProps>(
     if (isOneColumn) {
       return (
         <div className="flex justify-center">
-          <div className="w-[110px]">
+          <div className="w-[130px]">
             {cardContent}
           </div>
         </div>
