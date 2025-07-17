@@ -269,6 +269,11 @@ export function BarcodeGridGenerator() {
     if (!isFocusMode || barcodes.length === 0) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement;
+      if (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT') {
+        return;
+      }
+      
       if (event.code === 'Space') {
         event.preventDefault();
         const totalRows = Math.ceil(barcodes.length / gridColumns);
