@@ -398,7 +398,7 @@ export function BarcodeGridGenerator() {
       <CardHeader className="flex-col items-center gap-4 sm:flex-row sm:justify-between">
         <CardTitle className="text-2xl font-semibold flex items-center gap-2">
             <Boxes className="w-7 h-7" />
-            Container View
+            Container
         </CardTitle>
         <div className="flex items-center gap-4 flex-wrap justify-center">
             <Button

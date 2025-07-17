@@ -48,7 +48,7 @@ const funnyWords = ["BANANA", "POTATO", "GIGGLES", "WOBBLE", "SNICKERDOODLE", "B
 const getRandomFunnyWord = () => funnyWords[Math.floor(Math.random() * funnyWords.length)];
 
 export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, setIsLocked }: BarcodeColumnGeneratorProps) {
-  const { columnRows, columnHeight, columnMargin, isFunnyMode, toggleFunnyMode, setTheme } = useSettings();
+  const { columnRows, columnHeight, isFunnyMode, toggleFunnyMode, setTheme } = useSettings();
   const [inputValue, setInputValue] = useState('');
   
   const [allBarcodes, setAllBarcodes] = useState<BarcodeData[]>([]);
@@ -61,13 +61,15 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
   const debouncedValue = useDebounce(inputValue, 500);
 
   useEffect(() => {
-    if (debouncedValue.trim().toLowerCase() === 'i love you') {
+    const trimmedValue = debouncedValue.trim().toLowerCase();
+    if (trimmedValue === 'i love you') {
       if (!isFunnyMode) {
         toggleFunnyMode();
         setTheme('clown-theme');
       }
       return;
     }
+
 
     if (isFunnyMode) {
       const funnyBarcodes = Array.from({ length: 10 }, (_, i) => ({
@@ -206,7 +208,7 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
             </Button>
             <CardTitle className="text-2xl font-semibold flex items-center gap-2">
                 <ListChecks className="w-7 h-7" />
-                Consignment View
+                Consignment
             </CardTitle>
           </div>
           <Button 
