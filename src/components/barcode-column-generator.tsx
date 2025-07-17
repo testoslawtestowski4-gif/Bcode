@@ -48,7 +48,7 @@ const funnyWords = ["BANANA", "POTATO", "GIGGLES", "WOBBLE", "SNICKERDOODLE", "B
 const getRandomFunnyWord = () => funnyWords[Math.floor(Math.random() * funnyWords.length)];
 
 export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, setIsLocked }: BarcodeColumnGeneratorProps) {
-  const { columnRows, columnWidth, columnHeight, columnMargin, isFunnyMode, toggleFunnyMode, setTheme } = useSettings();
+  const { columnRows, columnHeight, columnMargin, isFunnyMode, toggleFunnyMode, setTheme } = useSettings();
   const [inputValue, setInputValue] = useState('');
   
   const [allBarcodes, setAllBarcodes] = useState<BarcodeData[]>([]);
@@ -254,7 +254,6 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
                   value={item.value}
                   isActive={activeBarcode === item.id || barcodes.length === 1}
                   onClick={() => setActiveBarcode(item.id)}
-                  width={columnWidth}
                   height={columnHeight}
                   margin={columnMargin}
                   isInteractive={barcodes.length > 1}

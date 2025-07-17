@@ -17,8 +17,8 @@ import { Separator } from './ui/separator';
 
 export function SettingsSheet() {
   const {
-    columnRows, setColumnRows, columnMargin, setColumnMargin, columnWidth, setColumnWidth, columnHeight, setColumnHeight,
-    gridRows, setGridRows, gridColumns, setGridColumns, gridMargin, setGridMargin, gridWidth, setGridWidth, gridHeight, setGridHeight
+    columnRows, setColumnRows, columnMargin, setColumnMargin, columnHeight, setColumnHeight,
+    gridRows, setGridRows, gridColumns, setGridColumns, gridMargin, setGridMargin, gridHeight, setGridHeight
   } = useSettings();
 
   return (
@@ -45,10 +45,6 @@ export function SettingsSheet() {
                         <Slider id="column-rows" min={1} max={20} step={1} value={[columnRows]} onValueChange={(value) => setColumnRows(value[0])} />
                     </div>
                     <div className="grid grid-cols-1 items-center gap-4">
-                        <Label htmlFor="column-width">Barcode Width: {columnWidth.toFixed(1)}</Label>
-                        <Slider id="column-width" min={1} max={4} step={0.1} value={[columnWidth]} onValueChange={(value) => setColumnWidth(value[0])} />
-                    </div>
-                    <div className="grid grid-cols-1 items-center gap-4">
                         <Label htmlFor="column-height">Barcode Height: {columnHeight}</Label>
                         <Slider id="column-height" min={20} max={150} step={5} value={[columnHeight]} onValueChange={(value) => setColumnHeight(value[0])} />
                     </div>
@@ -71,10 +67,6 @@ export function SettingsSheet() {
                     <div className="grid grid-cols-1 items-center gap-4">
                         <Label htmlFor="grid-columns">Grid Columns: {gridColumns}</Label>
                         <Slider id="grid-columns" min={1} max={10} step={1} value={[gridColumns]} onValueChange={(value) => setGridColumns(value[0])} />
-                    </div>
-                    <div className="grid grid-cols-1 items-center gap-4">
-                        <Label htmlFor="grid-width">Barcode Width: {gridWidth.toFixed(1)}</Label>
-                        <Slider id="grid-width" min={0.5} max={3} step={0.1} value={[gridWidth]} onValueChange={(value) => setGridWidth(value[0])} />
                     </div>
                     <div className="grid grid-cols-1 items-center gap-4">
                         <Label htmlFor="grid-height">Barcode Height: {gridHeight}</Label>

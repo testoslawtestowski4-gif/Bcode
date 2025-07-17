@@ -9,7 +9,6 @@ import { cn } from '@/lib/utils';
 interface GridBarcodeProps {
   value: string;
   index: number;
-  width: number;
   height: number;
   margin: number;
   isBlurred?: boolean;
@@ -18,7 +17,7 @@ interface GridBarcodeProps {
 }
 
 export const GridBarcode = forwardRef<HTMLDivElement, GridBarcodeProps>(
-  ({ value, index, width, height, margin, isBlurred = false, onClick, isOneColumn = false }, ref) => {
+  ({ value, index, height, margin, isBlurred = false, onClick, isOneColumn = false }, ref) => {
     const svgRef = useRef<SVGSVGElement | null>(null);
     const [isValid, setIsValid] = useState(true);
 
@@ -32,7 +31,6 @@ export const GridBarcode = forwardRef<HTMLDivElement, GridBarcodeProps>(
             lineColor: 'hsl(var(--card-foreground))',
             margin: margin,
             height: height,
-            width: width,
           });
           setIsValid(true);
         } catch (e) {
@@ -42,7 +40,7 @@ export const GridBarcode = forwardRef<HTMLDivElement, GridBarcodeProps>(
           }
         }
       }
-    }, [value, width, height, margin]);
+    }, [value, height, margin]);
 
     return (
       <Card

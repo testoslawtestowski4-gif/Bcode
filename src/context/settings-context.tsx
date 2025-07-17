@@ -8,8 +8,6 @@ interface SettingsContextType {
   setColumnRows: (rows: number) => void;
   columnMargin: number;
   setColumnMargin: (margin: number) => void;
-  columnWidth: number;
-  setColumnWidth: (width: number) => void;
   columnHeight: number;
   setColumnHeight: (height: number) => void;
   
@@ -20,8 +18,6 @@ interface SettingsContextType {
   setGridColumns: (columns: number) => void;
   gridMargin: number;
   setGridMargin: (margin: number) => void;
-  gridWidth: number;
-  setGridWidth: (width: number) => void;
   gridHeight: number;
   setGridHeight: (height: number) => void;
 
@@ -44,14 +40,12 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   // Column settings
   const [columnRows, setColumnRows] = useState(1);
   const [columnMargin, setColumnMargin] = useState(0);
-  const [columnWidth, setColumnWidth] = useState(1.0);
   const [columnHeight, setColumnHeight] = useState(40);
 
   // Grid settings
   const [gridRows, setGridRows] = useState(1);
-  const [gridColumns, setGridColumns] = useState(5);
+  const [gridColumns, setGridColumns] = useState(6);
   const [gridMargin, setGridMargin] = useState(10);
-  const [gridWidth, setGridWidth] = useState(2.0);
   const [gridHeight, setGridHeight] = useState(55);
 
   // Theme settings
@@ -124,8 +118,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       setColumnRows,
       columnMargin,
       setColumnMargin,
-      columnWidth,
-      setColumnWidth,
       columnHeight,
       setColumnHeight,
       gridRows,
@@ -134,8 +126,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       setGridColumns,
       gridMargin,
       setGridMargin,
-      gridWidth,
-      setGridWidth,
       gridHeight,
       setGridHeight,
       theme,

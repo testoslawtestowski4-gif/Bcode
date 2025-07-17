@@ -11,7 +11,6 @@ interface InteractiveBarcodeProps {
   value: string;
   isActive: boolean;
   onClick: () => void;
-  width: number;
   height: number;
   margin: number;
   isInteractive?: boolean;
@@ -21,8 +20,7 @@ export function InteractiveBarcode({
   value,
   isActive,
   onClick,
-  width = 2.5,
-  height = 80,
+  height = 40,
   margin = 10,
   isInteractive = true,
 }: InteractiveBarcodeProps) {
@@ -38,7 +36,6 @@ export function InteractiveBarcode({
           lineColor: 'hsl(var(--card-foreground))',
           margin: margin,
           height: height,
-          width: width,
         });
       } catch (e) {
         if (svgRef.current) {
@@ -46,7 +43,7 @@ export function InteractiveBarcode({
         }
       }
     }
-  }, [value, width, height, margin]);
+  }, [value, height, margin]);
 
   const showActiveState = !isInteractive || isActive;
 

@@ -22,7 +22,7 @@ const funnyWords = ["BANANA", "POTATO", "GIGGLES", "WOBBLE", "SNICKERDOODLE", "B
 const getRandomFunnyWord = () => funnyWords[Math.floor(Math.random() * funnyWords.length)];
 
 export function BarcodeGridGenerator() {
-  const { gridWidth, gridHeight, gridMargin, gridColumns, setGridColumns, isFunnyMode, animationsEnabled } = useSettings();
+  const { gridHeight, gridMargin, gridColumns, setGridColumns, isFunnyMode, animationsEnabled } = useSettings();
   const [inputValue, setInputValue] = useState('');
   const debouncedValue = useDebounce(inputValue, 500);
   const PREDEFINED_COLUMNS = [1, 4, 6];
@@ -304,7 +304,6 @@ export function BarcodeGridGenerator() {
     gridContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  const currentGridWidth = gridColumns === 1 ? 1.7 : gridWidth;
   const currentGridHeight = gridColumns === 1 ? 86 : gridHeight;
   const currentGridMargin = gridColumns === 1 ? 10 : gridMargin;
 
@@ -416,6 +415,8 @@ export function BarcodeGridGenerator() {
               {barcodes.map((value, index) => {
                 const rowIndex = Math.floor(index / gridColumns);
                 const isBlurred = isFocusMode && rowIndex !== focusedRow;
+                const isOneColumn = gridColumns === 1;
+
                 return (
                   <GridBarcode
                     ref={el => {
@@ -426,12 +427,11 @@ export function BarcodeGridGenerator() {
                     key={`${value}-${index}`} 
                     value={value} 
                     index={index}
-                    width={currentGridWidth}
                     height={currentGridHeight}
                     margin={currentGridMargin}
                     isBlurred={isBlurred}
                     onClick={() => isFocusMode && setFocusedRow(rowIndex)}
-                    isOneColumn={gridColumns === 1}
+                    isOneColumn={isOneColumn}
                   />
                 );
               })}
