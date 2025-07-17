@@ -24,9 +24,9 @@ export function DraggableBarcode({ onClose }: DraggableBarcodeProps) {
         fontOptions: 'bold',
         background: '#FFFFFF',
         lineColor: '#000000',
-        margin: 20,
-        height: 80,
-        fontSize: 24,
+        margin: 10,
+        height: 50,
+        fontSize: 18,
       });
     }
   }, []);
@@ -40,7 +40,7 @@ export function DraggableBarcode({ onClose }: DraggableBarcodeProps) {
       }}
     >
       <Card 
-        className="w-96 shadow-2xl bg-white border-2 border-muted rounded-t-none rounded-b-lg"
+        className="w-80 shadow-2xl bg-white border-2 border-muted rounded-t-none rounded-b-lg"
       >
         <CardHeader 
             className="flex flex-row items-center justify-between p-2"
@@ -61,7 +61,7 @@ export function DraggableBarcode({ onClose }: DraggableBarcodeProps) {
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="p-8 bg-white">
+        <CardContent className="p-4 bg-white">
           <svg ref={svgRef} className="w-full h-auto" />
         </CardContent>
       </Card>
