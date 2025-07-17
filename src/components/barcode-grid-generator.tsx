@@ -181,12 +181,13 @@ export function BarcodeGridGenerator() {
             th { background-color: #f8f9fa; font-weight: 600; }
             tbody tr:nth-child(even) { background-color: #f8f9fa; }
             tr:hover { background-color: #f1f3f5; }
-            .summary-grid { display: flex; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap;}
+            .summary-grid { display: flex; gap: 1.5rem; margin-top: 1.5rem; flex-wrap: wrap;}
             .summary-card { background-color: #f0f3f5; padding: 1.5rem; border-radius: 8px; text-align: center; border: 1px solid #e0e5e9; flex-grow: 1; }
             .summary-card.total { background-color: #e3f2fd; border-color: #bbdefb; }
             .summary-card .label { font-size: 1rem; color: #495057; margin-bottom: 0.5rem; display: block; }
             .summary-card .count { font-size: 2.2rem; font-weight: bold; color: #343a40; }
-            .summary-card.total .count { font-size: 2.8rem; color: #1e88e5; }
+            .summary-card.total .count { font-size: 3rem; color: #1e88e5; }
+            .level-breakdown { display: flex; gap: 1rem; justify-content: center; }
             .level-group { 
               margin-bottom: 2rem;
               background-color: white;
@@ -220,7 +221,8 @@ export function BarcodeGridGenerator() {
                 <span class="count">${barcodes.length}</span>
               </div>
             </div>
-            <div class="summary-grid">
+            
+            <div class="summary-grid level-breakdown">
               <div class="summary-card">
                 <span class="label">I&J</span>
                 <span class="count">${statistics.levelIJ}</span>
