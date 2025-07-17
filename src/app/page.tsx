@@ -17,7 +17,6 @@ import { AnimationSwitcher } from '@/components/animation-switcher';
 export default function Home() {
   const { isFunnyMode, animationsEnabled } = useSettings();
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
-  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   // When animations are disabled, the consignment view is always visible and locked.
@@ -27,18 +26,8 @@ export default function Home() {
 
 
   useEffect(() => {
-    let lastScrollY = window.scrollY;
-
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setIsHeaderVisible(false);
-      } else {
-        setIsHeaderVisible(true);
-      }
-      lastScrollY = currentScrollY;
-
-      if (currentScrollY > 300) {
+      if (window.scrollY > 300) {
         setShowScrollTop(true);
       } else {
         setShowScrollTop(false);
@@ -84,11 +73,7 @@ export default function Home() {
     <>
       <FunnyModeConfetti />
       <div className="flex flex-col min-h-screen bg-background text-foreground">
-        <header className={cn(
-            "sticky top-0 z-10 w-full border-b border-border bg-background/95 backdrop-blur-sm",
-            "transition-transform duration-300",
-            isHeaderVisible ? 'translate-y-0' : '-translate-y-full'
-        )}>
+        <header className="w-full border-b border-border bg-background/95 backdrop-blur-sm">
           <div className="container mx-auto flex h-16 items-center justify-between p-4">
               <div className="flex items-center gap-3">
                 <Barcode className="h-8 w-8 text-primary" />
