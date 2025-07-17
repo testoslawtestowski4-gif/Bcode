@@ -111,7 +111,8 @@ export function InteractiveBarcode({
       onClick={isInteractive ? onClick : undefined}
       className={cn(
         'barcode-card',
-        'transition-all duration-300 overflow-hidden relative flex items-stretch',
+        'transition-all duration-300',
+        'overflow-hidden relative flex items-stretch',
         isInteractive && 'cursor-pointer',
         showActiveState ? 'border-primary shadow-lg' : (isInteractive ? 'hover:border-primary/50' : '')
       )}
@@ -119,7 +120,8 @@ export function InteractiveBarcode({
       <div className="relative flex-grow">
         <div
           className={cn(
-            'transition-all duration-300 h-full flex flex-col',
+            'transition-all duration-300',
+            'h-full flex flex-col',
             showActiveState ? 'opacity-100 blur-none' : 'opacity-40 blur-lg'
           )}
         >

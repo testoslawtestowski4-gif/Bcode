@@ -48,7 +48,8 @@ export const GridBarcode = forwardRef<HTMLDivElement, GridBarcodeProps>(
         ref={ref}
         onClick={onClick}
         className={cn(
-          "flex flex-col items-center justify-between barcode-card transition-all duration-300 ease-in-out",
+          "flex flex-col items-center justify-between barcode-card",
+          "transition-all duration-300 ease-in-out",
           isBlurred && "blur-md opacity-40 cursor-pointer"
         )}
       >

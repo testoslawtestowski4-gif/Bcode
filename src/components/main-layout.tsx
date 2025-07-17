@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { ReactNode } from 'react';
 import { Button } from './ui/button';
 import { Eye } from 'lucide-react';
+import { useSettings } from '@/context/settings-context';
 
 interface MainLayoutProps {
     children: [ReactNode, ReactNode];
@@ -12,27 +13,32 @@ interface MainLayoutProps {
 }
 
 export function MainLayout({ children, isCollapsed, setIsCollapsed }: MainLayoutProps) {
+    const { animationsEnabled } = useSettings();
+    const isSpeedMode = !animationsEnabled;
     const [consignmentView, containerView] = children;
+
+    const effectiveIsCollapsed = isSpeedMode ? false : isCollapsed;
 
     return (
         <div className="flex flex-col lg:flex-row gap-8 items-start relative mt-8">
             <div
                 id="consignment-view-wrapper"
                 className={cn(
-                    'w-full lg:w-[35%] lg:flex-shrink-0 transition-all duration-500 ease-in-out relative',
-                    isCollapsed && 'lg:w-[120px]'
+                    'w-full lg:w-[35%] lg:flex-shrink-0 relative',
+                    'transition-all duration-500 ease-in-out',
+                    effectiveIsCollapsed && 'lg:w-[120px]'
                 )}
             >
                 <div
                     id="consignment-view"
                     className={cn(
                         'transition-opacity duration-300',
-                        isCollapsed && 'opacity-0 h-0 pointer-events-none'
+                        effectiveIsCollapsed && 'opacity-0 h-0 pointer-events-none'
                     )}
                 >
                     {consignmentView}
                 </div>
-                {isCollapsed && (
+                {effectiveIsCollapsed && !isSpeedMode && (
                     <div className="hidden lg:block sticky top-20 w-[120px]">
                          <div className="h-full w-full" style={{height: 'calc(100vh - 12rem)'}}>
                             <Button 
@@ -52,8 +58,9 @@ export function MainLayout({ children, isCollapsed, setIsCollapsed }: MainLayout
             <div
                 id="container-view"
                 className={cn(
-                    'w-full transition-all duration-500 ease-in-out flex-grow',
-                    isCollapsed ? 'lg:w-[calc(100% - 120px - 2rem)]' : 'lg:w-[65%]'
+                    'w-full flex-grow',
+                    'transition-all duration-500 ease-in-out',
+                    effectiveIsCollapsed ? 'lg:w-[calc(100% - 120px - 2rem)]' : 'lg:w-[65%]'
                 )}
             >
                 {containerView}

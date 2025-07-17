@@ -15,13 +15,16 @@ import { FunnyModeConfetti } from '@/components/funny-mode-confetti';
 import { AnimationSwitcher } from '@/components/animation-switcher';
 
 export default function Home() {
-  const { isFunnyMode } = useSettings();
+  const { isFunnyMode, animationsEnabled } = useSettings();
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
-  const [isConsignmentCollapsed, setIsConsignmentCollapsed] = useState(false);
-  const [isConsignmentLocked, setIsConsignmentLocked] = useState(false);
+  // When animations are disabled, the consignment view is always visible and locked.
+  const isSpeedMode = !animationsEnabled;
+  const [isConsignmentCollapsed, setIsConsignmentCollapsed] = useState(isSpeedMode ? false : true);
+  const [isConsignmentLocked, setIsConsignmentLocked] = useState(isSpeedMode);
+
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -47,6 +50,13 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    // In speed mode, the panel is always open and locked.
+    if (isSpeedMode) {
+      setIsConsignmentCollapsed(false);
+      setIsConsignmentLocked(true);
+      return;
+    }
+    
     const handleClickOutside = (event: MouseEvent) => {
       if (isConsignmentLocked) return;
       const columnEl = document.getElementById('consignment-view');
@@ -60,7 +70,7 @@ export default function Home() {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isConsignmentLocked]);
+  }, [isConsignmentLocked, isSpeedMode]);
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -74,7 +84,11 @@ export default function Home() {
     <>
       <FunnyModeConfetti />
       <div className="flex flex-col min-h-screen bg-background text-foreground">
-        <header className={`sticky top-0 z-10 w-full border-b border-border bg-background/95 backdrop-blur-sm transition-transform duration-300 ${isHeaderVisible ? 'translate-y-0' : '-translate-y-full'}`}>
+        <header className={cn(
+            "sticky top-0 z-10 w-full border-b border-border bg-background/95 backdrop-blur-sm",
+            "transition-transform duration-300",
+            isHeaderVisible ? 'translate-y-0' : '-translate-y-full'
+        )}>
           <div className="container mx-auto flex h-16 items-center justify-between p-4">
               <div className="flex items-center gap-3">
                 <Barcode className="h-8 w-8 text-primary" />
@@ -113,7 +127,8 @@ export default function Home() {
         size="icon"
         onClick={scrollToTop}
         className={cn(
-          "fixed bottom-6 right-6 z-50 rounded-full shadow-lg transition-opacity duration-300",
+          "fixed bottom-6 right-6 z-50 rounded-full shadow-lg",
+          "transition-opacity duration-300",
           showScrollTop ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
         aria-label="Scroll to top"
