@@ -56,7 +56,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const toggleFunnyMode = () => setIsFunnyMode(prev => !prev);
   
   // Performance settings
-  const [animationsEnabled, _setAnimationsEnabled] = useState(true);
+  const [animationsEnabled, _setAnimationsEnabled] = useState(false);
 
   useEffect(() => {
     const storedTheme = localStorage.getItem('app-theme') || 'light';
