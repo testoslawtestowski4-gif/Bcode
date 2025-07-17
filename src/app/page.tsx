@@ -82,19 +82,17 @@ export default function Home() {
                 <h1 className="text-3xl font-bold text-primary">{isFunnyMode ? 'B-Code Clown' : 'BCode Maker'}</h1>
               </div>
               <div className="flex items-center gap-2">
-                  {!isSleekTheme && (
-                    <Button variant="outline" size="icon" onClick={() => setShowDraggableBarcode(!showDraggableBarcode)}>
-                      <Barcode className="h-4 w-4" />
-                      <span className="sr-only">Show Draggable Barcode</span>
-                    </Button>
-                  )}
+                  <Button variant="outline" size="icon" onClick={() => setShowDraggableBarcode(!showDraggableBarcode)}>
+                    <Barcode className="h-4 w-4" />
+                    <span className="sr-only">Show Draggable Barcode</span>
+                  </Button>
                   <AnimationSwitcher />
                   <ThemeSwitcher />
                   <SettingsSheet />
               </div>
           </div>
         </header>
-        <main className={cn("flex-grow container mx-auto p-4 sm:p-6 md:p-8", showDraggableBarcode && !isSleekTheme && "pt-44")}>
+        <main className={cn("flex-grow container mx-auto p-4 sm:p-6 md:p-8", showDraggableBarcode && "pt-44")}>
             <MainLayout isCollapsed={isConsignmentCollapsed} setIsCollapsed={setIsConsignmentCollapsed}>
                 <BarcodeColumnGenerator 
                     isCollapsed={isConsignmentCollapsed}
@@ -112,7 +110,7 @@ export default function Home() {
           </footer>
         )}
       </div>
-      {showDraggableBarcode && !isSleekTheme && <DraggableBarcode onClose={() => setShowDraggableBarcode(false)} />}
+      {showDraggableBarcode && <DraggableBarcode onClose={() => setShowDraggableBarcode(false)} />}
       <Button
         variant="default"
         size="icon"

@@ -5,6 +5,7 @@ import JsBarcode from 'jsbarcode';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { X, ZoomIn, ZoomOut } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface DraggableBarcodeProps {
   onClose: () => void;
