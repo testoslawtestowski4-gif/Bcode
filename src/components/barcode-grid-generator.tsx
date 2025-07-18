@@ -246,11 +246,49 @@ export function BarcodeGridGenerator() {
   };
 
   const handlePrintStats = () => {
+    if (!statistics) return;
+
     const now = new Date();
     const generationDate = format(now, 'yyyy-MM-dd');
     const generationTime = format(now, 'HH:mm:ss');
-    const displayStats = statistics || { levelIJ: 0, levelKL: 0, levelC: 0, groundFloor: 0 };
     const total = barcodes.length;
+
+    const groupedBarcodes: { [key: string]: ParsedBarcode[] } = {
+      'I&J': [],
+      'K&L': [],
+      'Level C': [],
+      'Ground Floor': [],
+      'Unknown': []
+    };
+  
+    parsedBarcodes.forEach(barcode => {
+      const level = getBarcodeLevel(barcode.context);
+      groupedBarcodes[level].push(barcode);
+    });
+
+    const barcodeDetailsHtml = Object.entries(groupedBarcodes)
+      .filter(([, barcodes]) => barcodes.length > 0)
+      .map(([level, barcodes]) => `
+      <div class="level-group">
+        <h3>${level} (${barcodes.length})</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Barcode</th>
+              <th>Location</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${barcodes.map(b => `
+              <tr>
+                <td>${b.value}</td>
+                <td>${b.context}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `).join('');
 
     const statsHtml = `
       <html>
@@ -258,20 +296,39 @@ export function BarcodeGridGenerator() {
           <title>Barcode Statistics - Print</title>
           <style>
             @media print {
-              @page { size: A4; margin: 2cm; }
+              @page { size: A4; margin: 1.5cm; }
               body { -webkit-print-color-adjust: exact; }
             }
-            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 1rem; color: #212529; }
-            .container { max-width: 800px; margin: auto; }
-            h1, h2 { color: #343a40; text-align: center; border-bottom: 2px solid #dee2e6; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
-            h1 { font-size: 1.8rem; }
-            h2 { font-size: 1.4rem; margin-top: 2rem; }
+            body { 
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+              margin: 0; 
+              padding: 0; 
+              color: #212529; 
+            }
+            .container { max-width: 100%; margin: auto; }
+            h1, h2, h3 { color: #343a40; }
+            h1 { font-size: 1.8rem; text-align: center; border-bottom: 2px solid #dee2e6; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+            h2 { font-size: 1.4rem; margin-top: 2rem; border-bottom: 1px solid #dee2e6; padding-bottom: 0.5rem; margin-bottom: 1rem; }
+            h3 { font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 0.5rem; }
             .time-info { text-align: center; margin-bottom: 2rem; color: #6c757d; }
-            .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
-            .summary-card { background-color: #f8f9fa; border: 1px solid #e9ecef; padding: 1rem; border-radius: 8px; }
-            .summary-card.total { grid-column: 1 / -1; background-color: #e3f2fd; }
+            
+            .summary-grid { 
+              display: grid; 
+              grid-template-columns: 1fr 1fr; 
+              gap: 1rem; 
+              margin-top: 1rem; 
+              page-break-inside: avoid; 
+            }
+            .summary-card { background-color: #f8f9fa !important; border: 1px solid #e9ecef; padding: 1rem; border-radius: 8px; }
+            .summary-card.total { grid-column: 1 / -1; background-color: #e3f2fd !important; }
             .summary-card .label { font-size: 1rem; color: #495057; margin-bottom: 0.25rem; }
             .summary-card .count { font-size: 1.8rem; font-weight: bold; color: #343a40; }
+            
+            .level-group { page-break-inside: avoid; margin-bottom: 1.5rem; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #e9ecef; font-size: 0.9rem; }
+            th { background-color: #f8f9fa !important; font-weight: 600; }
+            tbody tr:nth-child(even) { background-color: #f8f9fa !important; }
           </style>
         </head>
         <body>
@@ -289,21 +346,24 @@ export function BarcodeGridGenerator() {
               </div>
               <div class="summary-card">
                 <div class="label">I&J</div>
-                <div class="count">${displayStats.levelIJ}</div>
+                <div class="count">${statistics.levelIJ}</div>
               </div>
               <div class="summary-card">
                 <div class="label">K&L</div>
-                <div class="count">${displayStats.levelKL}</div>
+                <div class="count">${statistics.levelKL}</div>
               </div>
               <div class="summary-card">
                 <div class="label">Level C</div>
-                <div class="count">${displayStats.levelC}</div>
+                <div class="count">${statistics.levelC}</div>
               </div>
               <div class="summary-card">
                 <div class="label">Ground Floor</div>
-                <div class="count">${displayStats.groundFloor}</div>
+                <div class="count">${statistics.groundFloor}</div>
               </div>
             </div>
+
+            <h2>Barcode Details</h2>
+            ${barcodeDetailsHtml}
           </div>
           <script>
             window.onload = function() {
