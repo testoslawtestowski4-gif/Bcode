@@ -31,6 +31,9 @@ export function ThemeSwitcher() {
         <DropdownMenuItem onClick={() => setTheme('pink-theme')}>
           Feminine
         </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme('clown-theme')}>
+          Clown
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
