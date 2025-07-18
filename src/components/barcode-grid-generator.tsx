@@ -159,7 +159,7 @@ export function BarcodeGridGenerator() {
           <style>
             body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 2rem; background-color: #f8f9fa; color: #212529; }
             .container { max-width: 900px; margin: auto; background: white; padding: 2.5rem; border-radius: 8px; box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
-            .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e9ecef; padding-bottom: 1.5rem; margin-bottom: 2rem; }
+            .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e9ecef; padding-bottom: 1.5rem; margin-bottom: 1rem; }
             h1 { color: #343a40; margin: 0; font-size: 2rem; }
             h2 { color: #495057; border-bottom: 1px solid #dee2e6; padding-bottom: 0.5rem; margin-top: 2.5rem; margin-bottom: 1.5rem; }
             h3 { color: #495057; margin: 0; font-size: 1.2rem; }
@@ -171,12 +171,34 @@ export function BarcodeGridGenerator() {
             th { background-color: #f8f9fa; font-weight: 600; }
             tbody tr:nth-child(even) { background-color: #f8f9fa; }
             tr:hover { background-color: #f1f3f5; }
-            .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
-            .summary-card { background-color: #f0f3f5; padding: 1rem; border-radius: 8px; border: 1px solid #e0e5e9; }
-            .summary-card.total { background-color: #e3f2fd; border-color: #bbdefb; grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; }
-            .summary-card .label { font-size: 0.9rem; color: #495057; }
-            .summary-card .count { font-size: 1.8rem; font-weight: bold; color: #343a40; }
-            .summary-card.total .count { font-size: 2.5rem; color: #1e88e5; }
+            .summary-container {
+                padding: 1rem;
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                border: 1px solid #e9ecef;
+            }
+            .summary-header {
+                display: flex;
+                align-items: baseline;
+                gap: 0.75rem;
+                margin-bottom: 0.5rem;
+            }
+            .summary-header .total-label { font-size: 1rem; color: #495057; }
+            .summary-header .total-count { font-size: 1.5rem; font-weight: bold; color: #343a40; }
+            .summary-details {
+                display: flex;
+                gap: 1.5rem;
+                flex-wrap: wrap;
+                border-top: 1px solid #dee2e6;
+                padding-top: 0.75rem;
+            }
+            .summary-item {
+                display: flex;
+                align-items: baseline;
+                gap: 0.5rem;
+            }
+            .summary-item .label { font-size: 0.9rem; color: #6c757d; }
+            .summary-item .count { font-size: 1rem; font-weight: 600; color: #343a40; }
             .level-group { 
               margin-bottom: 2rem;
               background-color: white;
@@ -204,27 +226,29 @@ export function BarcodeGridGenerator() {
             </div>
             
             <h2>Summary</h2>
-            <div class="summary-grid">
-              <div class="summary-card total">
-                <span class="label">Total Containers</span>
-                <span class="count">${barcodes.length}</span>
-              </div>
-              <div class="summary-card">
-                <div class="label">I&J</div>
-                <div class="count">${statistics.levelIJ}</div>
-              </div>
-              <div class="summary-card">
-                <div class="label">K&L</div>
-                <div class="count">${statistics.levelKL}</div>
-              </div>
-              <div class="summary-card">
-                <div class="label">Level C</div>
-                <div class="count">${statistics.levelC}</div>
-              </div>
-               <div class="summary-card">
-                <div class="label">Ground Floor</div>
-                <div class="count">${statistics.groundFloor}</div>
-              </div>
+            <div class="summary-container">
+                <div class="summary-header">
+                    <span class="total-label">Total Containers:</span>
+                    <span class="total-count">${barcodes.length}</span>
+                </div>
+                <div class="summary-details">
+                    <div class="summary-item">
+                        <span class="label">I&J:</span>
+                        <span class="count">${statistics.levelIJ}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">K&L:</span>
+                        <span class="count">${statistics.levelKL}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Level C:</span>
+                        <span class="count">${statistics.levelC}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Ground Floor:</span>
+                        <span class="count">${statistics.groundFloor}</span>
+                    </div>
+                </div>
             </div>
 
             <h2>Barcode Details</h2>
@@ -304,25 +328,33 @@ export function BarcodeGridGenerator() {
             .container { max-width: 100%; margin: auto; }
             h1, h2, h3 { color: #343a40; }
             h1 { font-size: 1.8rem; text-align: center; border-bottom: 2px solid #dee2e6; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
-            h2 { font-size: 1.4rem; margin-top: 2rem; border-bottom: 1px solid #dee2e6; padding-bottom: 0.5rem; margin-bottom: 1rem; }
+            h2 { font-size: 1.2rem; margin-top: 1.5rem; border-bottom: 1px solid #dee2e6; padding-bottom: 0.5rem; margin-bottom: 1rem; }
             h3 { font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 0.5rem; }
-            .time-info { text-align: center; margin-bottom: 2rem; color: #6c757d; }
+            .time-info { text-align: center; margin-bottom: 1rem; color: #6c757d; font-size: 0.9rem; }
             
-            .summary-grid { 
-              display: grid; 
-              grid-template-columns: 1fr 1fr; 
-              gap: 0.5rem 1.5rem; 
-              margin-top: 1rem; 
-              padding: 1rem;
-              border-radius: 8px;
+            .summary-bar {
+              display: flex;
+              justify-content: space-around;
+              flex-wrap: wrap;
+              padding: 0.5rem;
               background-color: #f8f9fa !important;
               border: 1px solid #e9ecef;
-              page-break-inside: avoid; 
+              border-radius: 6px;
+              font-size: 0.9rem;
+              margin-bottom: 1rem;
+              page-break-inside: avoid;
             }
-            .summary-item { display: flex; justify-content: space-between; align-items: baseline; }
-            .summary-item.total { grid-column: 1 / -1; font-size: 1.1rem; border-top: 1px solid #dee2e6; padding-top: 0.5rem; margin-top: 0.5rem; }
-            .summary-item .label { font-size: 0.9rem; color: #495057; }
-            .summary-item .count { font-size: 1rem; font-weight: bold; color: #343a40; }
+            .summary-item {
+              display: flex;
+              align-items: baseline;
+              padding: 0 0.5rem;
+              border-right: 1px solid #d3d3d3;
+            }
+            .summary-item:last-child {
+              border-right: none;
+            }
+            .summary-item .label { color: #495057; margin-right: 0.3em; }
+            .summary-item .count { font-weight: bold; color: #343a40; }
             
             .level-group { page-break-inside: avoid; margin-bottom: 1.5rem; }
             table { width: 100%; border-collapse: collapse; }
@@ -339,27 +371,27 @@ export function BarcodeGridGenerator() {
             </div>
             
             <h2>Summary</h2>
-            <div class="summary-grid">
-              <div class="summary-item">
-                <span class="label">I&J</span>
-                <span class="count">${statistics.levelIJ}</span>
-              </div>
-              <div class="summary-item">
-                <span class="label">K&L</span>
-                <span class="count">${statistics.levelKL}</span>
-              </div>
-              <div class="summary-item">
-                <span class="label">Level C</span>
-                <span class="count">${statistics.levelC}</span>
-              </div>
-              <div class="summary-item">
-                <span class="label">Ground Floor</span>
-                <span class="count">${statistics.groundFloor}</span>
-              </div>
-              <div class="summary-item total">
-                <span class="label">Total Containers</span>
-                <span class="count">${total}</span>
-              </div>
+            <div class="summary-bar">
+                <div class="summary-item">
+                    <span class="label">Total:</span>
+                    <span class="count">${total}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">I&J:</span>
+                    <span class="count">${statistics.levelIJ}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">K&L:</span>
+                    <span class="count">${statistics.levelKL}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Level C:</span>
+                    <span class="count">${statistics.levelC}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Ground:</span>
+                    <span class="count">${statistics.groundFloor}</span>
+                </div>
             </div>
 
             <h2>Barcode Details</h2>
