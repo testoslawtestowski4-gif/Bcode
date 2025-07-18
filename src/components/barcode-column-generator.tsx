@@ -9,7 +9,6 @@ import { useSettings } from '@/context/settings-context';
 import { Button } from './ui/button';
 import { ListChecks, Printer, Lock, Unlock } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { ChristmasLights } from './christmas-lights';
 
 interface BarcodeData {
   id: string;
@@ -49,7 +48,7 @@ const funnyWords = ["BANANA", "POTATO", "GIGGLES", "WOBBLE", "SNICKERDOODLE", "B
 const getRandomFunnyWord = () => funnyWords[Math.floor(Math.random() * funnyWords.length)];
 
 export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, setIsLocked }: BarcodeColumnGeneratorProps) {
-  const { columnRows, columnHeight, isFunnyMode, toggleFunnyMode, setTheme, isXmasMode, toggleXmasMode } = useSettings();
+  const { columnRows, columnHeight, isFunnyMode, toggleFunnyMode, setTheme } = useSettings();
   const [inputValue, setInputValue] = useState('');
   
   const [allBarcodes, setAllBarcodes] = useState<BarcodeData[]>([]);
@@ -70,15 +69,6 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
       }
       return;
     }
-
-    if (trimmedValue === 'xmas') {
-      if (!isXmasMode) {
-        toggleXmasMode();
-        setTheme('xmas-theme');
-      }
-      return;
-    }
-
 
     if (isFunnyMode) {
       const funnyBarcodes = Array.from({ length: 10 }, (_, i) => ({
@@ -112,7 +102,7 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
     
     setActiveFilter('ALL'); // Reset filter on new input
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue, isFunnyMode, isXmasMode]);
+  }, [debouncedValue, isFunnyMode]);
 
   useEffect(() => {
     let filteredBarcodes: BarcodeData[];
@@ -209,7 +199,6 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
 
   return (
       <Card className="relative overflow-visible">
-        {isXmasMode && <ChristmasLights />}
         <CardHeader className="flex flex-row items-center justify-between">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={() => setIsLocked(!isLocked)} className="text-muted-foreground hover:text-primary">

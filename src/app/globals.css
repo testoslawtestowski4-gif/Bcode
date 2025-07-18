@@ -151,126 +151,11 @@
     --ring: 217 91% 60%;
     --radius: 0.5rem;
   }
-  .xmas-theme {
-    --background: 210 30% 98%;
-    --foreground: 215 25% 27%;
-    --card: 0 0% 100%;
-    --card-foreground: 215 25% 27%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 27%;
-    --primary: 0 72% 51%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
-    --accent: 140 60% 35%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 0 72% 51%;
-    --radius: 0.7rem;
-  }
 
   .sleek-theme .card {
     border: 0;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
   }
-
-  .xmas-theme {
-    overflow-x: hidden;
-  }
-  
-  .sleigh {
-    position: absolute;
-    top: 5px;
-    left: 0;
-    width: 150px;
-    animation: sleigh-ride 25s linear infinite;
-    z-index: 10;
-  }
-
-  @keyframes sleigh-ride {
-    0% {
-      transform: translateX(-150px);
-    }
-    100% {
-      transform: translateX(100vw);
-    }
-  }
-
-  .christmas-lights {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    white-space: nowrap;
-    position: absolute;
-    top: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    text-align: center;
-  }
-  
-  .christmas-lights li {
-    position: relative;
-    animation:-global-flash 1.2s infinite ease-out;
-    display: inline-block;
-    width: 10px;
-    height: 20px;
-    border-radius: 50%;
-    margin: 0 10px;
-    background: #fff;
-  }
-  
-  .christmas-lights li:before {
-    content: "";
-    position: absolute;
-    background: #222;
-    width: 8px;
-    height: 8px;
-    border-radius: 4px;
-    top: -4px;
-    left: 1px;
-  }
-  
-  .christmas-lights li.red {
-    background: #f00;
-    animation-delay: 0.2s;
-  }
-  
-  .christmas-lights li.yellow {
-    background: #ff0;
-    animation-delay: 0.4s;
-  }
-  
-  .christmas-lights li.blue {
-    background: #00f;
-    animation-delay: 0.6s;
-  }
-  
-  .christmas-lights li.green {
-    background: #0f0;
-    animation-delay: 0.8s;
-  }
-  
-  .christmas-lights li.purple {
-    background: #800080;
-    animation-delay: 1s;
-  }
-  
-  @keyframes -global-flash {
-    0%, 100% {
-      background-color: rgba(255,255,255, 0.4);
-      box-shadow: 0 0 0px 0px rgba(255,255,255, 0.4);
-    }
-    50% {
-      box-shadow: 0 0 10px 5px rgba(255,255,255, 0.8);
-    }
-  }
-  
 }
 
 @layer base {
@@ -283,8 +168,7 @@
   .dark .barcode-card,
   .pink-theme .barcode-card,
   .clown-theme .barcode-card,
-  .sleek-theme .barcode-card,
-  .xmas-theme .barcode-card {
+  .sleek-theme .barcode-card {
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
     --muted-foreground: 240 3.8% 46.1%;

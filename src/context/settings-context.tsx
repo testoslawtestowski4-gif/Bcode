@@ -22,8 +22,6 @@ interface SettingsContextType {
   // Easter Eggs
   isFunnyMode: boolean;
   toggleFunnyMode: () => void;
-  isXmasMode: boolean;
-  toggleXmasMode: () => void;
   
   // Performance Settings
   animationsEnabled: boolean;
@@ -47,8 +45,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   // Easter egg settings
   const [isFunnyMode, setIsFunnyMode] = useState(false);
   const toggleFunnyMode = () => setIsFunnyMode(prev => !prev);
-  const [isXmasMode, setIsXmasMode] = useState(false);
-  const toggleXmasMode = () => setIsXmasMode(prev => !prev);
   
   // Performance settings
   const [animationsEnabled, _setAnimationsEnabled] = useState(false);
@@ -56,7 +52,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const storedTheme = localStorage.getItem('app-theme') || 'light';
     const storedFunnyMode = localStorage.getItem('funny-mode') === 'true';
-    const storedXmasMode = localStorage.getItem('xmas-mode') === 'true';
     const storedAnimations = localStorage.getItem('animations-enabled');
 
     if (storedAnimations !== null) {
@@ -70,9 +65,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     if (storedFunnyMode) {
       setIsFunnyMode(true);
       _setTheme('clown-theme');
-    } else if (storedXmasMode) {
-      setIsXmasMode(true);
-      _setTheme('xmas-theme');
     }
     else {
       _setTheme(storedTheme);
@@ -81,21 +73,14 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
   const setTheme = (newTheme: string) => {
     const isClown = newTheme === 'clown-theme';
-    const isXmas = newTheme === 'xmas-theme';
 
     if (isClown) {
       localStorage.setItem('funny-mode', 'true');
-      localStorage.removeItem('xmas-mode');
-    } else if (isXmas) {
-      localStorage.setItem('xmas-mode', 'true');
-      localStorage.removeItem('funny-mode');
     }
     else {
       localStorage.setItem('app-theme', newTheme);
       localStorage.removeItem('funny-mode');
-      localStorage.removeItem('xmas-mode');
       setIsFunnyMode(false);
-      setIsXmasMode(false);
     }
     _setTheme(newTheme);
   };
@@ -108,7 +93,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const root = window.document.documentElement;
-    root.classList.remove('light', 'dark', 'pink-theme', 'clown-theme', 'sleek-theme', 'xmas-theme');
+    root.classList.remove('light', 'dark', 'pink-theme', 'clown-theme', 'sleek-theme');
 
     if (theme !== 'light') {
       root.classList.add(theme);
@@ -139,8 +124,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       setTheme,
       isFunnyMode,
       toggleFunnyMode,
-      isXmasMode,
-      toggleXmasMode,
       animationsEnabled,
       setAnimationsEnabled
     }}>
