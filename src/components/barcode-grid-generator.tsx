@@ -459,23 +459,26 @@ export function BarcodeGridGenerator() {
                     </Button>
                   </div>
               </CardHeader>
-              <CardContent className="p-4 pt-0 text-sm">
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">I&amp;J:</span>
-                    <span className="font-semibold">{displayStats.levelIJ}</span>
+              <CardContent className="p-4 pt-0">
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">I & J</span>
+                    <span className="font-semibold text-lg">{displayStats.levelIJ}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">K&amp;L:</span>
-                    <span className="font-semibold">{displayStats.levelKL}</span>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">K & L</span>
+                    <span className="font-semibold text-lg">{displayStats.levelKL}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Level C:</span>
-                    <span className="font-semibold">{displayStats.levelC}</span>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Level C</span>
+                    <span className="font-semibold text-lg">{displayStats.levelC}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Ground:</span>
-                    <span className="font-semibold">{displayStats.groundFloor}</span>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Ground Floor</span>
+                    <span className="font-semibold text-lg">{displayStats.groundFloor}</span>
                   </div>
                 </div>
               </CardContent>
