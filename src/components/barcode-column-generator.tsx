@@ -48,7 +48,7 @@ const funnyWords = ["BANANA", "POTATO", "GIGGLES", "WOBBLE", "SNICKERDOODLE", "B
 const getRandomFunnyWord = () => funnyWords[Math.floor(Math.random() * funnyWords.length)];
 
 export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, setIsLocked }: BarcodeColumnGeneratorProps) {
-  const { columnRows, columnHeight, isFunnyMode, toggleFunnyMode, setTheme } = useSettings();
+  const { columnRows, columnHeight, isFunnyMode, toggleFunnyMode, setTheme, isXmasMode, toggleXmasMode } = useSettings();
   const [inputValue, setInputValue] = useState('');
   
   const [allBarcodes, setAllBarcodes] = useState<BarcodeData[]>([]);
@@ -66,6 +66,14 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
       if (!isFunnyMode) {
         toggleFunnyMode();
         setTheme('clown-theme');
+      }
+      return;
+    }
+
+    if (trimmedValue === 'xmas') {
+      if (!isXmasMode) {
+        toggleXmasMode();
+        setTheme('xmas-theme');
       }
       return;
     }
@@ -103,7 +111,7 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
     
     setActiveFilter('ALL'); // Reset filter on new input
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue, isFunnyMode]);
+  }, [debouncedValue, isFunnyMode, isXmasMode]);
 
   useEffect(() => {
     let filteredBarcodes: BarcodeData[];

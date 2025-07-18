@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { useSettings } from '@/context/settings-context';
 import { FunnyModeConfetti } from '@/components/funny-mode-confetti';
 import { AnimationSwitcher } from '@/components/animation-switcher';
+import { XmasSnowfall } from '@/components/xmas-snowfall';
 
 export default function Home() {
   const { isFunnyMode, animationsEnabled, theme } = useSettings();
@@ -74,6 +75,7 @@ export default function Home() {
   return (
     <>
       <FunnyModeConfetti />
+      <XmasSnowfall />
       <div className="flex flex-col min-h-screen bg-background text-foreground">
         <header className={cn("w-full bg-background/95 backdrop-blur-sm z-10", !isSleekTheme && "border-b border-border")}>
           <div className="container mx-auto flex h-16 items-center justify-between p-4">
