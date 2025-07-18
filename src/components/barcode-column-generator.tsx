@@ -115,6 +115,7 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
     if (!pasteOnFocus) return;
 
     try {
+      setInputValue(''); // Explicitly clear the input value first
       const text = await navigator.clipboard.readText();
       if (text) {
         setInputValue(text);
