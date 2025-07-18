@@ -31,23 +31,8 @@ interface BarcodeColumnGeneratorProps {
 
 // Validation helper
 export const isValidBarcode = (code: string) => {
-  // Must be composed of only letters and numbers
-  if (!/^[a-zA-Z0-9]+$/.test(code)) {
-    return false;
-  }
-  // Must contain at least one letter and at least one number
-  if (!(/[a-zA-Z]/.test(code) && /[0-9]/.test(code))) {
-    return false;
-  }
-  // Must not contain "web" (case-insensitive)
-  if (code.toLowerCase().includes('web')) {
-    return false;
-  }
-  // Must have more than 3 digits
-  if ((code.match(/\d/g) || []).length <= 3) {
-    return false;
-  }
-  return true;
+  // Must start with one or more letters, followed by 3 to 5 digits, and nothing else.
+  return /^[a-zA-Z]+\d{3,5}$/.test(code);
 };
 
 export function BarcodeColumnGenerator({ 
@@ -276,7 +261,7 @@ export function BarcodeColumnGenerator({
             ) : (
               <div className="text-center py-10 text-muted-foreground">
                 <p>Your generated barcodes will appear here.</p>
-                <p className="text-xs mt-2">(Codes must be alphanumeric, e.g., EX12345)</p>
+                <p className="text-xs mt-2">(Codes must be letters followed by 3-5 digits, e.g., MIX12345)</p>
               </div>
             )}
           </div>
