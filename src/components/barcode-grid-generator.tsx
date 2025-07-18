@@ -13,13 +13,18 @@ import { Label } from './ui/label';
 import { Separator } from './ui/separator';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import { isValidBarcode } from './barcode-column-generator';
 
 interface ParsedBarcode {
   value: string;
   context: string;
 }
 
-export function BarcodeGridGenerator() {
+interface BarcodeGridGeneratorProps {
+  onConsignmentCodeDetected: (code: string) => void;
+}
+
+export function BarcodeGridGenerator({ onConsignmentCodeDetected }: BarcodeGridGeneratorProps) {
   const { gridHeight, gridColumns, setGridColumns, animationsEnabled, pasteOnFocus, setPasteOnFocus } = useSettings();
   const [inputValue, setInputValue] = useState('');
   const debouncedValue = useDebounce(inputValue, 500);
@@ -466,6 +471,13 @@ export function BarcodeGridGenerator() {
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement> | React.ClipboardEvent<HTMLTextAreaElement>) => {
     const value = 'target' in event ? event.target.value : event.clipboardData.getData('text');
     setInputValue(value);
+
+    const potentialCodes = value.match(/[a-zA-Z0-9]+/g) || [];
+    const validConsignmentCodes = potentialCodes.filter(isValidBarcode);
+    if (validConsignmentCodes.length > 0) {
+      // Find the last valid code in the pasted text, as it's often the most relevant one.
+      onConsignmentCodeDetected(validConsignmentCodes[validConsignmentCodes.length - 1]);
+    }
   };
 
   const handleTextareaClick = async () => {
@@ -480,6 +492,12 @@ export function BarcodeGridGenerator() {
           title: "Pasted from clipboard",
           description: `Pasted ${text.length} characters into 'Container' field.`,
         });
+
+        const potentialCodes = text.match(/[a-zA-Z0-9]+/g) || [];
+        const validConsignmentCodes = potentialCodes.filter(isValidBarcode);
+        if (validConsignmentCodes.length > 0) {
+          onConsignmentCodeDetected(validConsignmentCodes[validConsignmentCodes.length - 1]);
+        }
       }
     } catch (err) {
       console.error('Failed to read clipboard contents: ', err);

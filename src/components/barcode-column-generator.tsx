@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { InteractiveBarcode } from '@/components/interactive-barcode';
@@ -8,10 +8,9 @@ import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
 import { Button } from './ui/button';
 import { ListChecks, Printer, Lock, Unlock } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
-interface BarcodeData {
+export interface BarcodeData {
   id: string;
   value: string;
 }
@@ -21,10 +20,17 @@ interface BarcodeColumnGeneratorProps {
   setIsCollapsed: (isCollapsed: boolean) => void;
   isLocked: boolean;
   setIsLocked: (isLocked: boolean) => void;
+  // Lifted state
+  inputValue: string;
+  setInputValue: Dispatch<SetStateAction<string>>;
+  allBarcodes: BarcodeData[];
+  setAllBarcodes: Dispatch<SetStateAction<BarcodeData[]>>;
+  activeBarcode: string | null;
+  setActiveBarcode: Dispatch<SetStateAction<string | null>>;
 }
 
 // Validation helper
-const isValidBarcode = (code: string) => {
+export const isValidBarcode = (code: string) => {
   // Must be composed of only letters and numbers
   if (!/^[a-zA-Z0-9]+$/.test(code)) {
     return false;
@@ -44,17 +50,16 @@ const isValidBarcode = (code: string) => {
   return true;
 };
 
-export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, setIsLocked }: BarcodeColumnGeneratorProps) {
+export function BarcodeColumnGenerator({ 
+  isCollapsed, setIsCollapsed, isLocked, setIsLocked,
+  inputValue, setInputValue, allBarcodes, setAllBarcodes,
+  activeBarcode, setActiveBarcode
+}: BarcodeColumnGeneratorProps) {
   const { columnRows, columnHeight, pasteOnFocus } = useSettings();
-  const [inputValue, setInputValue] = useState('');
-  
-  const [allBarcodes, setAllBarcodes] = useState<BarcodeData[]>([]);
   const [barcodes, setBarcodes] = useState<BarcodeData[]>([]); // This is the displayed list
-
   const [filterPrefixes, setFilterPrefixes] = useState<string[]>([]);
   const [activeFilter, setActiveFilter] = useState('ALL');
   
-  const [activeBarcode, setActiveBarcode] = useState<string | null>(null);
   const debouncedValue = useDebounce(inputValue, 500);
   const { toast } = useToast();
 
@@ -79,8 +84,7 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
     setFilterPrefixes(Array.from(prefixes).sort());
     
     setActiveFilter('ALL'); // Reset filter on new input
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
+  }, [debouncedValue, setAllBarcodes]);
 
   useEffect(() => {
     let filteredBarcodes: BarcodeData[];
@@ -101,8 +105,7 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
     } else {
         setActiveBarcode(null);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeFilter, allBarcodes]);
+  }, [activeFilter, allBarcodes, activeBarcode, setActiveBarcode]);
 
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement> | React.ClipboardEvent<HTMLTextAreaElement>) => {

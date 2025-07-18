@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { BarcodeColumnGenerator } from "@/components/barcode-column-generator";
+import { BarcodeColumnGenerator, BarcodeData, isValidBarcode } from "@/components/barcode-column-generator";
 import { BarcodeGridGenerator } from "@/components/barcode-grid-generator";
 import { SettingsSheet } from "@/components/settings-sheet";
 import { ThemeSwitcher } from "@/components/theme-switcher";
@@ -18,6 +18,11 @@ export default function Home() {
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   
+  // State lifted up from BarcodeColumnGenerator
+  const [consignmentInputValue, setConsignmentInputValue] = useState('');
+  const [allConsignmentBarcodes, setAllConsignmentBarcodes] = useState<BarcodeData[]>([]);
+  const [activeConsignmentBarcode, setActiveConsignmentBarcode] = useState<string | null>(null);
+
   const isSleekTheme = theme === 'sleek-theme';
 
   // When animations are disabled, the consignment view is always visible and locked.
@@ -69,6 +74,32 @@ export default function Home() {
     });
   };
 
+  const handleConsignmentCodeDetected = (code: string) => {
+    if (!isValidBarcode(code)) return;
+
+    setAllConsignmentBarcodes(prevBarcodes => {
+      const existingBarcode = prevBarcodes.find(b => b.value === code);
+      let newBarcodes = [...prevBarcodes];
+
+      if (existingBarcode) {
+        // Move existing barcode to the top
+        newBarcodes = newBarcodes.filter(b => b.id !== existingBarcode.id);
+        newBarcodes.unshift(existingBarcode);
+      } else {
+        // Add new barcode to the top
+        const newBarcode: BarcodeData = { id: `${code}-${Date.now()}`, value: code };
+        newBarcodes.unshift(newBarcode);
+      }
+      return newBarcodes;
+    });
+
+    // We need to derive the ID to set it as active.
+    // This is a bit tricky since ID can be new. Let's find it.
+    const barcodeToActivate = allConsignmentBarcodes.find(b => b.value === code) || { id: `${code}-${Date.now()}` };
+    setActiveConsignmentBarcode(barcodeToActivate.id);
+    setIsConsignmentCollapsed(false); // Ensure the panel is visible
+  };
+
 
   return (
     <>
@@ -97,8 +128,14 @@ export default function Home() {
                     setIsCollapsed={setIsConsignmentCollapsed}
                     isLocked={isConsignmentLocked}
                     setIsLocked={setIsConsignmentLocked}
+                    inputValue={consignmentInputValue}
+                    setInputValue={setConsignmentInputValue}
+                    allBarcodes={allConsignmentBarcodes}
+                    setAllBarcodes={setAllConsignmentBarcodes}
+                    activeBarcode={activeConsignmentBarcode}
+                    setActiveBarcode={setActiveConsignmentBarcode}
                 />
-                <BarcodeGridGenerator />
+                <BarcodeGridGenerator onConsignmentCodeDetected={handleConsignmentCodeDetected} />
             </MainLayout>
         </main>
         {!isSleekTheme && (
