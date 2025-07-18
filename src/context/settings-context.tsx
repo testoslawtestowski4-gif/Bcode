@@ -18,10 +18,6 @@ interface SettingsContextType {
   // Theme Settings
   theme: string;
   setTheme: (theme: string) => void;
-
-  // Easter Eggs
-  isFunnyMode: boolean;
-  toggleFunnyMode: () => void;
   
   // Performance Settings
   animationsEnabled: boolean;
@@ -42,16 +38,11 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   // Theme settings
   const [theme, _setTheme] = useState('light');
 
-  // Easter egg settings
-  const [isFunnyMode, setIsFunnyMode] = useState(false);
-  const toggleFunnyMode = () => setIsFunnyMode(prev => !prev);
-  
   // Performance settings
   const [animationsEnabled, _setAnimationsEnabled] = useState(false);
 
   useEffect(() => {
     const storedTheme = localStorage.getItem('app-theme') || 'light';
-    const storedFunnyMode = localStorage.getItem('funny-mode') === 'true';
     const storedAnimations = localStorage.getItem('animations-enabled');
 
     if (storedAnimations !== null) {
@@ -62,26 +53,11 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem('animations-enabled', 'false');
     }
 
-    if (storedFunnyMode) {
-      setIsFunnyMode(true);
-      _setTheme('clown-theme');
-    }
-    else {
-      _setTheme(storedTheme);
-    }
+    _setTheme(storedTheme);
   }, []);
 
   const setTheme = (newTheme: string) => {
-    const isClown = newTheme === 'clown-theme';
-
-    if (isClown) {
-      localStorage.setItem('funny-mode', 'true');
-    }
-    else {
-      localStorage.setItem('app-theme', newTheme);
-      localStorage.removeItem('funny-mode');
-      setIsFunnyMode(false);
-    }
+    localStorage.setItem('app-theme', newTheme);
     _setTheme(newTheme);
   };
 
@@ -93,7 +69,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const root = window.document.documentElement;
-    root.classList.remove('light', 'dark', 'pink-theme', 'clown-theme', 'sleek-theme');
+    root.classList.remove('light', 'dark', 'pink-theme', 'sleek-theme');
 
     if (theme !== 'light') {
       root.classList.add(theme);
@@ -122,8 +98,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       setGridHeight,
       theme,
       setTheme,
-      isFunnyMode,
-      toggleFunnyMode,
       animationsEnabled,
       setAnimationsEnabled
     }}>

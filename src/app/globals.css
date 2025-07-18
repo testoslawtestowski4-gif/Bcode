@@ -107,28 +107,6 @@
     --sidebar-border: 350 100% 90%;
     --sidebar-ring: 340 90% 70%;
   }
-  .clown-theme {
-    --background: 50 100% 95%;
-    --foreground: 30 90% 20%;
-    --card: 0 0% 100%;
-    --card-foreground: 10 10% 10%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 10 10% 10%;
-    --primary: 340 100% 50%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 200 100% 90%;
-    --secondary-foreground: 200 100% 20%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 120 100% 40%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 100% 50%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 30 100% 80%;
-    --input: 0 0% 100%;
-    --ring: 340 100% 50%;
-    --radius: 1.5rem;
-  }
   .sleek-theme {
     --background: 222 24% 12%;
     --foreground: 210 40% 98%;
@@ -167,7 +145,6 @@
   }
   .dark .barcode-card,
   .pink-theme .barcode-card,
-  .clown-theme .barcode-card,
   .sleek-theme .barcode-card {
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;

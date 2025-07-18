@@ -43,12 +43,8 @@ const isValidBarcode = (code: string) => {
   return true;
 };
 
-const funnyWords = ["BANANA", "POTATO", "GIGGLES", "WOBBLE", "SNICKERDOODLE", "BUMBLEBEE", "FLIBBERTIGIBBET", "SPOON", "NOODLE", "ZEBRA"];
-
-const getRandomFunnyWord = () => funnyWords[Math.floor(Math.random() * funnyWords.length)];
-
 export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, setIsLocked }: BarcodeColumnGeneratorProps) {
-  const { columnRows, columnHeight, isFunnyMode, toggleFunnyMode, setTheme } = useSettings();
+  const { columnRows, columnHeight } = useSettings();
   const [inputValue, setInputValue] = useState('');
   
   const [allBarcodes, setAllBarcodes] = useState<BarcodeData[]>([]);
@@ -61,26 +57,6 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
   const debouncedValue = useDebounce(inputValue, 500);
 
   useEffect(() => {
-    const trimmedValue = debouncedValue.trim().toLowerCase();
-    if (trimmedValue === 'i love you') {
-      if (!isFunnyMode) {
-        toggleFunnyMode();
-        setTheme('clown-theme');
-      }
-      return;
-    }
-
-    if (isFunnyMode) {
-      const funnyBarcodes = Array.from({ length: 10 }, (_, i) => ({
-        id: `funny-${i}`,
-        value: `${getRandomFunnyWord()}${i}`,
-      }));
-      setAllBarcodes(funnyBarcodes);
-      setFilterPrefixes([]);
-      setActiveFilter('ALL');
-      return;
-    }
-
     // Find all alphanumeric sequences in the input text
     const potentialCodes = debouncedValue.match(/[a-zA-Z0-9]+/g) || [];
     
@@ -102,7 +78,7 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
     
     setActiveFilter('ALL'); // Reset filter on new input
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue, isFunnyMode]);
+  }, [debouncedValue]);
 
   useEffect(() => {
     let filteredBarcodes: BarcodeData[];

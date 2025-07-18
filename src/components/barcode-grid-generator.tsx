@@ -18,11 +18,8 @@ interface ParsedBarcode {
   context: string;
 }
 
-const funnyWords = ["BANANA", "POTATO", "GIGGLES", "WOBBLE", "SNICKERDOODLE", "BUMBLEBEE", "FLIBBERTIGIBBET", "SPOON", "NOODLE", "ZEBRA"];
-const getRandomFunnyWord = () => funnyWords[Math.floor(Math.random() * funnyWords.length)];
-
 export function BarcodeGridGenerator() {
-  const { gridHeight, gridColumns, setGridColumns, isFunnyMode, animationsEnabled } = useSettings();
+  const { gridHeight, gridColumns, setGridColumns, animationsEnabled } = useSettings();
   const [inputValue, setInputValue] = useState('');
   const debouncedValue = useDebounce(inputValue, 500);
   const PREDEFINED_COLUMNS = [1, 4, 6];
@@ -35,13 +32,6 @@ export function BarcodeGridGenerator() {
   const isSpeedMode = !animationsEnabled;
 
   const parsedBarcodes = useMemo(() => {
-    if (isFunnyMode) {
-      return Array.from({ length: 50 }, (_, i) => ({
-        value: `${getRandomFunnyWord()}${i}`,
-        context: 'funny',
-      }));
-    }
-
     if (!debouncedValue) {
       return [];
     }
@@ -73,7 +63,7 @@ export function BarcodeGridGenerator() {
     }
     
     return Array.from(matches.values());
-  }, [debouncedValue, isFunnyMode]);
+  }, [debouncedValue]);
 
   const barcodes = useMemo(() => parsedBarcodes.map(b => b.value), [parsedBarcodes]);
 
@@ -91,7 +81,7 @@ export function BarcodeGridGenerator() {
   };
   
   const statistics = useMemo(() => {
-    const shouldCalculate = !parsedBarcodes.some(b => b.context === 'direct') && !isFunnyMode;
+    const shouldCalculate = !parsedBarcodes.some(b => b.context === 'direct');
     
     if (!shouldCalculate) {
       return null;
@@ -114,7 +104,7 @@ export function BarcodeGridGenerator() {
 
     return stats;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedBarcodes, isFunnyMode]);
+  }, [parsedBarcodes]);
 
   const handleOpenStatsPage = () => {
     if (!statistics) return;
