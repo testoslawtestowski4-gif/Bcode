@@ -12,6 +12,7 @@ import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 import { Separator } from './ui/separator';
 import { format } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
 
 interface ParsedBarcode {
   value: string;
@@ -19,7 +20,7 @@ interface ParsedBarcode {
 }
 
 export function BarcodeGridGenerator() {
-  const { gridHeight, gridColumns, setGridColumns, animationsEnabled } = useSettings();
+  const { gridHeight, gridColumns, setGridColumns, animationsEnabled, pasteOnFocus, setPasteOnFocus } = useSettings();
   const [inputValue, setInputValue] = useState('');
   const debouncedValue = useDebounce(inputValue, 500);
   const PREDEFINED_COLUMNS = [1, 4, 6];
@@ -30,6 +31,7 @@ export function BarcodeGridGenerator() {
   const gridContainerRef = useRef<HTMLDivElement>(null);
   const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
   const isSpeedMode = !animationsEnabled;
+  const { toast } = useToast();
 
   const parsedBarcodes = useMemo(() => {
     if (!debouncedValue) {
@@ -172,16 +174,18 @@ export function BarcodeGridGenerator() {
             tbody tr:nth-child(even) { background-color: #f8f9fa; }
             tr:hover { background-color: #f1f3f5; }
             .summary-container {
-                padding: 1rem;
-                background-color: #f8f9fa;
-                border-radius: 8px;
-                border: 1px solid #e9ecef;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              padding: 0.75rem 1rem;
+              background-color: #f8f9fa;
+              border-radius: 8px;
+              border: 1px solid #e9ecef;
             }
             .summary-header {
                 display: flex;
                 align-items: baseline;
                 gap: 0.75rem;
-                margin-bottom: 0.5rem;
             }
             .summary-header .total-label { font-size: 1rem; color: #495057; }
             .summary-header .total-count { font-size: 1.5rem; font-weight: bold; color: #343a40; }
@@ -189,8 +193,6 @@ export function BarcodeGridGenerator() {
                 display: flex;
                 gap: 1.5rem;
                 flex-wrap: wrap;
-                border-top: 1px solid #dee2e6;
-                padding-top: 0.75rem;
             }
             .summary-item {
                 display: flex;
@@ -227,28 +229,28 @@ export function BarcodeGridGenerator() {
             
             <h2>Summary</h2>
             <div class="summary-container">
-                <div class="summary-header">
-                    <span class="total-label">Total Containers:</span>
-                    <span class="total-count">${barcodes.length}</span>
-                </div>
-                <div class="summary-details">
-                    <div class="summary-item">
-                        <span class="label">I&J:</span>
-                        <span class="count">${statistics.levelIJ}</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="label">K&L:</span>
-                        <span class="count">${statistics.levelKL}</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="label">Level C:</span>
-                        <span class="count">${statistics.levelC}</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="label">Ground Floor:</span>
-                        <span class="count">${statistics.groundFloor}</span>
-                    </div>
-                </div>
+              <div class="summary-header">
+                  <span class="total-label">Total Containers:</span>
+                  <span class="total-count">${barcodes.length}</span>
+              </div>
+              <div class="summary-details">
+                  <div class="summary-item">
+                      <span class="label">I&J:</span>
+                      <span class="count">${statistics.levelIJ}</span>
+                  </div>
+                  <div class="summary-item">
+                      <span class="label">K&L:</span>
+                      <span class="count">${statistics.levelKL}</span>
+                  </div>
+                  <div class="summary-item">
+                      <span class="label">Level C:</span>
+                      <span class="count">${statistics.levelC}</span>
+                  </div>
+                  <div class="summary-item">
+                      <span class="label">Ground Floor:</span>
+                      <span class="count">${statistics.groundFloor}</span>
+                  </div>
+              </div>
             </div>
 
             <h2>Barcode Details</h2>
@@ -334,24 +336,25 @@ export function BarcodeGridGenerator() {
             
             .summary-bar {
               display: flex;
-              justify-content: space-around;
+              justify-content: flex-start;
+              gap: 1rem;
+              align-items: center;
               flex-wrap: wrap;
-              padding: 0.5rem;
-              background-color: #f8f9fa !important;
-              border: 1px solid #e9ecef;
-              border-radius: 6px;
+              padding: 0.5rem 0;
               font-size: 0.9rem;
               margin-bottom: 1rem;
               page-break-inside: avoid;
+              border-top: 1px solid #e9ecef;
+              border-bottom: 1px solid #e9ecef;
+
             }
             .summary-item {
               display: flex;
               align-items: baseline;
               padding: 0 0.5rem;
-              border-right: 1px solid #d3d3d3;
             }
-            .summary-item:last-child {
-              border-right: none;
+            .summary-item:not(:last-child) {
+              border-right: 1px solid #d3d3d3;
             }
             .summary-item .label { color: #495057; margin-right: 0.3em; }
             .summary-item .count { font-weight: bold; color: #343a40; }
@@ -466,6 +469,28 @@ export function BarcodeGridGenerator() {
     setInputValue(value);
   };
 
+  const handleTextareaClick = async () => {
+    if (!pasteOnFocus) return;
+
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text) {
+        setInputValue(text);
+        toast({
+          title: "Clipboard pasted",
+          description: `Pasted ${text.length} characters from the clipboard.`,
+        });
+      }
+    } catch (err) {
+      console.error('Failed to read clipboard contents: ', err);
+      toast({
+        variant: 'destructive',
+        title: "Paste failed",
+        description: "Could not read content from the clipboard. Please grant permission.",
+      });
+    }
+  };
+
   const handleScrollToGrid = () => {
     gridContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
@@ -493,6 +518,14 @@ export function BarcodeGridGenerator() {
               <ArrowDownToLine className="w-4 h-4" />
               <span className="sr-only">Scroll to grid</span>
             </Button>
+            <div className="flex items-center space-x-2">
+              <Switch
+                  id="paste-on-click"
+                  checked={pasteOnFocus}
+                  onCheckedChange={setPasteOnFocus}
+              />
+              <Label htmlFor="paste-on-click">Paste on Click</Label>
+            </div>
             <div className="flex items-center space-x-2">
                 <Switch
                     id="focus-mode"
@@ -527,6 +560,7 @@ export function BarcodeGridGenerator() {
               rows={5}
               value={inputValue}
               onChange={handleInputChange}
+              onClick={handleTextareaClick}
               onPaste={handleInputChange}
             />
           </div>

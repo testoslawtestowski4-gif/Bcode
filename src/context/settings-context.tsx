@@ -22,6 +22,10 @@ interface SettingsContextType {
   // Performance Settings
   animationsEnabled: boolean;
   setAnimationsEnabled: (enabled: boolean) => void;
+
+  // Paste on Focus setting
+  pasteOnFocus: boolean;
+  setPasteOnFocus: (enabled: boolean) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -40,10 +44,14 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
   // Performance settings
   const [animationsEnabled, _setAnimationsEnabled] = useState(false);
+  
+  // Paste on Focus setting
+  const [pasteOnFocus, _setPasteOnFocus] = useState(false);
 
   useEffect(() => {
     const storedTheme = localStorage.getItem('app-theme') || 'light';
     const storedAnimations = localStorage.getItem('animations-enabled');
+    const storedPasteOnFocus = localStorage.getItem('paste-on-focus');
 
     if (storedAnimations !== null) {
         _setAnimationsEnabled(storedAnimations === 'true');
@@ -51,6 +59,10 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
         // Default to speed mode
         _setAnimationsEnabled(false);
         localStorage.setItem('animations-enabled', 'false');
+    }
+
+    if (storedPasteOnFocus !== null) {
+      _setPasteOnFocus(storedPasteOnFocus === 'true');
     }
 
     _setTheme(storedTheme);
@@ -64,6 +76,11 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const setAnimationsEnabled = (enabled: boolean) => {
     localStorage.setItem('animations-enabled', String(enabled));
     _setAnimationsEnabled(enabled);
+  }
+
+  const setPasteOnFocus = (enabled: boolean) => {
+    localStorage.setItem('paste-on-focus', String(enabled));
+    _setPasteOnFocus(enabled);
   }
 
 
@@ -99,7 +116,9 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       theme,
       setTheme,
       animationsEnabled,
-      setAnimationsEnabled
+      setAnimationsEnabled,
+      pasteOnFocus,
+      setPasteOnFocus
     }}>
       {children}
     </SettingsContext.Provider>
