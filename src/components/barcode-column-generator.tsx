@@ -120,16 +120,16 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
       if (text) {
         setInputValue(text);
         toast({
-          title: "Wklejono ze schowka",
-          description: `Wklejono ${text.length} znaków do pola 'Consignment'.`,
+          title: "Pasted from clipboard",
+          description: `Pasted ${text.length} characters into 'Consignment' field.`,
         });
       }
     } catch (err) {
       console.error('Failed to read clipboard contents: ', err);
       toast({
         variant: 'destructive',
-        title: "Wklejanie nie powiodło się",
-        description: "Nie można odczytać zawartości schowka. Proszę udzielić pozwolenia.",
+        title: "Paste failed",
+        description: "Could not read clipboard contents. Please grant permission.",
       });
     }
   };
