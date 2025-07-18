@@ -460,25 +460,25 @@ export function BarcodeGridGenerator() {
                   </div>
               </CardHeader>
               <CardContent className="p-4 pt-0">
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-1">
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">I & J</span>
-                    <span className="font-semibold text-lg">{displayStats.levelIJ}</span>
+                    <span className="font-semibold">{displayStats.levelIJ}</span>
                   </div>
                   <Separator />
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">K & L</span>
-                    <span className="font-semibold text-lg">{displayStats.levelKL}</span>
+                    <span className="font-semibold">{displayStats.levelKL}</span>
                   </div>
                   <Separator />
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Level C</span>
-                    <span className="font-semibold text-lg">{displayStats.levelC}</span>
+                    <span className="font-semibold">{displayStats.levelC}</span>
                   </div>
                   <Separator />
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Ground Floor</span>
-                    <span className="font-semibold text-lg">{displayStats.groundFloor}</span>
+                    <span className="font-semibold">{displayStats.groundFloor}</span>
                   </div>
                 </div>
               </CardContent>
