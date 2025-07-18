@@ -14,9 +14,10 @@ import { useSettings } from '@/context/settings-context';
 import { FunnyModeConfetti } from '@/components/funny-mode-confetti';
 import { AnimationSwitcher } from '@/components/animation-switcher';
 import { XmasSnowfall } from '@/components/xmas-snowfall';
+import { SantaSleigh } from '@/components/santa-sleigh';
 
 export default function Home() {
-  const { isFunnyMode, animationsEnabled, theme } = useSettings();
+  const { isFunnyMode, animationsEnabled, theme, isXmasMode } = useSettings();
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   
@@ -78,7 +79,8 @@ export default function Home() {
       <XmasSnowfall />
       <div className="flex flex-col min-h-screen bg-background text-foreground">
         <header className={cn("w-full bg-background/95 backdrop-blur-sm z-10", !isSleekTheme && "border-b border-border")}>
-          <div className="container mx-auto flex h-16 items-center justify-between p-4">
+          <div className="container mx-auto flex h-16 items-center justify-between p-4 relative">
+              {isXmasMode && <SantaSleigh />}
               <div className="flex items-center gap-3">
                 <Barcode className="h-8 w-8 text-primary" />
                 <h1 className="text-3xl font-bold text-primary">{isFunnyMode ? 'B-Code Clown' : 'BCode Maker'}</h1>

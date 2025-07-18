@@ -12,6 +12,7 @@ import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 import { Separator } from './ui/separator';
 import { format } from 'date-fns';
+import { ChristmasLights } from './christmas-lights';
 
 interface ParsedBarcode {
   value: string;
@@ -22,7 +23,7 @@ const funnyWords = ["BANANA", "POTATO", "GIGGLES", "WOBBLE", "SNICKERDOODLE", "B
 const getRandomFunnyWord = () => funnyWords[Math.floor(Math.random() * funnyWords.length)];
 
 export function BarcodeGridGenerator() {
-  const { gridHeight, gridColumns, setGridColumns, isFunnyMode, animationsEnabled } = useSettings();
+  const { gridHeight, gridColumns, setGridColumns, isFunnyMode, animationsEnabled, isXmasMode } = useSettings();
   const [inputValue, setInputValue] = useState('');
   const debouncedValue = useDebounce(inputValue, 500);
   const PREDEFINED_COLUMNS = [1, 4, 6];
@@ -394,7 +395,8 @@ export function BarcodeGridGenerator() {
   const displayStats = statistics || { levelIJ: 0, levelKL: 0, levelC: 0, groundFloor: 0 };
     
   return (
-    <Card>
+    <Card className="relative overflow-visible">
+      {isXmasMode && <ChristmasLights />}
       <CardHeader className="flex-col items-center gap-4 sm:flex-row sm:justify-between">
         <CardTitle className="text-2xl font-semibold flex items-center gap-2">
             <Boxes className="w-7 h-7" />

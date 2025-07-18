@@ -9,6 +9,7 @@ import { useSettings } from '@/context/settings-context';
 import { Button } from './ui/button';
 import { ListChecks, Printer, Lock, Unlock } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ChristmasLights } from './christmas-lights';
 
 interface BarcodeData {
   id: string;
@@ -207,7 +208,8 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
   };
 
   return (
-      <Card>
+      <Card className="relative overflow-visible">
+        {isXmasMode && <ChristmasLights />}
         <CardHeader className="flex flex-row items-center justify-between">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={() => setIsLocked(!isLocked)} className="text-muted-foreground hover:text-primary">
