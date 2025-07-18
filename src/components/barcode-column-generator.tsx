@@ -9,6 +9,7 @@ import { useSettings } from '@/context/settings-context';
 import { Button } from './ui/button';
 import { ListChecks, Printer, Lock, Unlock } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 interface BarcodeData {
   id: string;
@@ -44,7 +45,7 @@ const isValidBarcode = (code: string) => {
 };
 
 export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, setIsLocked }: BarcodeColumnGeneratorProps) {
-  const { columnRows, columnHeight } = useSettings();
+  const { columnRows, columnHeight, pasteOnFocus } = useSettings();
   const [inputValue, setInputValue] = useState('');
   
   const [allBarcodes, setAllBarcodes] = useState<BarcodeData[]>([]);
@@ -55,6 +56,7 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
   
   const [activeBarcode, setActiveBarcode] = useState<string | null>(null);
   const debouncedValue = useDebounce(inputValue, 500);
+  const { toast } = useToast();
 
   useEffect(() => {
     // Find all alphanumeric sequences in the input text
@@ -106,6 +108,29 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement> | React.ClipboardEvent<HTMLTextAreaElement>) => {
     const value = 'target' in event ? event.target.value : event.clipboardData.getData('text');
     setInputValue(value);
+  };
+
+  const handleTextareaClick = async () => {
+    setIsCollapsed(false);
+    if (!pasteOnFocus) return;
+
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text) {
+        setInputValue(text);
+        toast({
+          title: "Wklejono ze schowka",
+          description: `Wklejono ${text.length} znaków do pola 'Consignment'.`,
+        });
+      }
+    } catch (err) {
+      console.error('Failed to read clipboard contents: ', err);
+      toast({
+        variant: 'destructive',
+        title: "Wklejanie nie powiodło się",
+        description: "Nie można odczytać zawartości schowka. Proszę udzielić pozwolenia.",
+      });
+    }
   };
 
   const handlePrintAll = () => {
@@ -206,7 +231,7 @@ export function BarcodeColumnGenerator({ isCollapsed, setIsCollapsed, isLocked, 
               value={inputValue}
               onChange={handleInputChange}
               onPaste={handleInputChange}
-              onClick={() => setIsCollapsed(false)}
+              onClick={handleTextareaClick}
             />
           </div>
 

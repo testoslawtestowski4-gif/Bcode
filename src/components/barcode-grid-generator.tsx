@@ -214,7 +214,6 @@ export function BarcodeGridGenerator() {
               padding: 1rem 1.5rem;
               border-bottom: 1px solid #dee2e6;
             }
-            .level-group table { margin-top: 0; }
           </style>
         </head>
         <body>
@@ -477,16 +476,16 @@ export function BarcodeGridGenerator() {
       if (text) {
         setInputValue(text);
         toast({
-          title: "Clipboard pasted",
-          description: `Pasted ${text.length} characters from the clipboard.`,
+          title: "Wklejono ze schowka",
+          description: `Wklejono ${text.length} znaków do pola 'Container'.`,
         });
       }
     } catch (err) {
       console.error('Failed to read clipboard contents: ', err);
       toast({
         variant: 'destructive',
-        title: "Paste failed",
-        description: "Could not read content from the clipboard. Please grant permission.",
+        title: "Wklejanie nie powiodło się",
+        description: "Nie można odczytać zawartości schowka. Proszę udzielić pozwolenia.",
       });
     }
   };
@@ -524,7 +523,7 @@ export function BarcodeGridGenerator() {
                   checked={pasteOnFocus}
                   onCheckedChange={setPasteOnFocus}
               />
-              <Label htmlFor="paste-on-click">Paste on Click</Label>
+              <Label htmlFor="paste-on-click">Wklej po kliknięciu</Label>
             </div>
             <div className="flex items-center space-x-2">
                 <Switch
@@ -533,7 +532,7 @@ export function BarcodeGridGenerator() {
                     onCheckedChange={setIsFocusMode}
                     disabled={barcodes.length === 0}
                 />
-                <Label htmlFor="focus-mode">Focus Mode</Label>
+                <Label htmlFor="focus-mode">Tryb skupienia</Label>
             </div>
             <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground hidden md:inline">Columns:</span>
