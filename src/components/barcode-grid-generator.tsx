@@ -155,7 +155,7 @@ export function BarcodeGridGenerator() {
     const statsHtml = `
       <html>
         <head>
-          <title>Barcode Statistics</title>
+          <title>Barcode Generation Report</title>
           <style>
             body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 2rem; background-color: #f8f9fa; color: #212529; }
             .container { max-width: 900px; margin: auto; background: white; padding: 2.5rem; border-radius: 8px; box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
@@ -171,13 +171,12 @@ export function BarcodeGridGenerator() {
             th { background-color: #f8f9fa; font-weight: 600; }
             tbody tr:nth-child(even) { background-color: #f8f9fa; }
             tr:hover { background-color: #f1f3f5; }
-            .summary-grid { display: flex; gap: 1.5rem; margin-top: 1.5rem; flex-wrap: wrap;}
-            .summary-card { background-color: #f0f3f5; padding: 1.5rem; border-radius: 8px; text-align: center; border: 1px solid #e0e5e9; flex-grow: 1; }
-            .summary-card.total { background-color: #e3f2fd; border-color: #bbdefb; }
-            .summary-card .label { font-size: 1rem; color: #495057; margin-bottom: 0.5rem; display: block; }
-            .summary-card .count { font-size: 2.2rem; font-weight: bold; color: #343a40; }
-            .summary-card.total .count { font-size: 3rem; color: #1e88e5; }
-            .level-breakdown { display: flex; gap: 1rem; justify-content: center; }
+            .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+            .summary-card { background-color: #f0f3f5; padding: 1rem; border-radius: 8px; border: 1px solid #e0e5e9; }
+            .summary-card.total { background-color: #e3f2fd; border-color: #bbdefb; grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; }
+            .summary-card .label { font-size: 0.9rem; color: #495057; }
+            .summary-card .count { font-size: 1.8rem; font-weight: bold; color: #343a40; }
+            .summary-card.total .count { font-size: 2.5rem; color: #1e88e5; }
             .level-group { 
               margin-bottom: 2rem;
               background-color: white;
@@ -210,24 +209,21 @@ export function BarcodeGridGenerator() {
                 <span class="label">Total Containers</span>
                 <span class="count">${barcodes.length}</span>
               </div>
-            </div>
-            
-            <div class="summary-grid level-breakdown">
               <div class="summary-card">
-                <span class="label">I&J</span>
-                <span class="count">${statistics.levelIJ}</span>
+                <div class="label">I&J</div>
+                <div class="count">${statistics.levelIJ}</div>
               </div>
               <div class="summary-card">
-                <span class="label">K&L</span>
-                <span class="count">${statistics.levelKL}</span>
+                <div class="label">K&L</div>
+                <div class="count">${statistics.levelKL}</div>
               </div>
               <div class="summary-card">
-                <span class="label">Level C</span>
-                <span class="count">${statistics.levelC}</span>
+                <div class="label">Level C</div>
+                <div class="count">${statistics.levelC}</div>
               </div>
                <div class="summary-card">
-                <span class="label">Ground Floor</span>
-                <span class="count">${statistics.groundFloor}</span>
+                <div class="label">Ground Floor</div>
+                <div class="count">${statistics.groundFloor}</div>
               </div>
             </div>
 
@@ -315,14 +311,18 @@ export function BarcodeGridGenerator() {
             .summary-grid { 
               display: grid; 
               grid-template-columns: 1fr 1fr; 
-              gap: 1rem; 
+              gap: 0.5rem 1.5rem; 
               margin-top: 1rem; 
+              padding: 1rem;
+              border-radius: 8px;
+              background-color: #f8f9fa !important;
+              border: 1px solid #e9ecef;
               page-break-inside: avoid; 
             }
-            .summary-card { background-color: #f8f9fa !important; border: 1px solid #e9ecef; padding: 1rem; border-radius: 8px; }
-            .summary-card.total { grid-column: 1 / -1; background-color: #e3f2fd !important; }
-            .summary-card .label { font-size: 1rem; color: #495057; margin-bottom: 0.25rem; }
-            .summary-card .count { font-size: 1.8rem; font-weight: bold; color: #343a40; }
+            .summary-item { display: flex; justify-content: space-between; align-items: baseline; }
+            .summary-item.total { grid-column: 1 / -1; font-size: 1.1rem; border-top: 1px solid #dee2e6; padding-top: 0.5rem; margin-top: 0.5rem; }
+            .summary-item .label { font-size: 0.9rem; color: #495057; }
+            .summary-item .count { font-size: 1rem; font-weight: bold; color: #343a40; }
             
             .level-group { page-break-inside: avoid; margin-bottom: 1.5rem; }
             table { width: 100%; border-collapse: collapse; }
@@ -340,25 +340,25 @@ export function BarcodeGridGenerator() {
             
             <h2>Summary</h2>
             <div class="summary-grid">
-              <div class="summary-card total">
-                <div class="label">Total Containers</div>
-                <div class="count">${total}</div>
+              <div class="summary-item">
+                <span class="label">I&J</span>
+                <span class="count">${statistics.levelIJ}</span>
               </div>
-              <div class="summary-card">
-                <div class="label">I&J</div>
-                <div class="count">${statistics.levelIJ}</div>
+              <div class="summary-item">
+                <span class="label">K&L</span>
+                <span class="count">${statistics.levelKL}</span>
               </div>
-              <div class="summary-card">
-                <div class="label">K&L</div>
-                <div class="count">${statistics.levelKL}</div>
+              <div class="summary-item">
+                <span class="label">Level C</span>
+                <span class="count">${statistics.levelC}</span>
               </div>
-              <div class="summary-card">
-                <div class="label">Level C</div>
-                <div class="count">${statistics.levelC}</div>
+              <div class="summary-item">
+                <span class="label">Ground Floor</span>
+                <span class="count">${statistics.groundFloor}</span>
               </div>
-              <div class="summary-card">
-                <div class="label">Ground Floor</div>
-                <div class="count">${statistics.groundFloor}</div>
+              <div class="summary-item total">
+                <span class="label">Total Containers</span>
+                <span class="count">${total}</span>
               </div>
             </div>
 
