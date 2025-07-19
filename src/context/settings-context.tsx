@@ -86,7 +86,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const root = window.document.documentElement;
-    root.classList.remove('light', 'dark', 'pink-theme', 'sleek-theme');
+    root.classList.remove('light', 'dark', 'pink-theme', 'sleek-theme', 'xmas-theme');
 
     if (theme !== 'light') {
       root.classList.add(theme);

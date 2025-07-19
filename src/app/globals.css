@@ -39,38 +39,25 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
   .dark {
-    --background: 220 13% 40%;
-    --foreground: 220 13% 95%;
-    --card: 220 13% 35%;
-    --card-foreground: 220 13% 95%;
-    --popover: 220 13% 35%;
-    --popover-foreground: 220 13% 95%;
-    --primary: 210 90% 65%;
-    --primary-foreground: 210 90% 10%;
-    --secondary: 220 13% 30%;
-    --secondary-foreground: 220 13% 90%;
-    --muted: 220 13% 30%;
-    --muted-foreground: 220 13% 65%;
-    --accent: 200 90% 55%;
-    --accent-foreground: 200 90% 5%;
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 86% 97%;
-    --border: 220 13% 50%;
-    --input: 220 13% 55%;
-    --ring: 210 90% 65%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 220 13% 38%;
-    --sidebar-foreground: 220 13% 95%;
-    --sidebar-primary: 210 90% 65%;
-    --sidebar-primary-foreground: 210 90% 10%;
-    --sidebar-accent: 220 13% 45%;
-    --sidebar-accent-foreground: 220 13% 95%;
-    --sidebar-border: 220 13% 50%;
-    --sidebar-ring: 210 90% 65%;
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 216 34% 17%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217 33% 22%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 27.9% 60.5%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 85.7% 97.3%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
   }
   .pink-theme {
     --background: 350 100% 98%;
@@ -129,10 +116,31 @@
     --ring: 217 91% 60%;
     --radius: 0.5rem;
   }
-
   .sleek-theme .card {
     border: 0;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  }
+  .xmas-theme {
+    --background: 210 40% 98%;
+    --foreground: 10 30% 20%;
+    --card: 0 0% 100%;
+    --card-foreground: 10 30% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 10 30% 20%;
+    --primary: 0 65% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 120 30% 96%;
+    --secondary-foreground: 120 50% 20%;
+    --muted: 120 30% 96%;
+    --muted-foreground: 10 20% 40%;
+    --accent: 120 60% 40%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 20% 90%;
+    --input: 0 20% 90%;
+    --ring: 0 65% 50%;
+    --radius: 0.75rem;
   }
 }
 
@@ -145,7 +153,8 @@
   }
   .dark .barcode-card,
   .pink-theme .barcode-card,
-  .sleek-theme .barcode-card {
+  .sleek-theme .barcode-card,
+  .xmas-theme .barcode-card {
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
     --muted-foreground: 240 3.8% 46.1%;
@@ -153,5 +162,35 @@
   .no-animations * {
     transition: none !important;
     animation: none !important;
+  }
+}
+
+@layer utilities {
+  .snowfall {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  .snowflake {
+    position: absolute;
+    top: -5%;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: fall linear infinite;
+  }
+
+  @keyframes fall {
+    0% {
+      transform: translateY(0) rotate(0deg);
+    }
+    100% {
+      transform: translateY(105vh) rotate(360deg);
+    }
   }
 }
