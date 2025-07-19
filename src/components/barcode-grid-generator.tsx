@@ -7,13 +7,14 @@ import { GridBarcode } from '@/components/grid-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
 import { Button } from './ui/button';
-import { Boxes, BarChart2, ArrowDownToLine, ExternalLink, Printer } from 'lucide-react';
+import { Boxes, BarChart2, ArrowDownToLine, ExternalLink, Printer, ListChecks } from 'lucide-react';
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 import { Separator } from './ui/separator';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { isValidBarcode } from './barcode-column-generator';
+import { cn } from '@/lib/utils';
 
 interface ParsedBarcode {
   value: string;
@@ -188,14 +189,51 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
             th { background-color: #f8f9fa; font-weight: 600; }
             tbody tr:nth-child(even) { background-color: #f8f9fa; }
             tr:hover { background-color: #f1f3f5; }
-            .summary-container { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0; flex-wrap: wrap; gap: 1.5rem; }
-            .summary-header { display: flex; align-items: baseline; gap: 0.75rem; }
-            .summary-header .total-label { font-size: 1rem; color: #495057; }
-            .summary-header .total-count { font-size: 1.5rem; font-weight: bold; color: #343a40; }
-            .summary-details { display: flex; gap: 1.5rem; flex-wrap: wrap; }
-            .summary-item { display: flex; align-items: baseline; gap: 0.5rem; }
-            .summary-item .label { font-size: 0.9rem; color: #6c757d; }
-            .summary-item .count { font-size: 1rem; font-weight: 600; color: #343a40; }
+            .summary-container {
+                display: flex;
+                align-items: baseline;
+                justify-content: flex-start;
+                gap: 1.5rem;
+                padding: 1rem 0;
+                flex-wrap: wrap;
+                border-top: 1px solid #e9ecef;
+                border-bottom: 1px solid #e9ecef;
+            }
+            .summary-header {
+                display: flex;
+                align-items: baseline;
+                gap: 0.5rem;
+            }
+            .total-label {
+                font-size: 1.1rem;
+                color: #495057;
+                font-weight: 600;
+            }
+            .total-count {
+                font-size: 1.2rem;
+                font-weight: bold;
+                color: #343a40;
+            }
+            .summary-details {
+                display: flex;
+                gap: 1.5rem;
+                flex-wrap: wrap;
+                align-items: baseline;
+            }
+            .summary-item {
+                display: flex;
+                align-items: baseline;
+                gap: 0.4rem;
+            }
+            .summary-item .label {
+                font-size: 1rem;
+                color: #6c757d;
+            }
+            .summary-item .count {
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #343a40;
+            }
             .level-group { 
               margin-bottom: 2rem;
               background-color: white;
@@ -223,14 +261,14 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
             <h2>Summary</h2>
             <div class="summary-container">
               <div class="summary-header">
-                  <span class="total-label">Total Containers:</span>
+                  <span class="total-label">Total:</span>
                   <span class="total-count">${barcodes.length}</span>
               </div>
               <div class="summary-details">
                   <div class="summary-item"><span class="label">I&J:</span><span class="count">${statistics.levelIJ}</span></div>
                   <div class="summary-item"><span class="label">K&L:</span><span class="count">${statistics.levelKL}</span></div>
                   <div class="summary-item"><span class="label">Level C:</span><span class="count">${statistics.levelC}</span></div>
-                  <div class="summary-item"><span class="label">Ground Floor:</span><span class="count">${statistics.groundFloor}</span></div>
+                  <div class="summary-item"><span class="label">Ground:</span><span class="count">${statistics.groundFloor}</span></div>
               </div>
             </div>
 
@@ -333,9 +371,8 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
               page-break-inside: avoid;
               border-top: 1px solid #e9ecef;
               border-bottom: 1px solid #e9ecef;
-
             }
-            .summary-item { display: flex; align-items: baseline; padding: 0 0.5rem; }
+            .summary-item { display: flex; align-items: baseline; padding-right: 1rem; }
             .summary-item:not(:last-child) { border-right: 1px solid #d3d3d3; }
             .summary-item .label { color: #495057; margin-right: 0.3em; }
             .summary-item .count { font-weight: bold; color: #343a40; }
@@ -547,6 +584,15 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
               onClick={handleTextareaClick}
               onPaste={handleInputChange}
             />
+             {activeConsignmentCodeValue && (
+                <div className="mt-4 flex items-center gap-3 text-foreground">
+                    <ListChecks className="w-6 h-6" />
+                    <div className="flex items-baseline gap-2">
+                        <span className="text-lg font-semibold">Consignment:</span>
+                        <span className="text-lg font-semibold font-code">{activeConsignmentCodeValue}</span>
+                    </div>
+                </div>
+            )}
           </div>
           {showStats && (
             <Card>
@@ -570,25 +616,22 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
                   </div>
               </CardHeader>
               <CardContent className="p-4 pt-0">
-                <div className="flex flex-col gap-1">
+                <div className="grid grid-cols-2 gap-x-8 gap-y-1">
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">I & J</span>
-                    <span className="font-semibold">{displayStats.levelIJ}</span>
+                    <span className="font-semibold text-base">{displayStats.levelIJ}</span>
                   </div>
-                  <Separator />
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">K & L</span>
-                    <span className="font-semibold">{displayStats.levelKL}</span>
-                  </div>
-                  <Separator />
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Level C</span>
-                    <span className="font-semibold">{displayStats.levelC}</span>
+                    <span className="font-semibold text-base">{displayStats.levelC}</span>
                   </div>
-                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">K & L</span>
+                    <span className="font-semibold text-base">{displayStats.levelKL}</span>
+                  </div>
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Ground Floor</span>
-                    <span className="font-semibold">{displayStats.groundFloor}</span>
+                    <span className="font-semibold text-base">{displayStats.groundFloor}</span>
                   </div>
                 </div>
               </CardContent>
