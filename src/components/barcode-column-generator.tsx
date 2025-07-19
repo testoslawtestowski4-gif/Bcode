@@ -40,7 +40,7 @@ export function BarcodeColumnGenerator({
   inputValue, setInputValue, allBarcodes, setAllBarcodes,
   activeBarcode, setActiveBarcode
 }: BarcodeColumnGeneratorProps) {
-  const { columnRows, columnHeight, pasteOnFocus } = useSettings();
+  const { columnHeight, pasteOnFocus } = useSettings();
   const [barcodes, setBarcodes] = useState<BarcodeData[]>([]); // This is the displayed list
   const [filterPrefixes, setFilterPrefixes] = useState<string[]>([]);
   const [activeFilter, setActiveFilter] = useState('ALL');
@@ -216,7 +216,7 @@ export function BarcodeColumnGenerator({
             <Textarea
               placeholder="Paste your list of codes here..."
               className="w-full resize-none"
-              rows={columnRows}
+              rows={5}
               value={inputValue}
               onChange={handleInputChange}
               onPaste={handleInputChange}

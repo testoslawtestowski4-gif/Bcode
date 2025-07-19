@@ -17,7 +17,7 @@ import { Separator } from './ui/separator';
 
 export function SettingsSheet() {
   const {
-    columnRows, setColumnRows, columnHeight, setColumnHeight,
+    columnHeight, setColumnHeight,
     gridHeight, setGridHeight
   } = useSettings();
 
@@ -40,10 +40,6 @@ export function SettingsSheet() {
             <div>
                 <h4 className="text-lg font-medium mb-4">Column View</h4>
                 <div className="grid gap-6">
-                    <div className="grid grid-cols-1 items-center gap-4">
-                        <Label htmlFor="column-rows">Input Rows: {columnRows}</Label>
-                        <Slider id="column-rows" min={1} max={20} step={1} value={[columnRows]} onValueChange={(value) => setColumnRows(value[0])} />
-                    </div>
                     <div className="grid grid-cols-1 items-center gap-4">
                         <Label htmlFor="column-height">Barcode Height: {columnHeight}</Label>
                         <Slider id="column-height" min={20} max={150} step={5} value={[columnHeight]} onValueChange={(value) => setColumnHeight(value[0])} />

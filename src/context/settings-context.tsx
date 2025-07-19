@@ -4,8 +4,6 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 
 interface SettingsContextType {
   // Column View Settings
-  columnRows: number;
-  setColumnRows: (rows: number) => void;
   columnHeight: number;
   setColumnHeight: (height: number) => void;
   
@@ -32,7 +30,6 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 
 export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   // Column settings
-  const [columnRows, setColumnRows] = useState(1);
   const [columnHeight, setColumnHeight] = useState(40);
 
   // Grid settings
@@ -105,8 +102,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <SettingsContext.Provider value={{
-      columnRows,
-      setColumnRows,
       columnHeight,
       setColumnHeight,
       gridColumns,
