@@ -15,7 +15,7 @@ import { AnimationSwitcher } from '@/components/animation-switcher';
 import { Snowfall } from '@/components/snowfall';
 
 export default function Home() {
-  const { animationsEnabled, theme, setTheme } = useSettings();
+  const { animationsEnabled, theme } = useSettings();
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isXmas, setIsXmas] = useState(false);
@@ -42,16 +42,14 @@ export default function Home() {
 
     if (isChristmasTime) {
       setIsXmas(true);
-      setTheme('xmas-theme');
     }
-  }, [setTheme]);
+  }, []);
 
   useEffect(() => {
     if (consignmentInputValue.toLowerCase() === 'xmas') {
       setIsXmas(true);
-      setTheme('xmas-theme');
     }
-  }, [consignmentInputValue, setTheme]);
+  }, [consignmentInputValue]);
 
 
   useEffect(() => {
