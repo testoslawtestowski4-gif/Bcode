@@ -22,9 +22,10 @@ interface ParsedBarcode {
 
 interface BarcodeGridGeneratorProps {
   onConsignmentCodeDetected: (code: string) => void;
+  activeConsignmentCodeValue: string | null;
 }
 
-export function BarcodeGridGenerator({ onConsignmentCodeDetected }: BarcodeGridGeneratorProps) {
+export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignmentCodeValue }: BarcodeGridGeneratorProps) {
   const { gridHeight, gridColumns, setGridColumns, animationsEnabled, pasteOnFocus, setPasteOnFocus } = useSettings();
   const [inputValue, setInputValue] = useState('');
   const debouncedValue = useDebounce(inputValue, 500);
@@ -158,6 +159,12 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected }: BarcodeGridG
         </table>
       </div>
     `).join('');
+    
+    const consignmentHtml = activeConsignmentCodeValue ? `
+    <div class="consignment-info">
+        <span class="label">Consignment Code:</span>
+        <span class="value">${activeConsignmentCodeValue}</span>
+    </div>` : '';
   
     const statsHtml = `
       <html>
@@ -166,44 +173,27 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected }: BarcodeGridG
           <style>
             body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 2rem; background-color: #f8f9fa; color: #212529; }
             .container { max-width: 900px; margin: auto; background: white; padding: 2.5rem; border-radius: 8px; box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
-            .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e9ecef; padding-bottom: 1.5rem; margin-bottom: 1rem; }
+            .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e9ecef; padding-bottom: 1.5rem; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem; }
             h1 { color: #343a40; margin: 0; font-size: 2rem; }
             h2 { color: #495057; border-bottom: 1px solid #dee2e6; padding-bottom: 0.5rem; margin-top: 2.5rem; margin-bottom: 1.5rem; }
             h3 { color: #495057; margin: 0; font-size: 1.2rem; }
-            .time-info { text-align: right; }
-            .time-info .date { font-size: 1rem; color: #6c757d; }
-            .time-info .time { font-size: 2.5rem; font-weight: bold; color: #343a40; }
+            .meta-info { text-align: right; }
+            .meta-info .date, .meta-info .time { font-size: 1rem; color: #6c757d; }
+            .meta-info .time { font-weight: bold; }
+            .consignment-info { font-size: 1.1rem; color: #495057; background-color: #e9ecef; padding: 0.5rem 1rem; border-radius: 6px; }
+            .consignment-info .label { font-weight: 600; }
+            .consignment-info .value { font-family: monospace; }
             table { width: 100%; border-collapse: collapse; }
             th, td { text-align: left; padding: 0.8rem 1rem; border-bottom: 1px solid #e9ecef; }
             th { background-color: #f8f9fa; font-weight: 600; }
             tbody tr:nth-child(even) { background-color: #f8f9fa; }
             tr:hover { background-color: #f1f3f5; }
-            .summary-container {
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              padding: 0.75rem 1rem;
-              background-color: #f8f9fa;
-              border-radius: 8px;
-              border: 1px solid #e9ecef;
-            }
-            .summary-header {
-                display: flex;
-                align-items: baseline;
-                gap: 0.75rem;
-            }
+            .summary-container { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0; flex-wrap: wrap; gap: 1.5rem; }
+            .summary-header { display: flex; align-items: baseline; gap: 0.75rem; }
             .summary-header .total-label { font-size: 1rem; color: #495057; }
             .summary-header .total-count { font-size: 1.5rem; font-weight: bold; color: #343a40; }
-            .summary-details {
-                display: flex;
-                gap: 1.5rem;
-                flex-wrap: wrap;
-            }
-            .summary-item {
-                display: flex;
-                align-items: baseline;
-                gap: 0.5rem;
-            }
+            .summary-details { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+            .summary-item { display: flex; align-items: baseline; gap: 0.5rem; }
             .summary-item .label { font-size: 0.9rem; color: #6c757d; }
             .summary-item .count { font-size: 1rem; font-weight: 600; color: #343a40; }
             .level-group { 
@@ -214,20 +204,19 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected }: BarcodeGridG
               box-shadow: 0 4px 6px rgba(0,0,0,0.05);
               overflow: hidden;
             }
-            .level-header {
-              background-color: #f8f9fa;
-              padding: 1rem 1.5rem;
-              border-bottom: 1px solid #dee2e6;
-            }
+            .level-header { background-color: #f8f9fa; padding: 1rem 1.5rem; border-bottom: 1px solid #dee2e6; }
           </style>
         </head>
         <body>
           <div class="container">
             <div class="header">
-                <h1>Barcode Generation Report</h1>
-                <div class="time-info">
-                    <div class="date">${generationDate}</div>
-                    <div class="time">${generationTime}</div>
+                <div>
+                  <h1>Barcode Generation Report</h1>
+                  ${consignmentHtml}
+                </div>
+                <div class="meta-info">
+                    <div class="date">Date: ${generationDate}</div>
+                    <div class="time">Time: ${generationTime}</div>
                 </div>
             </div>
             
@@ -238,22 +227,10 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected }: BarcodeGridG
                   <span class="total-count">${barcodes.length}</span>
               </div>
               <div class="summary-details">
-                  <div class="summary-item">
-                      <span class="label">I&J:</span>
-                      <span class="count">${statistics.levelIJ}</span>
-                  </div>
-                  <div class="summary-item">
-                      <span class="label">K&L:</span>
-                      <span class="count">${statistics.levelKL}</span>
-                  </div>
-                  <div class="summary-item">
-                      <span class="label">Level C:</span>
-                      <span class="count">${statistics.levelC}</span>
-                  </div>
-                  <div class="summary-item">
-                      <span class="label">Ground Floor:</span>
-                      <span class="count">${statistics.groundFloor}</span>
-                  </div>
+                  <div class="summary-item"><span class="label">I&J:</span><span class="count">${statistics.levelIJ}</span></div>
+                  <div class="summary-item"><span class="label">K&L:</span><span class="count">${statistics.levelKL}</span></div>
+                  <div class="summary-item"><span class="label">Level C:</span><span class="count">${statistics.levelC}</span></div>
+                  <div class="summary-item"><span class="label">Ground Floor:</span><span class="count">${statistics.groundFloor}</span></div>
               </div>
             </div>
 
@@ -315,6 +292,12 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected }: BarcodeGridG
         </table>
       </div>
     `).join('');
+    
+    const consignmentHtml = activeConsignmentCodeValue ? `
+    <div class="summary-item">
+      <span class="label">Consignment:</span>
+      <span class="count">${activeConsignmentCodeValue}</span>
+    </div>` : '';
 
     const statsHtml = `
       <html>
@@ -352,14 +335,8 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected }: BarcodeGridG
               border-bottom: 1px solid #e9ecef;
 
             }
-            .summary-item {
-              display: flex;
-              align-items: baseline;
-              padding: 0 0.5rem;
-            }
-            .summary-item:not(:last-child) {
-              border-right: 1px solid #d3d3d3;
-            }
+            .summary-item { display: flex; align-items: baseline; padding: 0 0.5rem; }
+            .summary-item:not(:last-child) { border-right: 1px solid #d3d3d3; }
             .summary-item .label { color: #495057; margin-right: 0.3em; }
             .summary-item .count { font-weight: bold; color: #343a40; }
             
@@ -383,22 +360,11 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected }: BarcodeGridG
                     <span class="label">Total:</span>
                     <span class="count">${total}</span>
                 </div>
-                <div class="summary-item">
-                    <span class="label">I&J:</span>
-                    <span class="count">${statistics.levelIJ}</span>
-                </div>
-                <div class="summary-item">
-                    <span class="label">K&L:</span>
-                    <span class="count">${statistics.levelKL}</span>
-                </div>
-                <div class="summary-item">
-                    <span class="label">Level C:</span>
-                    <span class="count">${statistics.levelC}</span>
-                </div>
-                <div class="summary-item">
-                    <span class="label">Ground:</span>
-                    <span class="count">${statistics.groundFloor}</span>
-                </div>
+                ${consignmentHtml}
+                <div class="summary-item"><span class="label">I&J:</span><span class="count">${statistics.levelIJ}</span></div>
+                <div class="summary-item"><span class="label">K&L:</span><span class="count">${statistics.levelKL}</span></div>
+                <div class="summary-item"><span class="label">Level C:</span><span class="count">${statistics.levelC}</span></div>
+                <div class="summary-item"><span class="label">Ground:</span><span class="count">${statistics.groundFloor}</span></div>
             </div>
 
             <h2>Barcode Details</h2>

@@ -98,6 +98,8 @@ export default function Home() {
   const handleConsignmentCodeDetected = (code: string) => {
     if (!isValidBarcode(code)) return;
 
+    let newActiveId = null;
+
     setAllConsignmentBarcodes(prevBarcodes => {
       const existingBarcode = prevBarcodes.find(b => b.value === code);
       let newBarcodes = [...prevBarcodes];
@@ -106,21 +108,24 @@ export default function Home() {
         // Move existing barcode to the top
         newBarcodes = newBarcodes.filter(b => b.id !== existingBarcode.id);
         newBarcodes.unshift(existingBarcode);
+        newActiveId = existingBarcode.id;
       } else {
         // Add new barcode to the top
         const newBarcode: BarcodeData = { id: `${code}-${Date.now()}`, value: code };
         newBarcodes.unshift(newBarcode);
+        newActiveId = newBarcode.id;
       }
       return newBarcodes;
     });
 
-    // We need to derive the ID to set it as active.
-    // This is a bit tricky since ID can be new. Let's find it.
-    const barcodeToActivate = allConsignmentBarcodes.find(b => b.value === code) || { id: `${code}-${Date.now()}` };
-    setActiveConsignmentBarcode(barcodeToActivate.id);
+    if (newActiveId) {
+      setActiveConsignmentBarcode(newActiveId);
+    }
+    
     setIsConsignmentCollapsed(false); // Ensure the panel is visible
   };
-
+  
+  const activeConsignmentCodeValue = allConsignmentBarcodes.find(b => b.id === activeConsignmentBarcode)?.value || null;
 
   return (
     <>
@@ -159,7 +164,10 @@ export default function Home() {
                     activeBarcode={activeConsignmentBarcode}
                     setActiveBarcode={setActiveConsignmentBarcode}
                 />
-                <BarcodeGridGenerator onConsignmentCodeDetected={handleConsignmentCodeDetected} />
+                <BarcodeGridGenerator 
+                  onConsignmentCodeDetected={handleConsignmentCodeDetected} 
+                  activeConsignmentCodeValue={activeConsignmentCodeValue}
+                />
             </MainLayout>
         </main>
         {!isSleekTheme && (
