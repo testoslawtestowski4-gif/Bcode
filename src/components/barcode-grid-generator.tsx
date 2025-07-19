@@ -27,7 +27,10 @@ interface BarcodeGridGeneratorProps {
 }
 
 export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignmentCodeValue }: BarcodeGridGeneratorProps) {
-  const { gridHeight, gridColumns, setGridColumns, animationsEnabled, pasteOnFocus, setPasteOnFocus } = useSettings();
+  const { 
+    gridHeight, gridColumns, setGridColumns, animationsEnabled, 
+    pasteOnFocus, setPasteOnFocus, focusModeThreshold, focusModeVisibleRows 
+  } = useSettings();
   const [inputValue, setInputValue] = useState('');
   const debouncedValue = useDebounce(inputValue, 500);
   const PREDEFINED_COLUMNS = [1, 4, 6];
@@ -193,7 +196,7 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
                 display: flex;
                 align-items: baseline;
                 justify-content: flex-start;
-                gap: 1.5rem;
+                gap: 0.5rem;
                 padding: 1rem 0;
                 flex-wrap: wrap;
                 border-top: 1px solid #e9ecef;
@@ -203,6 +206,7 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
                 display: flex;
                 align-items: baseline;
                 gap: 0.5rem;
+                padding-right: 1.5rem;
             }
             .total-label {
                 font-size: 1.1rem;
@@ -426,13 +430,13 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
 
 
   useEffect(() => {
-    if (barcodes.length > 15) {
+    if (barcodes.length > focusModeThreshold) {
       setIsFocusMode(true);
     } else {
       setIsFocusMode(false);
     }
     setFocusedRow(0);
-  }, [barcodes.length]);
+  }, [barcodes.length, focusModeThreshold]);
 
   useEffect(() => {
     if (!isFocusMode || barcodes.length === 0) return;
@@ -443,11 +447,13 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
         return;
       }
       
+      const totalRows = Math.ceil(barcodes.length / gridColumns);
+      const rowChunks = Math.ceil(totalRows / focusModeVisibleRows);
+
       if (event.code === 'Space') {
         event.preventDefault();
-        const totalRows = Math.ceil(barcodes.length / gridColumns);
         if (totalRows > 0) {
-          setFocusedRow(prevRow => (prevRow + 1) % totalRows);
+          setFocusedRow(prevRow => (prevRow + 1) % rowChunks);
         }
       }
     };
@@ -457,18 +463,18 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isFocusMode, barcodes.length, gridColumns]);
+  }, [isFocusMode, barcodes.length, gridColumns, focusModeVisibleRows]);
 
   useEffect(() => {
     if (isFocusMode) {
-      const firstIndexOfRow = focusedRow * gridColumns;
-      const rowElement = rowRefs.current[firstIndexOfRow];
+      const firstIndexOfChunk = focusedRow * focusModeVisibleRows * gridColumns;
+      const rowElement = rowRefs.current[firstIndexOfChunk];
       rowElement?.scrollIntoView({
         behavior: 'smooth',
         block: 'center',
       });
     }
-  }, [focusedRow, isFocusMode, gridColumns]);
+  }, [focusedRow, isFocusMode, gridColumns, focusModeVisibleRows]);
 
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement> | React.ClipboardEvent<HTMLTextAreaElement>) => {
@@ -647,7 +653,8 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
             >
               {barcodes.map((value, index) => {
                 const rowIndex = Math.floor(index / gridColumns);
-                const isBlurred = isFocusMode && rowIndex !== focusedRow;
+                const focusChunkIndex = Math.floor(rowIndex / focusModeVisibleRows);
+                const isBlurred = isFocusMode && focusChunkIndex !== focusedRow;
                 const isOneColumn = gridColumns === 1;
 
                 return (
@@ -662,7 +669,7 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
                     index={index}
                     height={currentGridHeight}
                     isBlurred={isBlurred}
-                    onClick={() => isFocusMode && setFocusedRow(rowIndex)}
+                    onClick={() => isFocusMode && setFocusedRow(focusChunkIndex)}
                     isOneColumn={isOneColumn}
                   />
                 );

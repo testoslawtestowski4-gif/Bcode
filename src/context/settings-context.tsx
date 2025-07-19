@@ -12,6 +12,10 @@ interface SettingsContextType {
   setGridColumns: (columns: number) => void;
   gridHeight: number;
   setGridHeight: (height: number) => void;
+  focusModeThreshold: number;
+  setFocusModeThreshold: (threshold: number) => void;
+  focusModeVisibleRows: number;
+  setFocusModeVisibleRows: (rows: number) => void;
 
   // Theme Settings
   theme: string;
@@ -35,6 +39,8 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   // Grid settings
   const [gridColumns, setGridColumns] = useState(6);
   const [gridHeight, setGridHeight] = useState(55);
+  const [focusModeThreshold, _setFocusModeThreshold] = useState(15);
+  const [focusModeVisibleRows, _setFocusModeVisibleRows] = useState(1);
 
   // Theme settings
   const [theme, _setTheme] = useState('light');
@@ -49,17 +55,26 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     const storedTheme = localStorage.getItem('app-theme') || 'light';
     const storedAnimations = localStorage.getItem('animations-enabled');
     const storedPasteOnFocus = localStorage.getItem('paste-on-focus');
+    const storedFocusThreshold = localStorage.getItem('focus-mode-threshold');
+    const storedFocusRows = localStorage.getItem('focus-mode-visible-rows');
 
     if (storedAnimations !== null) {
         _setAnimationsEnabled(storedAnimations === 'true');
     } else {
-        // Default to speed mode
         _setAnimationsEnabled(false);
         localStorage.setItem('animations-enabled', 'false');
     }
 
     if (storedPasteOnFocus !== null) {
       _setPasteOnFocus(storedPasteOnFocus === 'true');
+    }
+
+    if (storedFocusThreshold !== null) {
+      _setFocusModeThreshold(Number(storedFocusThreshold));
+    }
+
+    if (storedFocusRows !== null) {
+      _setFocusModeVisibleRows(Number(storedFocusRows));
     }
 
     _setTheme(storedTheme);
@@ -79,6 +94,16 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('paste-on-focus', String(enabled));
     _setPasteOnFocus(enabled);
   }
+
+  const setFocusModeThreshold = (threshold: number) => {
+    localStorage.setItem('focus-mode-threshold', String(threshold));
+    _setFocusModeThreshold(threshold);
+  };
+
+  const setFocusModeVisibleRows = (rows: number) => {
+    localStorage.setItem('focus-mode-visible-rows', String(rows));
+    _setFocusModeVisibleRows(rows);
+  };
 
 
   useEffect(() => {
@@ -108,6 +133,10 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       setGridColumns,
       gridHeight,
       setGridHeight,
+      focusModeThreshold,
+      setFocusModeThreshold,
+      focusModeVisibleRows,
+      setFocusModeVisibleRows,
       theme,
       setTheme,
       animationsEnabled,

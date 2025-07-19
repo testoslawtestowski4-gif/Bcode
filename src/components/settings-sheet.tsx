@@ -14,11 +14,14 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { useSettings } from '@/context/settings-context';
 import { Separator } from './ui/separator';
+import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 
 export function SettingsSheet() {
   const {
     columnHeight, setColumnHeight,
-    gridHeight, setGridHeight
+    gridHeight, setGridHeight,
+    focusModeThreshold, setFocusModeThreshold,
+    focusModeVisibleRows, setFocusModeVisibleRows
   } = useSettings();
 
   return (
@@ -55,6 +58,33 @@ export function SettingsSheet() {
                     <div className="grid grid-cols-1 items-center gap-4">
                         <Label htmlFor="grid-height">Barcode Height: {gridHeight}</Label>
                         <Slider id="grid-height" min={10} max={100} step={5} value={[gridHeight]} onValueChange={(value) => setGridHeight(value[0])} />
+                    </div>
+                </div>
+            </div>
+
+            <Separator />
+
+            <div>
+                <h4 className="text-lg font-medium mb-4">Focus Mode</h4>
+                <div className="space-y-6">
+                    <div className="grid grid-cols-1 items-center gap-4">
+                        <Label htmlFor="focus-threshold">Auto-enable threshold: {focusModeThreshold} barcodes</Label>
+                        <Slider id="focus-threshold" min={10} max={50} step={1} value={[focusModeThreshold]} onValueChange={(value) => setFocusModeThreshold(value[0])} />
+                    </div>
+                    <div className="grid grid-cols-1 items-center gap-4">
+                        <Label>Visible rows in Focus Mode</Label>
+                        <RadioGroup 
+                            value={String(focusModeVisibleRows)} 
+                            onValueChange={(value) => setFocusModeVisibleRows(Number(value))}
+                            className="flex space-x-4"
+                        >
+                            {[1, 2, 3, 4].map(rows => (
+                                <div key={rows} className="flex items-center space-x-2">
+                                    <RadioGroupItem value={String(rows)} id={`rows-${rows}`} />
+                                    <Label htmlFor={`rows-${rows}`}>{rows}</Label>
+                                </div>
+                            ))}
+                        </RadioGroup>
                     </div>
                 </div>
             </div>
