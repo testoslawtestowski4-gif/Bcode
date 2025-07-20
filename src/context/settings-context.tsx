@@ -34,11 +34,11 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 
 export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   // Column settings
-  const [columnHeight, setColumnHeight] = useState(40);
+  const [columnHeight, _setColumnHeight] = useState(40);
 
   // Grid settings
   const [gridColumns, setGridColumns] = useState(6);
-  const [gridHeight, setGridHeight] = useState(55);
+  const [gridHeight, _setGridHeight] = useState(55);
   const [focusModeThreshold, _setFocusModeThreshold] = useState(15);
   const [focusModeVisibleRows, _setFocusModeVisibleRows] = useState(1);
 
@@ -57,6 +57,8 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     const storedPasteOnFocus = localStorage.getItem('paste-on-focus');
     const storedFocusThreshold = localStorage.getItem('focus-mode-threshold');
     const storedFocusRows = localStorage.getItem('focus-mode-visible-rows');
+    const storedColumnHeight = localStorage.getItem('column-height');
+    const storedGridHeight = localStorage.getItem('grid-height');
 
     if (storedAnimations !== null) {
         _setAnimationsEnabled(storedAnimations === 'true');
@@ -75,6 +77,14 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
     if (storedFocusRows !== null) {
       _setFocusModeVisibleRows(Number(storedFocusRows));
+    }
+
+    if (storedColumnHeight !== null) {
+      _setColumnHeight(Number(storedColumnHeight));
+    }
+    
+    if (storedGridHeight !== null) {
+      _setGridHeight(Number(storedGridHeight));
     }
 
     _setTheme(storedTheme);
@@ -103,6 +113,16 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const setFocusModeVisibleRows = (rows: number) => {
     localStorage.setItem('focus-mode-visible-rows', String(rows));
     _setFocusModeVisibleRows(rows);
+  };
+
+  const setColumnHeight = (height: number) => {
+    localStorage.setItem('column-height', String(height));
+    _setColumnHeight(height);
+  };
+
+  const setGridHeight = (height: number) => {
+    localStorage.setItem('grid-height', String(height));
+    _setGridHeight(height);
   };
 
 
