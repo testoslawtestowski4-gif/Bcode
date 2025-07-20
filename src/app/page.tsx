@@ -172,7 +172,13 @@ export default function Home() {
         </main>
         {!isSleekTheme && (
           <footer className="border-t mt-12 py-6">
-            <div className="container flex flex-col items-center justify-center gap-4 md:h-24 md:flex-row">
+            <div className="container flex flex-col items-center justify-center gap-4 text-center">
+              <p className="text-sm text-muted-foreground">
+                Designed and developed by Damian Suchecki.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                For suggestions, contact <a href="mailto:Suchecki.Damian@gmail.com" className="underline hover:text-primary">Suchecki.Damian@gmail.com</a>.
+              </p>
             </div>
           </footer>
         )}
