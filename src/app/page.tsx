@@ -27,10 +27,9 @@ export default function Home() {
 
   const isSleekTheme = theme === 'sleek-theme';
 
-  // When animations are disabled, the consignment view is always visible and locked.
+  // When animations are disabled, the consignment view is always visible.
   const isSpeedMode = !animationsEnabled;
   const [isConsignmentCollapsed, setIsConsignmentCollapsed] = useState(isSpeedMode ? false : true);
-  const [isConsignmentLocked, setIsConsignmentLocked] = useState(isSpeedMode);
 
   useEffect(() => {
     const today = new Date();
@@ -66,15 +65,13 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    // In speed mode, the panel is always open and locked.
+    // In speed mode, the panel is always open.
     if (isSpeedMode) {
       setIsConsignmentCollapsed(false);
-      setIsConsignmentLocked(true);
       return;
     }
     
     const handleClickOutside = (event: MouseEvent) => {
-      if (isConsignmentLocked) return;
       const columnEl = document.getElementById('consignment-view');
       const gridEl = document.getElementById('container-view');
       
@@ -86,7 +83,7 @@ export default function Home() {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isConsignmentLocked, isSpeedMode]);
+  }, [isSpeedMode]);
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -155,8 +152,6 @@ export default function Home() {
                 <BarcodeColumnGenerator 
                     isCollapsed={isConsignmentCollapsed}
                     setIsCollapsed={setIsConsignmentCollapsed}
-                    isLocked={isConsignmentLocked}
-                    setIsLocked={setIsConsignmentLocked}
                     inputValue={consignmentInputValue}
                     setInputValue={setConsignmentInputValue}
                     allBarcodes={allConsignmentBarcodes}
@@ -174,7 +169,7 @@ export default function Home() {
           <footer className="border-t mt-12 py-6">
             <div className="container flex flex-col items-center justify-center gap-4 text-center">
                 <p className="text-sm text-muted-foreground">
-                  © Damian Suchecki · ✉ <a href="mailto:suchecki.damian@gmail.com" className="underline hover:text-primary">suchecki.damian@gmail.com</a>
+                  © <a href="mailto:suchecki.damian@gmail.com" className="underline hover:text-primary">Damian Suchecki</a> · ✉ suchecki.damian@gmail.com
                 </p>
             </div>
           </footer>

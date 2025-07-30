@@ -7,7 +7,7 @@ import { InteractiveBarcode } from '@/components/interactive-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
 import { Button } from './ui/button';
-import { ListChecks, Printer, Lock, Unlock } from 'lucide-react';
+import { ListChecks, Printer } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export interface BarcodeData {
@@ -18,8 +18,6 @@ export interface BarcodeData {
 interface BarcodeColumnGeneratorProps {
   isCollapsed: boolean;
   setIsCollapsed: (isCollapsed: boolean) => void;
-  isLocked: boolean;
-  setIsLocked: (isLocked: boolean) => void;
   // Lifted state
   inputValue: string;
   setInputValue: Dispatch<SetStateAction<string>>;
@@ -37,7 +35,7 @@ export const isValidBarcode = (code: string) => {
 };
 
 export function BarcodeColumnGenerator({ 
-  isCollapsed, setIsCollapsed, isLocked, setIsLocked,
+  isCollapsed, setIsCollapsed,
   inputValue, setInputValue, allBarcodes, setAllBarcodes,
   activeBarcode, setActiveBarcode
 }: BarcodeColumnGeneratorProps) {
@@ -191,16 +189,10 @@ export function BarcodeColumnGenerator({
   return (
       <Card className="relative overflow-visible">
         <CardHeader className="flex flex-row items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => setIsLocked(!isLocked)} className="text-muted-foreground hover:text-primary">
-              {isLocked ? <Lock className="w-5 h-5" /> : <Unlock className="w-5 h-5" />}
-              <span className="sr-only">{isLocked ? 'Unlock View' : 'Lock View'}</span>
-            </Button>
-            <CardTitle className="text-2xl font-semibold flex items-center gap-2">
-                <ListChecks className="w-7 h-7" />
-                Consignment
-            </CardTitle>
-          </div>
+          <CardTitle className="text-2xl font-semibold flex items-center gap-2">
+              <ListChecks className="w-7 h-7" />
+              Consignment
+          </CardTitle>
           <Button 
               variant="outline"
               size="icon"
