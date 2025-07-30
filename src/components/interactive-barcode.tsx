@@ -22,13 +22,19 @@ interface InteractiveBarcodeProps {
   printOptions?: PrintOptions;
 }
 
+const defaultPrintOptions: PrintOptions = {
+  fontSize: 140,
+  fontWeight: true,
+  orientation: 'landscape',
+};
+
 export function InteractiveBarcode({
   value,
   isActive,
   onClick,
   height = 40,
   isInteractive = true,
-  printOptions = { fontSize: 140, fontWeight: true, orientation: 'landscape' },
+  printOptions = defaultPrintOptions,
 }: InteractiveBarcodeProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
@@ -86,8 +92,8 @@ export function InteractiveBarcode({
                   font-family: sans-serif;
               }
               .printable-content {
-                  font-size: 140pt;
-                  font-weight: bold;
+                  font-size: ${printOptions.fontSize}pt;
+                  font-weight: ${printOptions.fontWeight ? 'bold' : 'normal'};
                   text-align: center;
               }
             </style>
