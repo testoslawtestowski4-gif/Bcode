@@ -1,13 +1,19 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Source_Code_Pro } from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
-import { SettingsProvider, useSettings } from '@/context/settings-context';
-import { cn } from '@/lib/utils';
+import { SettingsProvider } from '@/context/settings-context';
+import { AppBody } from '@/components/app-body';
 
 const inter = Inter({ 
   subsets: ['latin'],
   variable: '--font-sans',
+});
+
+const sourceCodePro = Source_Code_Pro({
+  subsets: ['latin'],
+  variable: '--font-code',
+  weight: ['400', '500'],
 });
 
 export const metadata: Metadata = {
@@ -15,28 +21,6 @@ export const metadata: Metadata = {
   description: "A modern barcode generator.",
 };
 
-// This is a client component that consumes the settings context and renders the <body> tag.
-function AppBody({ children }: { children: React.ReactNode }) {
-  'use client';
-
-  const { theme, animationsEnabled } = useSettings();
-
-  return (
-    <body
-      className={cn(
-        'min-h-screen bg-background font-sans antialiased',
-        inter.variable,
-        theme,
-        !animationsEnabled && 'no-animations'
-      )}
-    >
-        {children}
-        <Toaster />
-    </body>
-  );
-}
-
-// This remains a server component. It provides the context but does not use client-side hooks.
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -48,6 +32,7 @@ export default function RootLayout({
       <SettingsProvider>
         <AppBody>
           {children}
+          <Toaster />
         </AppBody>
       </SettingsProvider>
     </html>
