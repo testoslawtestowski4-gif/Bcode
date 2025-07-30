@@ -488,6 +488,10 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
       onConsignmentCodeDetected(validConsignmentCodes[validConsignmentCodes.length - 1]);
     }
   };
+  
+  const handleScrollToGrid = () => {
+    gridContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   const handleTextareaClick = async () => {
     if (!pasteOnFocus) return;
@@ -507,6 +511,9 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
         if (validConsignmentCodes.length > 0) {
           onConsignmentCodeDetected(validConsignmentCodes[validConsignmentCodes.length - 1]);
         }
+        
+        // Wait for state to update and then scroll
+        setTimeout(handleScrollToGrid, 0);
       }
     } catch (err) {
       console.error('Failed to read clipboard contents: ', err);
@@ -516,10 +523,6 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
         description: "Could not read clipboard contents. Please grant permission.",
       });
     }
-  };
-
-  const handleScrollToGrid = () => {
-    gridContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   const currentGridHeight = gridColumns === 1 ? 86 : gridHeight;
