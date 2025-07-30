@@ -179,27 +179,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('print-orientation', orientation);
     _setPrintOrientation(orientation);
   }
-
-
-  useEffect(() => {
-    const root = window.document.documentElement;
-    root.classList.remove('light', 'dark', 'pink-theme', 'sleek-theme', 'classic-blue-theme');
-
-    if (theme !== 'light') {
-      root.classList.add(theme);
-    }
-  }, [theme]);
   
-  useEffect(() => {
-    const root = window.document.documentElement;
-    if (animationsEnabled) {
-      root.classList.remove('no-animations');
-    } else {
-      root.classList.add('no-animations');
-    }
-  }, [animationsEnabled]);
-
-
   return (
     <SettingsContext.Provider value={{
       columnHeight,

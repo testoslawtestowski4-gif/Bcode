@@ -121,7 +121,7 @@
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
   }
   .classic-blue-theme {
-    --background: 217 91% 55%;
+    --background: 225 73% 47%;
     --foreground: 210 40% 98%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
@@ -142,9 +142,6 @@
     --ring: 217 91% 60%;
     --radius: 0.5rem;
   }
-  .classic-blue-theme .barcode-card {
-    --card-foreground: 222 47% 11%;
-  }
 }
 
 @layer base {
@@ -154,6 +151,14 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  .classic-blue-theme body {
+    background-image: linear-gradient(to right top, #1e40af, #1b2c64, #0284c7);
+  }
+  .classic-blue-theme .bg-background {
+    background-color: transparent !important;
+  }
+
   .dark .barcode-card,
   .pink-theme .barcode-card,
   .sleek-theme .barcode-card,
