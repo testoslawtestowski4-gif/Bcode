@@ -247,6 +247,26 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
               overflow: hidden;
             }
             .level-header { background-color: #f8f9fa; padding: 1rem 1.5rem; border-bottom: 1px solid #dee2e6; }
+            .print-button {
+                background-color: #007bff;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                cursor: pointer;
+                border-radius: 5px;
+            }
+            @media print {
+                body { padding: 0.5rem; background-color: #ffffff; }
+                .container { box-shadow: none; border: none; padding: 0; }
+                .no-print { display: none; }
+                .level-group { page-break-inside: avoid; }
+                tr:hover { background-color: transparent; }
+            }
           </style>
         </head>
         <body>
@@ -256,7 +276,8 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
                   <h1>Barcode Generation Report</h1>
                   ${consignmentHtml}
                 </div>
-                <div class="meta-info">
+                <div class="meta-info no-print">
+                    <button class="print-button" onclick="window.print()">Print Report</button>
                     <div class="date">Date: ${generationDate}</div>
                     <div class="time">Time: ${generationTime}</div>
                 </div>
