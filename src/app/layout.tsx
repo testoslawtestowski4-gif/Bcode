@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   description: "A modern barcode generator.",
 };
 
+// This is a client component that consumes the settings context and renders the <body> tag.
 function AppBody({ children }: { children: React.ReactNode }) {
   'use client';
 
@@ -35,6 +36,7 @@ function AppBody({ children }: { children: React.ReactNode }) {
   );
 }
 
+// This remains a server component. It provides the context but does not use client-side hooks.
 export default function RootLayout({
   children,
 }: Readonly<{
