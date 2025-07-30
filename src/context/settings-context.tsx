@@ -37,7 +37,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const [columnHeight, _setColumnHeight] = useState(40);
 
   // Grid settings
-  const [gridColumns, setGridColumns] = useState(6);
+  const [gridColumns, _setGridColumns] = useState(6);
   const [gridHeight, _setGridHeight] = useState(55);
   const [focusModeThreshold, _setFocusModeThreshold] = useState(15);
   const [focusModeVisibleRows, _setFocusModeVisibleRows] = useState(1);
@@ -59,6 +59,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     const storedFocusRows = localStorage.getItem('focus-mode-visible-rows');
     const storedColumnHeight = localStorage.getItem('column-height');
     const storedGridHeight = localStorage.getItem('grid-height');
+    const storedGridColumns = localStorage.getItem('grid-columns');
 
     if (storedAnimations !== null) {
         _setAnimationsEnabled(storedAnimations === 'true');
@@ -85,6 +86,10 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     
     if (storedGridHeight !== null) {
       _setGridHeight(Number(storedGridHeight));
+    }
+
+    if (storedGridColumns !== null) {
+      _setGridColumns(Number(storedGridColumns));
     }
 
     _setTheme(storedTheme);
@@ -123,6 +128,11 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const setGridHeight = (height: number) => {
     localStorage.setItem('grid-height', String(height));
     _setGridHeight(height);
+  };
+  
+  const setGridColumns = (columns: number) => {
+    localStorage.setItem('grid-columns', String(columns));
+    _setGridColumns(columns);
   };
 
 
