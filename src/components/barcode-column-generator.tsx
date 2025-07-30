@@ -138,39 +138,33 @@ export function BarcodeColumnGenerator({
                 <head>
                     <title>Print All Barcodes</title>
                     <style>
-                        @media print {
-                            @page { size: ${printOrientation}; margin: 0mm; }
-                            body {
-                                display: flex;
-                                flex-direction: column;
-                                margin: 0;
-                                font-family: sans-serif;
-                            }
-                            .printable-content {
-                                page-break-after: always;
-                                font-size: ${printFontSize}pt;
-                                font-weight: ${printFontWeight ? 'bold' : 'normal'};
-                                text-align: center;
-                                height: 100vh;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                            }
-                            .printable-content:last-child {
-                                page-break-after: auto;
-                            }
+                        body { 
+                            margin: 0;
+                            font-family: sans-serif;
                         }
-                        body { font-family: sans-serif; }
                         .printable-content {
-                            font-size: 40pt;
-                            font-weight: bold;
+                            font-size: ${printFontSize}pt;
+                            font-weight: ${printFontWeight ? 'bold' : 'normal'};
                             text-align: center;
-                            padding: 40px 0;
-                            border-bottom: 2px solid #ccc;
                             height: 100vh;
                             display: flex;
                             align-items: center;
                             justify-content: center;
+                            border-bottom: 2px solid #ccc;
+                        }
+                        @media print {
+                            @page { 
+                                size: ${printOrientation}; 
+                                margin: 0mm; 
+                            }
+                            body {
+                                display: block;
+                            }
+                            .printable-content {
+                                page-break-after: always;
+                                height: 100vh;
+                                border-bottom: none;
+                            }
                         }
                     </style>
                 </head>
