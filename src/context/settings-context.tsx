@@ -64,7 +64,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const [animationsEnabled, _setAnimationsEnabled] = useState(false);
   
   // Paste on Focus setting
-  const [pasteOnFocus, _setPasteOnFocus] = useState(false);
+  const [pasteOnFocus, _setPasteOnFocus] = useState(true);
 
   useEffect(() => {
     const storedTheme = localStorage.getItem('app-theme') || 'light';
