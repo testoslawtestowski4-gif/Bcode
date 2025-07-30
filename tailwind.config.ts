@@ -1,4 +1,4 @@
-import type {Config} from 'tailwindcss';
+import type { Config } from 'tailwindcss';
 
 export default {
   darkMode: ['class'],
@@ -17,8 +17,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['var(--font-sans)', 'Inter', 'sans-serif'],
-        mono: ['var(--font-mono)', '"Source Code Pro"', 'monospace'],
+        sans: ['var(--font-sans)', 'sans-serif'],
       },
       colors: {
         border: 'hsl(var(--border))',
@@ -62,12 +61,12 @@ export default {
       },
       keyframes: {
         'accordion-down': {
-          from: {height: '0'},
-          to: {height: 'var(--radix-accordion-content-height)'},
+          from: { height: '0' },
+          to: { height: 'var(--radix-accordion-content-height)' },
         },
         'accordion-up': {
-          from: {height: 'var(--radix-accordion-content-height)'},
-          to: {height: '0'},
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: '0' },
         },
         enter: {
           '0%': {
