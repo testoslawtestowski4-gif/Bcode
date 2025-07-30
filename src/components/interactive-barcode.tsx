@@ -7,12 +7,19 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from './ui/button';
 import { Printer } from 'lucide-react';
 
+interface PrintOptions {
+  fontSize: number;
+  fontWeight: boolean;
+  orientation: 'landscape' | 'portrait';
+}
+
 interface InteractiveBarcodeProps {
   value: string;
   isActive: boolean;
   onClick: () => void;
   height: number;
   isInteractive?: boolean;
+  printOptions?: PrintOptions;
 }
 
 export function InteractiveBarcode({
@@ -21,6 +28,7 @@ export function InteractiveBarcode({
   onClick,
   height = 40,
   isInteractive = true,
+  printOptions = { fontSize: 140, fontWeight: true, orientation: 'landscape' },
 }: InteractiveBarcodeProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
@@ -54,7 +62,7 @@ export function InteractiveBarcode({
             <title>Print</title>
             <style>
               @media print {
-                @page { size: auto; margin: 0mm; }
+                @page { size: ${printOptions.orientation}; margin: 0mm; }
                 body {
                   display: flex;
                   align-items: center;
@@ -64,8 +72,8 @@ export function InteractiveBarcode({
                   font-family: sans-serif;
                 }
                 .printable-content {
-                  font-size: 140pt;
-                  font-weight: bold;
+                  font-size: ${printOptions.fontSize}pt;
+                  font-weight: ${printOptions.fontWeight ? 'bold' : 'normal'};
                   text-align: center;
                 }
               }

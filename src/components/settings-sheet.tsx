@@ -7,21 +7,25 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
   SheetDescription,
+  SheetTrigger,
 } from '@/components/ui/sheet';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { useSettings } from '@/context/settings-context';
 import { Separator } from './ui/separator';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
+import { Switch } from './ui/switch';
 
 export function SettingsSheet() {
   const {
     columnHeight, setColumnHeight,
     gridHeight, setGridHeight,
     focusModeThreshold, setFocusModeThreshold,
-    focusModeVisibleRows, setFocusModeVisibleRows
+    focusModeVisibleRows, setFocusModeVisibleRows,
+    printFontSize, setPrintFontSize,
+    printFontWeight, setPrintFontWeight,
+    printOrientation, setPrintOrientation
   } = useSettings();
 
   return (
@@ -84,6 +88,50 @@ export function SettingsSheet() {
                                     <Label htmlFor={`rows-${rows}`}>{rows}</Label>
                                 </div>
                             ))}
+                        </RadioGroup>
+                    </div>
+                </div>
+            </div>
+
+            <Separator />
+
+            <div>
+                <h4 className="text-lg font-medium mb-4">Printing</h4>
+                <div className="space-y-6">
+                    <div className="space-y-4">
+                        <Label htmlFor="font-size-slider">Font Size: {printFontSize}pt</Label>
+                        <Slider
+                            id="font-size-slider"
+                            min={20}
+                            max={300}
+                            step={10}
+                            value={[printFontSize]}
+                            onValueChange={(value) => setPrintFontSize(value[0])}
+                        />
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <Switch
+                            id="font-weight-switch"
+                            checked={printFontWeight}
+                            onCheckedChange={setPrintFontWeight}
+                        />
+                        <Label htmlFor="font-weight-switch">Bold Text</Label>
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Page Orientation</Label>
+                        <RadioGroup
+                            value={printOrientation}
+                            onValueChange={(value: 'landscape' | 'portrait') => setPrintOrientation(value)}
+                            className="flex space-x-4"
+                        >
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="landscape" id="orientation-landscape" />
+                                <Label htmlFor="orientation-landscape">Landscape</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="portrait" id="orientation-portrait" />
+                                <Label htmlFor="orientation-portrait">Portrait</Label>
+                            </div>
                         </RadioGroup>
                     </div>
                 </div>

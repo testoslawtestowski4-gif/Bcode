@@ -1,19 +1,14 @@
 'use client';
 
-import { useState, useEffect, Dispatch, SetStateAction } from 'react';
-import { Textarea } from '@/components/ui/textarea';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { InteractiveBarcode } from '@/components/interactive-barcode';
+import { ListChecks, Printer } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
-import { Button } from './ui/button';
-import { ListChecks, Printer } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
-import { Label } from './ui/label';
-import { Slider } from './ui/slider';
-import { Switch } from './ui/switch';
-import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 
 export interface BarcodeData {
   id: string;
@@ -44,19 +39,16 @@ export function BarcodeColumnGenerator({
   inputValue, setInputValue, allBarcodes, setAllBarcodes,
   activeBarcode, setActiveBarcode
 }: BarcodeColumnGeneratorProps) {
-  const { columnHeight, pasteOnFocus } = useSettings();
+  const { 
+    columnHeight, pasteOnFocus, printFontSize, 
+    printFontWeight, printOrientation 
+  } = useSettings();
   const [barcodes, setBarcodes] = useState<BarcodeData[]>([]); // This is the displayed list
   const [filterPrefixes, setFilterPrefixes] = useState<string[]>([]);
   const [activeFilter, setActiveFilter] = useState('ALL');
   
   const debouncedValue = useDebounce(inputValue, 500);
   const { toast } = useToast();
-
-  // Print settings state
-  const [isPrintDialogOpen, setIsPrintDialogOpen] = useState(false);
-  const [printFontSize, setPrintFontSize] = useState(140);
-  const [printFontWeight, setPrintFontWeight] = useState(true);
-  const [printOrientation, setPrintOrientation] = useState<'landscape' | 'portrait'>('landscape');
 
   useEffect(() => {
     // Find all alphanumeric sequences in the input text
@@ -194,7 +186,6 @@ export function BarcodeColumnGenerator({
             </html>
         `);
         printWindow.document.close();
-        setIsPrintDialogOpen(false);
     }
   };
 
@@ -205,69 +196,16 @@ export function BarcodeColumnGenerator({
               <ListChecks className="w-7 h-7" />
               Consignment
           </CardTitle>
-          <AlertDialog open={isPrintDialogOpen} onOpenChange={setIsPrintDialogOpen}>
-            <AlertDialogTrigger asChild>
-                <Button 
-                    variant="outline"
-                    size="icon"
-                    disabled={barcodes.length === 0}
-                    title="Print All"
-                >
-                    <Printer className="w-4 h-4" />
-                    <span className="sr-only">Print All</span>
-                </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>Print Settings</AlertDialogTitle>
-                    <AlertDialogDescription>
-                        Adjust the settings for your printed output.
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <div className="space-y-6 py-4">
-                    <div className="space-y-4">
-                        <Label htmlFor="font-size-slider">Font Size: {printFontSize}pt</Label>
-                        <Slider
-                            id="font-size-slider"
-                            min={20}
-                            max={300}
-                            step={10}
-                            value={[printFontSize]}
-                            onValueChange={(value) => setPrintFontSize(value[0])}
-                        />
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <Switch
-                            id="font-weight-switch"
-                            checked={printFontWeight}
-                            onCheckedChange={setPrintFontWeight}
-                        />
-                        <Label htmlFor="font-weight-switch">Bold Text</Label>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Page Orientation</Label>
-                        <RadioGroup
-                            value={printOrientation}
-                            onValueChange={(value: 'landscape' | 'portrait') => setPrintOrientation(value)}
-                            className="flex space-x-4"
-                        >
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="landscape" id="orientation-landscape" />
-                                <Label htmlFor="orientation-landscape">Landscape</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="portrait" id="orientation-portrait" />
-                                <Label htmlFor="orientation-portrait">Portrait</Label>
-                            </div>
-                        </RadioGroup>
-                    </div>
-                </div>
-                <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handlePrint}>Print</AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <Button 
+              variant="outline"
+              size="icon"
+              onClick={handlePrint}
+              disabled={barcodes.length === 0}
+              title="Print All"
+          >
+              <Printer className="w-4 h-4" />
+              <span className="sr-only">Print All</span>
+          </Button>
         </CardHeader>
         <CardContent className="p-6 pt-0">
           <div className="relative">
@@ -314,6 +252,11 @@ export function BarcodeColumnGenerator({
                   onClick={() => setActiveBarcode(item.id)}
                   height={columnHeight}
                   isInteractive={barcodes.length > 1}
+                  printOptions={{
+                    fontSize: printFontSize,
+                    fontWeight: printFontWeight,
+                    orientation: printOrientation
+                  }}
                 />
               ))
             ) : (

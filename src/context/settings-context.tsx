@@ -2,6 +2,8 @@
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
+type PrintOrientation = 'landscape' | 'portrait';
+
 interface SettingsContextType {
   // Column View Settings
   columnHeight: number;
@@ -16,6 +18,14 @@ interface SettingsContextType {
   setFocusModeThreshold: (threshold: number) => void;
   focusModeVisibleRows: number;
   setFocusModeVisibleRows: (rows: number) => void;
+
+  // Print Settings
+  printFontSize: number;
+  setPrintFontSize: (size: number) => void;
+  printFontWeight: boolean;
+  setPrintFontWeight: (bold: boolean) => void;
+  printOrientation: PrintOrientation;
+  setPrintOrientation: (orientation: PrintOrientation) => void;
 
   // Theme Settings
   theme: string;
@@ -41,6 +51,11 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const [gridHeight, _setGridHeight] = useState(55);
   const [focusModeThreshold, _setFocusModeThreshold] = useState(15);
   const [focusModeVisibleRows, _setFocusModeVisibleRows] = useState(1);
+  
+  // Print settings
+  const [printFontSize, _setPrintFontSize] = useState(140);
+  const [printFontWeight, _setPrintFontWeight] = useState(true);
+  const [printOrientation, _setPrintOrientation] = useState<PrintOrientation>('landscape');
 
   // Theme settings
   const [theme, _setTheme] = useState('light');
@@ -60,6 +75,9 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     const storedColumnHeight = localStorage.getItem('column-height');
     const storedGridHeight = localStorage.getItem('grid-height');
     const storedGridColumns = localStorage.getItem('grid-columns');
+    const storedPrintFontSize = localStorage.getItem('print-font-size');
+    const storedPrintFontWeight = localStorage.getItem('print-font-weight');
+    const storedPrintOrientation = localStorage.getItem('print-orientation');
 
     if (storedAnimations !== null) {
         _setAnimationsEnabled(storedAnimations === 'true');
@@ -90,6 +108,18 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
     if (storedGridColumns !== null) {
       _setGridColumns(Number(storedGridColumns));
+    }
+
+    if (storedPrintFontSize !== null) {
+        _setPrintFontSize(Number(storedPrintFontSize));
+    }
+
+    if (storedPrintFontWeight !== null) {
+        _setPrintFontWeight(storedPrintFontWeight === 'true');
+    }
+
+    if (storedPrintOrientation !== null) {
+        _setPrintOrientation(storedPrintOrientation as PrintOrientation);
     }
 
     _setTheme(storedTheme);
@@ -135,6 +165,21 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     _setGridColumns(columns);
   };
 
+  const setPrintFontSize = (size: number) => {
+    localStorage.setItem('print-font-size', String(size));
+    _setPrintFontSize(size);
+  }
+
+  const setPrintFontWeight = (bold: boolean) => {
+    localStorage.setItem('print-font-weight', String(bold));
+    _setPrintFontWeight(bold);
+  }
+
+  const setPrintOrientation = (orientation: PrintOrientation) => {
+    localStorage.setItem('print-orientation', orientation);
+    _setPrintOrientation(orientation);
+  }
+
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -167,6 +212,12 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       setFocusModeThreshold,
       focusModeVisibleRows,
       setFocusModeVisibleRows,
+      printFontSize,
+      setPrintFontSize,
+      printFontWeight,
+      setPrintFontWeight,
+      printOrientation,
+      setPrintOrientation,
       theme,
       setTheme,
       animationsEnabled,
