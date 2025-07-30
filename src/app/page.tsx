@@ -26,6 +26,7 @@ export default function Home() {
   const [activeConsignmentBarcode, setActiveConsignmentBarcode] = useState<string | null>(null);
 
   const isSleekTheme = theme === 'sleek-theme';
+  const isClassicBlueTheme = theme === 'classic-blue-theme';
 
   // When animations are disabled, the consignment view is always visible.
   const isSpeedMode = !animationsEnabled;
@@ -123,17 +124,22 @@ export default function Home() {
   };
   
   const activeConsignmentCodeValue = allConsignmentBarcodes.find(b => b.id === activeConsignmentBarcode)?.value || null;
+  
+  const headerTextColorClass = isClassicBlueTheme ? 'text-primary-foreground' : 'text-primary';
 
   return (
     <>
-      {isXmas && <Snowfall />}
+      {isXmas && theme !== 'classic-blue-theme' && <Snowfall />}
       <div className="flex flex-col min-h-screen bg-background text-foreground">
-        <header className={cn("w-full bg-background/95 backdrop-blur-sm z-10", !isSleekTheme && "border-b border-border")}>
+        <header className={cn(
+            "w-full bg-background/95 backdrop-blur-sm z-10", 
+            !isSleekTheme && !isClassicBlueTheme && "border-b border-border"
+        )}>
           <div className="container mx-auto flex h-16 items-center justify-between p-4 relative">
               <div className="flex items-center gap-3">
-                <Barcode className="h-8 w-8 text-primary" />
-                <h1 className="text-3xl font-bold text-primary">
-                  {isXmas ? "BCode Maker's Little Helper" : "BCode Maker"}
+                <Barcode className={cn("h-8 w-8", headerTextColorClass)} />
+                <h1 className={cn("text-3xl font-bold", headerTextColorClass)}>
+                  {isXmas && theme !== 'classic-blue-theme' ? "BCode Maker's Little Helper" : "BCode Maker"}
                 </h1>
               </div>
               <div className="flex items-center gap-2">
@@ -166,9 +172,12 @@ export default function Home() {
             </MainLayout>
         </main>
         {!isSleekTheme && (
-          <footer className="border-t mt-12 py-6">
+          <footer className={cn(
+            "mt-12 py-6",
+            !isClassicBlueTheme && "border-t"
+          )}>
             <div className="container flex flex-col items-center justify-center gap-4 text-center">
-                <p className="text-sm text-muted-foreground">
+                <p className={cn("text-sm", isClassicBlueTheme ? "text-primary-foreground/80" : "text-muted-foreground")}>
                   © <a href="mailto:suchecki.damian@gmail.com" className="underline hover:text-primary">Damian Suchecki</a> · ✉ suchecki.damian@gmail.com
                 </p>
             </div>

@@ -123,7 +123,7 @@
   .classic-blue-theme {
     --background: 217 91% 55%;
     --foreground: 210 40% 98%;
-    --card: 220 13% 97%;
+    --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
@@ -156,7 +156,8 @@
   }
   .dark .barcode-card,
   .pink-theme .barcode-card,
-  .sleek-theme .barcode-card {
+  .sleek-theme .barcode-card,
+  .classic-blue-theme .barcode-card {
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
     --muted-foreground: 240 3.8% 46.1%;
