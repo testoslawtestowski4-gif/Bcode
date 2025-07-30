@@ -24,10 +24,9 @@ function AppBody({ children }: { children: React.ReactNode }) {
   return (
     <body
       className={cn(
-        'font-body antialiased',
+        'font-sans antialiased',
         theme,
-        !animationsEnabled && 'no-animations',
-        theme === 'classic-blue-theme' && 'bg-background'
+        !animationsEnabled && 'no-animations'
       )}
     >
         {children}
