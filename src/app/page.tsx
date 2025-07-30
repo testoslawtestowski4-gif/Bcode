@@ -12,13 +12,11 @@ import { MainLayout } from '@/components/main-layout';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/context/settings-context';
 import { AnimationSwitcher } from '@/components/animation-switcher';
-import { Snowfall } from '@/components/snowfall';
 
 export default function Home() {
   const { animationsEnabled, theme } = useSettings();
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [isXmas, setIsXmas] = useState(false);
 
   // State lifted up from BarcodeColumnGenerator
   const [consignmentInputValue, setConsignmentInputValue] = useState('');
@@ -30,26 +28,6 @@ export default function Home() {
   // When animations are disabled, the consignment view is always visible.
   const isSpeedMode = !animationsEnabled;
   const [isConsignmentCollapsed, setIsConsignmentCollapsed] = useState(isSpeedMode ? false : true);
-
-  useEffect(() => {
-    const today = new Date();
-    const month = today.getMonth(); // 0-11
-    const day = today.getDate();
-
-    // December is 11, January is 0
-    const isChristmasTime = (month === 11 && day >= 1) || (month === 0 && day <= 29);
-
-    if (isChristmasTime) {
-      setIsXmas(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (consignmentInputValue.toLowerCase() === 'xmas') {
-      setIsXmas(true);
-    }
-  }, [consignmentInputValue]);
-
 
   useEffect(() => {
     const handleScroll = () => {
@@ -124,11 +102,8 @@ export default function Home() {
   
   const activeConsignmentCodeValue = allConsignmentBarcodes.find(b => b.id === activeConsignmentBarcode)?.value || null;
   
-  const isXmasTheme = theme === 'xmas-theme';
-
   return (
     <>
-      {isXmas && <Snowfall />}
       <div className="flex flex-col min-h-screen bg-background text-foreground">
         <header className={cn(
             "w-full bg-background/95 backdrop-blur-sm z-10", 
@@ -137,8 +112,8 @@ export default function Home() {
           <div className="container mx-auto flex h-16 items-center justify-between p-4 relative">
               <div className="flex items-center gap-3">
                 <Barcode className="h-8 w-8 text-primary" />
-                <h1 className={cn("text-3xl font-bold text-primary", isXmasTheme && "font-serif")}>
-                  {isXmas ? "BCode Maker's Little Helper" : "BCode Maker"}
+                <h1 className={cn("text-3xl font-bold text-primary")}>
+                  BCode Maker
                 </h1>
               </div>
               <div className="flex items-center gap-2">
