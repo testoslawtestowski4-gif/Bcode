@@ -84,7 +84,6 @@ export function BarcodeGridGenerator({
     }
     
     return Array.from(matches.values());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue]);
 
   // Effect to reset team work mode when input changes
@@ -645,7 +644,7 @@ export function BarcodeGridGenerator({
               onClick={handleTextareaClick}
               onPaste={handleInputChange}
             />
-             {activeConsignmentCodeValue && (
+             {activeConsignmentCodeValue && !isTeamWorkActive && (
                 <div className="mt-4 flex items-center gap-3 text-foreground">
                     <ListChecks className="w-6 h-6" />
                     <div className="flex items-baseline gap-2">

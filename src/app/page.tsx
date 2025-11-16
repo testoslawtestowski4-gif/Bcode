@@ -118,7 +118,6 @@ export default function Home() {
                     setAllBarcodes={setAllConsignmentBarcodes}
                     activeBarcode={activeConsignmentBarcode}
                     setActiveBarcode={setActiveConsignmentBarcode}
-                    isTeamWorkActive={isTeamWorkActive}
                 />
                 <BarcodeGridGenerator 
                   onConsignmentCodeDetected={handleConsignmentCodeDetected} 

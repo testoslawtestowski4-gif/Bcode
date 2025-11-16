@@ -22,7 +22,6 @@ interface BarcodeColumnGeneratorProps {
   setAllBarcodes: Dispatch<SetStateAction<BarcodeData[]>>;
   activeBarcode: string | null;
   setActiveBarcode: Dispatch<SetStateAction<string | null>>;
-  isTeamWorkActive: boolean;
 }
 
 // Validation helper
@@ -34,8 +33,7 @@ export const isValidBarcode = (code: string) => {
 
 export function BarcodeColumnGenerator({ 
   inputValue, setInputValue, allBarcodes, setAllBarcodes,
-  activeBarcode, setActiveBarcode,
-  isTeamWorkActive
+  activeBarcode, setActiveBarcode
 }: BarcodeColumnGeneratorProps) {
   const { 
     columnHeight, pasteOnFocus, printFontSize, 
@@ -180,8 +178,6 @@ export function BarcodeColumnGenerator({
     }
   };
 
-  const activeBarcodeData = barcodes.find(item => item.id === activeBarcode);
-
   return (
       <Card className="relative overflow-visible">
         <CardHeader className="flex flex-row items-center justify-between">
@@ -201,90 +197,64 @@ export function BarcodeColumnGenerator({
           </Button>
         </CardHeader>
         <CardContent className="p-6 pt-0">
-          {!isTeamWorkActive ? (
-            <>
-              <div className="relative">
-                <Textarea
-                  placeholder="Paste your list of codes here..."
-                  className="w-full resize-none"
-                  rows={5}
-                  value={inputValue}
-                  onChange={handleInputChange}
-                  onPaste={handleInputChange}
-                  onClick={handleTextareaClick}
-                />
-              </div>
+          <div className="relative">
+            <Textarea
+              placeholder="Paste your list of codes here..."
+              className="w-full resize-none"
+              rows={5}
+              value={inputValue}
+              onChange={handleInputChange}
+              onPaste={handleInputChange}
+              onClick={handleTextareaClick}
+            />
+          </div>
 
-              {filterPrefixes.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-4">
-                  <Button
-                    variant={activeFilter === 'ALL' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setActiveFilter('ALL')}
-                  >
-                    All
-                  </Button>
-                  {filterPrefixes.map(prefix => (
-                    <Button
-                      key={prefix}
-                      variant={activeFilter === prefix ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => setActiveFilter(prefix)}
-                    >
-                      {prefix}
-                    </Button>
-                  ))}
-                </div>
-              )}
-
-              <div className="mt-6 space-y-4">
-                {barcodes.length > 0 ? (
-                  barcodes.map((item) => (
-                    <InteractiveBarcode
-                      key={item.id}
-                      value={item.value}
-                      isActive={activeBarcode === item.id || barcodes.length === 1}
-                      onClick={() => setActiveBarcode(item.id)}
-                      height={columnHeight}
-                      isInteractive={barcodes.length > 1}
-                      printOptions={{
-                        fontSize: printFontSize,
-                        fontWeight: printFontWeight,
-                        orientation: printOrientation
-                      }}
-                    />
-                  ))
-                ) : (
-                  <div className="text-center py-10 text-muted-foreground">
-                    <p>Your generated barcodes will appear here.</p>
-                    <p className="text-xs mt-2">(Codes must be letters followed by 3-5 digits, e.g., MIX12345)</p>
-                  </div>
-                )}
-              </div>
-            </>
-          ) : (
-             <div className="mt-6 space-y-4">
-                {activeBarcodeData ? (
-                  <InteractiveBarcode
-                    key={activeBarcodeData.id}
-                    value={activeBarcodeData.value}
-                    isActive={true}
-                    onClick={() => {}}
-                    height={columnHeight}
-                    isInteractive={false}
-                    printOptions={{
-                      fontSize: printFontSize,
-                      fontWeight: printFontWeight,
-                      orientation: printOrientation
-                    }}
-                  />
-                ) : (
-                  <div className="text-center py-10 text-muted-foreground">
-                    <p>No active consignment code.</p>
-                  </div>
-                )}
-              </div>
+          {filterPrefixes.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-4">
+              <Button
+                variant={activeFilter === 'ALL' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveFilter('ALL')}
+              >
+                All
+              </Button>
+              {filterPrefixes.map(prefix => (
+                <Button
+                  key={prefix}
+                  variant={activeFilter === prefix ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setActiveFilter(prefix)}
+                >
+                  {prefix}
+                </Button>
+              ))}
+            </div>
           )}
+
+          <div className="mt-6 space-y-4">
+            {barcodes.length > 0 ? (
+              barcodes.map((item) => (
+                <InteractiveBarcode
+                  key={item.id}
+                  value={item.value}
+                  isActive={activeBarcode === item.id || barcodes.length === 1}
+                  onClick={() => setActiveBarcode(item.id)}
+                  height={columnHeight}
+                  isInteractive={barcodes.length > 1}
+                  printOptions={{
+                    fontSize: printFontSize,
+                    fontWeight: printFontWeight,
+                    orientation: printOrientation
+                  }}
+                />
+              ))
+            ) : (
+              <div className="text-center py-10 text-muted-foreground">
+                <p>Your generated barcodes will appear here.</p>
+                <p className="text-xs mt-2">(Codes must be letters followed by 3-5 digits, e.g., MIX12345)</p>
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
   );
