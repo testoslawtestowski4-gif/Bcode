@@ -30,6 +30,7 @@ export function SettingsSheet() {
     printOrientation, setPrintOrientation,
     teamWorkEnabled, setTeamWorkEnabled,
     totalConsignmentBarcodes, totalContainerBarcodes,
+    firstGenerationDate,
   } = useSettings();
 
   return (
@@ -54,6 +55,10 @@ export function SettingsSheet() {
                   Global Statistics
                 </h4>
                 <div className="grid gap-2 text-sm">
+                    <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">First generation date:</span>
+                        <span className="font-semibold">{firstGenerationDate || 'N/A'}</span>
+                    </div>
                     <div className="flex items-center justify-between">
                         <span className="text-muted-foreground">Total Consignment Barcodes:</span>
                         <span className="font-semibold">{totalConsignmentBarcodes}</span>

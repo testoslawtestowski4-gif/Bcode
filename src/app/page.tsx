@@ -12,6 +12,7 @@ import { Barcode, ArrowUp, Mail } from 'lucide-react';
 import { MainLayout } from '@/components/main-layout';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/context/settings-context';
+import { format } from 'date-fns';
 
 export default function Home() {
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
@@ -27,11 +28,19 @@ export default function Home() {
   const [containerBarcodeCount, setContainerBarcodeCount] = useState(0);
   const [containerInputValue, setContainerInputValue] = useState('');
 
-  const { setTotalConsignmentBarcodes, setTotalContainerBarcodes } = useSettings();
+  const { 
+    setTotalConsignmentBarcodes, 
+    setTotalContainerBarcodes,
+    firstGenerationDate,
+    setFirstGenerationDate 
+  } = useSettings();
 
   useEffect(() => {
     if (allConsignmentBarcodes.length > 0) {
       setTotalConsignmentBarcodes(prev => prev + allConsignmentBarcodes.length);
+      if (!firstGenerationDate) {
+        setFirstGenerationDate(format(new Date(), 'yyyy-MM-dd'));
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allConsignmentBarcodes]);
@@ -39,6 +48,9 @@ export default function Home() {
   useEffect(() => {
     if (containerBarcodeCount > 0) {
       setTotalContainerBarcodes(prev => prev + containerBarcodeCount);
+      if (!firstGenerationDate) {
+        setFirstGenerationDate(format(new Date(), 'yyyy-MM-dd'));
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [containerBarcodeCount]);

@@ -47,6 +47,8 @@ interface SettingsContextType {
   setTotalConsignmentBarcodes: Dispatch<SetStateAction<number>>;
   totalContainerBarcodes: number;
   setTotalContainerBarcodes: Dispatch<SetStateAction<number>>;
+  firstGenerationDate: string | null;
+  setFirstGenerationDate: (date: string) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -79,6 +81,8 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   // Statistics
   const [totalConsignmentBarcodes, setTotalConsignmentBarcodes] = useState(0);
   const [totalContainerBarcodes, setTotalContainerBarcodes] = useState(0);
+  const [firstGenerationDate, _setFirstGenerationDate] = useState<string | null>(null);
+
 
   useEffect(() => {
     const storedTheme = localStorage.getItem('app-theme') || 'light';
@@ -95,6 +99,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     const storedPrintOrientation = localStorage.getItem('print-orientation');
     const storedTotalConsignment = localStorage.getItem('total-consignment-barcodes');
     const storedTotalContainer = localStorage.getItem('total-container-barcodes');
+    const storedFirstDate = localStorage.getItem('first-generation-date');
 
 
     if (storedPasteOnFocus !== null) {
@@ -147,6 +152,10 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
     if (storedTotalContainer !== null) {
       setTotalContainerBarcodes(Number(storedTotalContainer));
+    }
+
+    if (storedFirstDate !== null) {
+      _setFirstGenerationDate(storedFirstDate);
     }
 
     _setTheme(storedTheme);
@@ -220,6 +229,14 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     _setPrintOrientation(orientation);
   }
   
+  const setFirstGenerationDate = (date: string) => {
+    // Only set the date if it hasn't been set before.
+    if (!firstGenerationDate) {
+      localStorage.setItem('first-generation-date', date);
+      _setFirstGenerationDate(date);
+    }
+  };
+
   return (
     <SettingsContext.Provider value={{
       columnHeight,
@@ -250,6 +267,8 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       setTotalConsignmentBarcodes,
       totalContainerBarcodes,
       setTotalContainerBarcodes,
+      firstGenerationDate,
+      setFirstGenerationDate,
     }}>
       {children}
     </SettingsContext.Provider>
