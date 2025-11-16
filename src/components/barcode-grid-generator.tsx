@@ -53,6 +53,8 @@ export function BarcodeGridGenerator({
 
   
   const gridContainerRef = useRef<HTMLDivElement>(null);
+  const leftScrollContainerRef = useRef<HTMLDivElement>(null);
+  const rightScrollContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
   const leftRowRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -559,6 +561,29 @@ export function BarcodeGridGenerator({
     };
   }, [isFocusMode, isTeamWorkActive, barcodes.length, leftBarcodes.length, rightBarcodes.length, gridColumns, focusModeVisibleRows]);
 
+  const scrollToRow = (
+    scrollContainer: HTMLDivElement | null, 
+    rowRefs: (HTMLDivElement | null)[], 
+    focusedRowIndex: number, 
+    itemsPerChunk: number
+  ) => {
+    if (!scrollContainer) return;
+    
+    const firstIndexOfChunk = focusedRowIndex * itemsPerChunk;
+    const rowElement = rowRefs[firstIndexOfChunk];
+    
+    if (rowElement) {
+        const containerTop = scrollContainer.getBoundingClientRect().top;
+        const rowTop = rowElement.getBoundingClientRect().top;
+        const scrollOffset = rowTop - containerTop + scrollContainer.scrollTop;
+
+        scrollContainer.scrollTo({
+            top: scrollOffset,
+            behavior: 'smooth',
+        });
+    }
+  };
+
   useEffect(() => {
     if (isFocusMode && !isTeamWorkActive) {
       const firstIndexOfChunk = focusedRow * focusModeVisibleRows * gridColumns;
@@ -569,31 +594,18 @@ export function BarcodeGridGenerator({
       });
     }
   }, [focusedRow, isFocusMode, gridColumns, focusModeVisibleRows, isTeamWorkActive]);
-
+  
   useEffect(() => {
     if (isFocusMode && isTeamWorkActive) {
-        const teamWorkGridColumns = 4;
-        const firstIndexOfChunk = focusedRowLeft * focusModeVisibleRows * teamWorkGridColumns;
-        const rowElement = leftRowRefs.current[firstIndexOfChunk];
-        rowElement?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center',
-        });
+      scrollToRow(leftScrollContainerRef.current, leftRowRefs.current, focusedRowLeft, focusModeVisibleRows * 4);
     }
   }, [focusedRowLeft, isFocusMode, isTeamWorkActive, focusModeVisibleRows]);
 
   useEffect(() => {
-      if (isFocusMode && isTeamWorkActive) {
-          const teamWorkGridColumns = 4;
-          const firstIndexOfChunk = focusedRowRight * focusModeVisibleRows * teamWorkGridColumns;
-          const rowElement = rightRowRefs.current[firstIndexOfChunk];
-          rowElement?.scrollIntoView({
-              behavior: 'smooth',
-              block: 'center',
-          });
-      }
+    if (isFocusMode && isTeamWorkActive) {
+      scrollToRow(rightScrollContainerRef.current, rightRowRefs.current, focusedRowRight, focusModeVisibleRows * 4);
+    }
   }, [focusedRowRight, isFocusMode, isTeamWorkActive, focusModeVisibleRows]);
-
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement> | React.ClipboardEvent<HTMLTextAreaElement>) => {
     const value = 'target' in event ? event.target.value : event.clipboardData.getData('text');
@@ -605,10 +617,6 @@ export function BarcodeGridGenerator({
       // Find the last valid code in the pasted text, as it's often the most relevant one.
       onConsignmentCodeDetected(validConsignmentCodes[validConsignmentCodes.length - 1]);
     }
-  };
-  
-  const handleScrollToGrid = () => {
-    gridContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   const handleTextareaClick = async () => {
@@ -629,9 +637,6 @@ export function BarcodeGridGenerator({
         if (validConsignmentCodes.length > 0) {
           onConsignmentCodeDetected(validConsignmentCodes[validConsignmentCodes.length - 1]);
         }
-        
-        // Wait for state to update and then scroll
-        setTimeout(handleScrollToGrid, 0);
       }
     } catch (err) {
       console.error('Failed to read clipboard contents: ', err);
@@ -764,53 +769,65 @@ export function BarcodeGridGenerator({
                 <div className="flex justify-between gap-8">
                   <div className="w-[48%]">
                     <h3 className="text-lg font-semibold text-center mb-4">Part 1 ({leftBarcodes.length} items)</h3>
-                    <div 
-                      className="grid gap-4"
-                      style={{ gridTemplateColumns: `repeat(${teamWorkGridColumns}, minmax(0, 1fr))` }}
+                    <div
+                      ref={leftScrollContainerRef}
+                      className="grid-scroll-container pr-2"
+                      style={{ maxHeight: `${focusModeVisibleRows * (currentGridHeight + 45)}px` }}
                     >
-                      {leftBarcodes.map((value, index) => {
-                        const rowIndex = Math.floor(index / teamWorkGridColumns);
-                        const focusChunkIndex = Math.floor(rowIndex / focusModeVisibleRows);
-                        const isBlurred = isFocusMode && focusChunkIndex !== focusedRowLeft;
-                        return (
-                          <GridBarcode
-                            ref={el => { leftRowRefs.current[index] = el; }}
-                            key={`${value}-${index}`}
-                            value={value}
-                            index={index}
-                            height={currentGridHeight}
-                            isBlurred={isBlurred}
-                            isOneColumn={false}
-                            onClick={() => isFocusMode && setFocusedRowLeft(focusChunkIndex)}
-                          />
-                        );
-                      })}
+                      <div 
+                        className="grid gap-4"
+                        style={{ gridTemplateColumns: `repeat(${teamWorkGridColumns}, minmax(0, 1fr))` }}
+                      >
+                        {leftBarcodes.map((value, index) => {
+                          const rowIndex = Math.floor(index / teamWorkGridColumns);
+                          const focusChunkIndex = Math.floor(rowIndex / focusModeVisibleRows);
+                          const isBlurred = isFocusMode && focusChunkIndex !== focusedRowLeft;
+                          return (
+                            <GridBarcode
+                              ref={el => { leftRowRefs.current[index] = el; }}
+                              key={`${value}-${index}`}
+                              value={value}
+                              index={index}
+                              height={currentGridHeight}
+                              isBlurred={isBlurred}
+                              isOneColumn={false}
+                              onClick={() => isFocusMode && setFocusedRowLeft(focusChunkIndex)}
+                            />
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                   <div className="w-[48%]">
                     <h3 className="text-lg font-semibold text-center mb-4">Part 2 ({rightBarcodes.length} items)</h3>
                     <div
-                      className="grid gap-4"
-                      style={{ gridTemplateColumns: `repeat(${teamWorkGridColumns}, minmax(0, 1fr))` }}
+                      ref={rightScrollContainerRef}
+                      className="grid-scroll-container pr-2"
+                      style={{ maxHeight: `${focusModeVisibleRows * (currentGridHeight + 45)}px` }}
                     >
-                      {rightBarcodes.map((value, index) => {
-                        const originalIndex = index + midPoint;
-                        const rowIndex = Math.floor(index / teamWorkGridColumns);
-                        const focusChunkIndex = Math.floor(rowIndex / focusModeVisibleRows);
-                        const isBlurred = isFocusMode && focusChunkIndex !== focusedRowRight;
-                        return (
-                          <GridBarcode
-                            ref={el => { rightRowRefs.current[originalIndex] = el; }}
-                            key={`${value}-${originalIndex}`}
-                            value={value}
-                            index={originalIndex}
-                            height={currentGridHeight}
-                            isBlurred={isBlurred}
-                            isOneColumn={false}
-                            onClick={() => isFocusMode && setFocusedRowRight(focusChunkIndex)}
-                          />
-                        );
-                      })}
+                      <div
+                        className="grid gap-4"
+                        style={{ gridTemplateColumns: `repeat(${teamWorkGridColumns}, minmax(0, 1fr))` }}
+                      >
+                        {rightBarcodes.map((value, index) => {
+                          const originalIndex = index + midPoint;
+                          const rowIndex = Math.floor(index / teamWorkGridColumns);
+                          const focusChunkIndex = Math.floor(rowIndex / focusModeVisibleRows);
+                          const isBlurred = isFocusMode && focusChunkIndex !== focusedRowRight;
+                          return (
+                            <GridBarcode
+                              ref={el => { rightRowRefs.current[index] = el; }}
+                              key={`${value}-${originalIndex}`}
+                              value={value}
+                              index={originalIndex}
+                              height={currentGridHeight}
+                              isBlurred={isBlurred}
+                              isOneColumn={false}
+                              onClick={() => isFocusMode && setFocusedRowRight(focusChunkIndex)}
+                            />
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 </div>
