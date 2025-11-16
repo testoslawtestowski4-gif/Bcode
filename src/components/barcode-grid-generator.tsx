@@ -81,10 +81,6 @@ export function BarcodeGridGenerator({
 
   const parsedBarcodes = useMemo(() => {
     if (!debouncedValue) {
-      if (!isTeamWorkActive && textareaRef.current) {
-        textareaRef.current.blur();
-        window.focus();
-      }
       return [];
     }
   
@@ -125,6 +121,13 @@ export function BarcodeGridGenerator({
     
     return Array.from(matches.values());
   }, [debouncedValue, isCustomMode, isTeamWorkActive]);
+
+  useEffect(() => {
+    if (parsedBarcodes.length > 0 && !isTeamWorkActive) {
+        textareaRef.current?.blur();
+        window.focus();
+    }
+  }, [parsedBarcodes, isTeamWorkActive]);
 
   const barcodes = useMemo(() => parsedBarcodes.map(b => b.value), [parsedBarcodes]);
   
@@ -958,6 +961,8 @@ export function BarcodeGridGenerator({
     </Card>
   );
 }
+
+    
 
     
 
