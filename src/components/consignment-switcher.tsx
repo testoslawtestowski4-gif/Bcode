@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useRef } from 'react';
@@ -13,9 +14,10 @@ interface ConsignmentSwitcherProps {
     allBarcodes: BarcodeData[];
     activeBarcode: string | null;
     setActiveBarcode: (id: string | null) => void;
+    inContainer?: boolean;
 }
 
-export function ConsignmentSwitcher({ allBarcodes, activeBarcode, setActiveBarcode }: ConsignmentSwitcherProps) {
+export function ConsignmentSwitcher({ allBarcodes, activeBarcode, setActiveBarcode, inContainer = false }: ConsignmentSwitcherProps) {
     const svgRef = useRef<SVGSVGElement | null>(null);
     const activeBarcodeData = allBarcodes.find(b => b.id === activeBarcode);
     
@@ -42,26 +44,34 @@ export function ConsignmentSwitcher({ allBarcodes, activeBarcode, setActiveBarco
 
     if (!activeBarcodeData) {
         return (
-            <div className="flex items-center gap-2 text-muted-foreground p-2 rounded-md border h-12">
+            <div className={cn(
+                "flex items-center gap-2 text-muted-foreground p-2 rounded-md border",
+                inContainer ? "h-auto w-full" : "h-12"
+            )}>
                 <ListChecks className="w-5 h-5" />
                 <span className="text-sm font-medium">No Consignment</span>
             </div>
         );
     }
     
+    const Component = inContainer ? 'div' : Card;
+
     return (
-        <Card className="flex items-center justify-between p-2 h-14 w-80">
-            <div className="flex items-center gap-3 flex-grow overflow-hidden">
-                <div className="w-32 flex-shrink-0">
-                    <svg ref={svgRef} className="w-full h-auto" />
+        <Component className={cn(
+            "flex items-center justify-between",
+            inContainer ? 'flex-col gap-2 w-full' : 'p-2 h-14 w-80'
+        )}>
+            <div className={cn("flex items-center gap-3 flex-grow overflow-hidden", inContainer && "w-full flex-col")}>
+                <div className={cn("flex-shrink-0", inContainer ? 'w-full h-12' : 'w-32')}>
+                    <svg ref={svgRef} className="w-full h-full" />
                 </div>
             </div>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center gap-2 flex-shrink-0">
+                    <Button variant="ghost" className="flex items-center gap-2 flex-shrink-0 w-full justify-center">
                         <span className={cn(
                             "font-semibold font-code text-lg",
-                             allBarcodes.length > 1 && "max-w-[80px] truncate"
+                             allBarcodes.length > 1 && !inContainer && "max-w-[80px] truncate"
                         )}>
                             {activeBarcodeData.value}
                         </span>
@@ -82,6 +92,6 @@ export function ConsignmentSwitcher({ allBarcodes, activeBarcode, setActiveBarco
                     </DropdownMenuContent>
                 )}
             </DropdownMenu>
-        </Card>
+        </Component>
     );
 }

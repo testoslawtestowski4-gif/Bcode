@@ -85,22 +85,10 @@ export default function Home() {
           <div className="container mx-auto flex h-16 items-center justify-between p-4 relative">
               <div className="flex items-center gap-3">
                 <Barcode className="h-8 w-8 text-primary" />
-                {!isTeamWorkActive && (
-                  <h1 className={cn("text-3xl font-bold text-primary")}>
-                    BCode Maker
-                  </h1>
-                )}
+                <h1 className={cn("text-3xl font-bold text-primary")}>
+                  BCode Maker
+                </h1>
               </div>
-              
-              {isTeamWorkActive && (
-                  <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                    <ConsignmentSwitcher 
-                      allBarcodes={allConsignmentBarcodes}
-                      activeBarcode={activeConsignmentBarcode}
-                      setActiveBarcode={setActiveConsignmentBarcode}
-                    />
-                  </div>
-              )}
 
               <div className="flex items-center gap-2">
                   {teamWorkEnabled && (
@@ -138,6 +126,9 @@ export default function Home() {
                   activeConsignmentCodeValue={activeConsignmentCodeValue}
                   isTeamWorkActive={isTeamWorkActive}
                   setContainerBarcodeCount={setContainerBarcodeCount}
+                  allConsignmentBarcodes={allConsignmentBarcodes}
+                  activeConsignmentBarcode={activeConsignmentBarcode}
+                  setActiveConsignmentBarcode={setActiveConsignmentBarcode}
                 />
             </MainLayout>
         </main>

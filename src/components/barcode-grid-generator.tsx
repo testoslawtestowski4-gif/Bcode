@@ -13,8 +13,10 @@ import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
-import { isValidBarcode } from './barcode-column-generator';
+import { BarcodeData, isValidBarcode } from './barcode-column-generator';
 import { cn } from '@/lib/utils';
+import { ConsignmentSwitcher } from './consignment-switcher';
+
 
 interface ParsedBarcode {
   value: string;
@@ -28,6 +30,9 @@ interface BarcodeGridGeneratorProps {
   activeConsignmentCodeValue: string | null;
   isTeamWorkActive: boolean;
   setContainerBarcodeCount: Dispatch<SetStateAction<number>>;
+  allConsignmentBarcodes: BarcodeData[];
+  activeConsignmentBarcode: string | null;
+  setActiveConsignmentBarcode: (id: string | null) => void;
 }
 
 export function BarcodeGridGenerator({ 
@@ -36,7 +41,10 @@ export function BarcodeGridGenerator({
   onConsignmentCodeDetected, 
   activeConsignmentCodeValue,
   isTeamWorkActive,
-  setContainerBarcodeCount
+  setContainerBarcodeCount,
+  allConsignmentBarcodes,
+  activeConsignmentBarcode,
+  setActiveConsignmentBarcode
 }: BarcodeGridGeneratorProps) {
   const { 
     gridHeight, gridColumns, setGridColumns, 
@@ -654,7 +662,7 @@ export function BarcodeGridGenerator({
   const currentGridHeight = gridColumns === 1 ? 86 : gridHeight;
   const teamWorkGridColumns = 4; // Hardcode to 4 for Team Work mode
 
-  const showStats = statistics;
+  const showStats = statistics && (isTeamWorkActive || barcodes.length > 0);
   const displayStats = statistics || { levelIJ: 0, levelKL: 0, levelC: 0, groundFloor: 0 };
     
   return (
@@ -699,8 +707,18 @@ export function BarcodeGridGenerator({
         </div>
       </CardHeader>
       <CardContent className="p-6 pt-0">
-        <div className={`grid grid-cols-1 ${showStats ? 'sm:grid-cols-2' : ''} gap-6`}>
-          <div className="relative">
+        <div className={`grid grid-cols-1 ${showStats ? (isTeamWorkActive ? 'lg:grid-cols-3' : 'sm:grid-cols-2') : ''} gap-6 items-start`}>
+          {isTeamWorkActive && (
+              <div className="flex flex-col gap-4 lg:col-span-1">
+                <ConsignmentSwitcher 
+                  allBarcodes={allConsignmentBarcodes}
+                  activeBarcode={activeConsignmentBarcode}
+                  setActiveBarcode={setActiveConsignmentBarcode}
+                  inContainer={true}
+                />
+              </div>
+          )}
+          <div className={cn("relative", isTeamWorkActive ? "lg:col-span-2" : "")}>
             <Textarea
               ref={textareaRef}
               placeholder="Paste your list of codes here..."
@@ -872,5 +890,3 @@ export function BarcodeGridGenerator({
     </Card>
   );
 }
-
-    
