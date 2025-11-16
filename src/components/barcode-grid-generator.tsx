@@ -83,6 +83,7 @@ export function BarcodeGridGenerator({
     if (!debouncedValue) {
       if (!isTeamWorkActive && textareaRef.current) {
         textareaRef.current.blur();
+        window.focus();
       }
       return [];
     }
@@ -725,14 +726,7 @@ export function BarcodeGridGenerator({
               />
               <Label htmlFor="paste-on-click">Paste on click</Label>
             </div>
-            <div className="flex items-center space-x-2">
-              <Switch
-                  id="focus-mode"
-                  checked={isFocusMode}
-                  onCheckedChange={setIsFocusMode}
-              />
-              <Label htmlFor="focus-mode">Focus Mode</Label>
-            </div>
+            
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon">

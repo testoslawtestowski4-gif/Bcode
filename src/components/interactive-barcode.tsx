@@ -128,7 +128,6 @@ export function InteractiveBarcode({
       <div className="relative flex-grow">
         <div
           className={cn(
-            'transition-all duration-300',
             'h-full flex flex-col',
             showActiveState ? 'opacity-100 blur-none' : 'opacity-40 blur-lg'
           )}
