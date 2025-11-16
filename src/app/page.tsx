@@ -13,6 +13,7 @@ import { MainLayout } from '@/components/main-layout';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/context/settings-context';
 import { format } from 'date-fns';
+import { Snowfall } from '@/components/snowfall';
 
 export default function Home() {
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
@@ -32,7 +33,7 @@ export default function Home() {
     setTotalConsignmentBarcodes, 
     setTotalContainerBarcodes,
     firstGenerationDate,
-    setFirstGenerationDate 
+    setFirstGenerationDate,
   } = useSettings();
 
   useEffect(() => {

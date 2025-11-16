@@ -39,7 +39,7 @@ export function BarcodeColumnGenerator({
 }: BarcodeColumnGeneratorProps) {
   const { 
     columnHeight, pasteOnFocus, printFontSize, 
-    printFontWeight, printOrientation 
+    printFontWeight, printOrientation, setShowSnowfall
   } = useSettings();
   const [barcodes, setBarcodes] = useState<BarcodeData[]>([]); // This is the displayed list
   const [filterPrefixes, setFilterPrefixes] = useState<string[]>([]);
@@ -49,6 +49,11 @@ export function BarcodeColumnGenerator({
   const { toast } = useToast();
 
   useEffect(() => {
+    // Easter egg check
+    if (debouncedValue.toLowerCase().trim() === 'xmass') {
+      setShowSnowfall(true);
+    }
+    
     // Find all alphanumeric sequences in the input text
     const potentialCodes = debouncedValue.match(/[a-zA-Z0-9]+/g) || [];
     
@@ -69,7 +74,7 @@ export function BarcodeColumnGenerator({
     setFilterPrefixes(Array.from(prefixes).sort());
     
     setActiveFilter('ALL'); // Reset filter on new input
-  }, [debouncedValue, setAllBarcodes]);
+  }, [debouncedValue, setAllBarcodes, setShowSnowfall]);
 
   useEffect(() => {
     let filteredBarcodes: BarcodeData[];

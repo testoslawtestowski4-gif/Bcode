@@ -51,6 +51,10 @@ interface SettingsContextType {
   setTotalContainerBarcodes: Dispatch<SetStateAction<number>>;
   firstGenerationDate: string | null;
   setFirstGenerationDate: (date: string) => void;
+
+  // Easter Egg Settings
+  showSnowfall: boolean;
+  setShowSnowfall: (enabled: boolean) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -87,8 +91,12 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const [totalContainerBarcodes, setTotalContainerBarcodes] = useState(0);
   const [firstGenerationDate, _setFirstGenerationDate] = useState<string | null>(null);
 
+  // Easter Egg Settings
+  const [showSnowfall, _setShowSnowfall] = useState(false);
+
 
   useEffect(() => {
+    // --- Standard settings loading ---
     const storedTheme = localStorage.getItem('app-theme') || 'light';
     const storedPasteOnFocus = localStorage.getItem('paste-on-focus');
     const storedTeamWork = localStorage.getItem('team-work-enabled');
@@ -105,69 +113,44 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     const storedTotalConsignment = localStorage.getItem('total-consignment-barcodes');
     const storedTotalContainer = localStorage.getItem('total-container-barcodes');
     const storedFirstDate = localStorage.getItem('first-generation-date');
-
-
-    if (storedPasteOnFocus !== null) {
-      _setPasteOnFocus(storedPasteOnFocus === 'true');
-    }
-
-    if (storedTeamWork !== null) {
-      _setTeamWorkEnabled(storedTeamWork === 'true');
-    }
-
-    if (storedGamification !== null) {
-      _setGamificationEnabled(storedGamification === 'true');
-    }
-
-    if (storedIsFocusMode !== null) {
-      _setIsFocusMode(storedIsFocusMode === 'true');
-    }
-
-    if (storedFocusThreshold !== null) {
-      _setFocusModeThreshold(Number(storedFocusThreshold));
-    }
-
-    if (storedFocusRows !== null) {
-      _setFocusModeVisibleRows(Number(storedFocusRows));
-    }
-
-    if (storedColumnHeight !== null) {
-      _setColumnHeight(Number(storedColumnHeight));
-    }
-    
-    if (storedGridHeight !== null) {
-      _setGridHeight(Number(storedGridHeight));
-    }
-
-    if (storedGridColumns !== null) {
-      _setGridColumns(Number(storedGridColumns));
-    }
-
-    if (storedPrintFontSize !== null) {
-        _setPrintFontSize(Number(storedPrintFontSize));
-    }
-
-    if (storedPrintFontWeight !== null) {
-        _setPrintFontWeight(storedPrintFontWeight === 'true');
-    }
-
-    if (storedPrintOrientation !== null) {
-        _setPrintOrientation(storedPrintOrientation as PrintOrientation);
-    }
-
-    if (storedTotalConsignment !== null) {
-      setTotalConsignmentBarcodes(Number(storedTotalConsignment));
-    }
-
-    if (storedTotalContainer !== null) {
-      setTotalContainerBarcodes(Number(storedTotalContainer));
-    }
-
-    if (storedFirstDate !== null) {
-      _setFirstGenerationDate(storedFirstDate);
-    }
-
     _setTheme(storedTheme);
+
+    // --- Snowfall Easter Egg Logic ---
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth(); // 0-11 (December is 11)
+    const currentYear = currentDate.getFullYear();
+    const snowDisabledKey = `snowfall-disabled-${currentYear}`;
+
+    if (currentMonth === 11) { // It's December
+      const isSnowDisabled = localStorage.getItem(snowDisabledKey) === 'true';
+      if (!isSnowDisabled) {
+        _setShowSnowfall(true);
+      }
+    } else {
+      // Not December, clear any old disabled keys to reset for next year
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('snowfall-disabled-')) {
+          localStorage.removeItem(key);
+        }
+      });
+    }
+
+    // --- Rest of settings loading ---
+    if (storedPasteOnFocus !== null) _setPasteOnFocus(storedPasteOnFocus === 'true');
+    if (storedTeamWork !== null) _setTeamWorkEnabled(storedTeamWork === 'true');
+    if (storedGamification !== null) _setGamificationEnabled(storedGamification === 'true');
+    if (storedIsFocusMode !== null) _setIsFocusMode(storedIsFocusMode === 'true');
+    if (storedFocusThreshold !== null) _setFocusModeThreshold(Number(storedFocusThreshold));
+    if (storedFocusRows !== null) _setFocusModeVisibleRows(Number(storedFocusRows));
+    if (storedColumnHeight !== null) _setColumnHeight(Number(storedColumnHeight));
+    if (storedGridHeight !== null) _setGridHeight(Number(storedGridHeight));
+    if (storedGridColumns !== null) _setGridColumns(Number(storedGridColumns));
+    if (storedPrintFontSize !== null) _setPrintFontSize(Number(storedPrintFontSize));
+    if (storedPrintFontWeight !== null) _setPrintFontWeight(storedPrintFontWeight === 'true');
+    if (storedPrintOrientation !== null) _setPrintOrientation(storedPrintOrientation as PrintOrientation);
+    if (storedTotalConsignment !== null) setTotalConsignmentBarcodes(Number(storedTotalConsignment));
+    if (storedTotalContainer !== null) setTotalContainerBarcodes(Number(storedTotalContainer));
+    if (storedFirstDate !== null) _setFirstGenerationDate(storedFirstDate);
   }, []);
 
   useEffect(() => {
@@ -244,47 +227,39 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   }
   
   const setFirstGenerationDate = (date: string) => {
-    // Only set the date if it hasn't been set before.
     if (!firstGenerationDate) {
       localStorage.setItem('first-generation-date', date);
       _setFirstGenerationDate(date);
     }
   };
 
+  const setShowSnowfall = (enabled: boolean) => {
+    _setShowSnowfall(enabled);
+    if (!enabled) {
+      const currentYear = new Date().getFullYear();
+      localStorage.setItem(`snowfall-disabled-${currentYear}`, 'true');
+    }
+  };
+
   return (
     <SettingsContext.Provider value={{
-      columnHeight,
-      setColumnHeight,
-      gridColumns,
-      setGridColumns,
-      gridHeight,
-      setGridHeight,
-      isFocusMode,
-      setIsFocusMode,
-      focusModeThreshold,
-      setFocusModeThreshold,
-      focusModeVisibleRows,
-      setFocusModeVisibleRows,
-      printFontSize,
-      setPrintFontSize,
-      printFontWeight,
-      setPrintFontWeight,
-      printOrientation,
-      setPrintOrientation,
-      theme,
-      setTheme,
-      pasteOnFocus,
-      setPasteOnFocus,
-      teamWorkEnabled,
-      setTeamWorkEnabled,
-      gamificationEnabled,
-      setGamificationEnabled,
-      totalConsignmentBarcodes,
-      setTotalConsignmentBarcodes,
-      totalContainerBarcodes,
-      setTotalContainerBarcodes,
-      firstGenerationDate,
-      setFirstGenerationDate,
+      columnHeight, setColumnHeight,
+      gridColumns, setGridColumns,
+      gridHeight, setGridHeight,
+      isFocusMode, setIsFocusMode,
+      focusModeThreshold, setFocusModeThreshold,
+      focusModeVisibleRows, setFocusModeVisibleRows,
+      printFontSize, setPrintFontSize,
+      printFontWeight, setPrintFontWeight,
+      printOrientation, setPrintOrientation,
+      theme, setTheme,
+      pasteOnFocus, setPasteOnFocus,
+      teamWorkEnabled, setTeamWorkEnabled,
+      gamificationEnabled, setGamificationEnabled,
+      totalConsignmentBarcodes, setTotalConsignmentBarcodes,
+      totalContainerBarcodes, setTotalContainerBarcodes,
+      firstGenerationDate, setFirstGenerationDate,
+      showSnowfall, setShowSnowfall,
     }}>
       {children}
     </SettingsContext.Provider>
@@ -298,5 +273,3 @@ export const useSettings = () => {
   }
   return context;
 };
-
-    

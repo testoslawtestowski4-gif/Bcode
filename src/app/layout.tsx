@@ -1,25 +1,35 @@
+
 import type { Metadata } from 'next';
-import { Inter, Source_Code_Pro } from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
-import { SettingsProvider } from '@/context/settings-context';
+import { SettingsProvider, useSettings } from '@/context/settings-context';
 import { AppBody } from '@/components/app-body';
-
-const inter = Inter({ 
-  subsets: ['latin'],
-  variable: '--font-sans',
-});
-
-const sourceCodePro = Source_Code_Pro({
-  subsets: ['latin'],
-  variable: '--font-code',
-  weight: ['400', '500'],
-});
+import { Snowfall } from '@/components/snowfall';
+import { ReactNode } from 'react';
 
 export const metadata: Metadata = {
   title: "BCode Maker",
   description: "A modern barcode generator.",
 };
+
+function AppWrapper({ children }: { children: React.ReactNode }) {
+  'use client';
+
+  function ConditionalSnowfall() {
+    const { showSnowfall } = useSettings();
+    return showSnowfall ? <Snowfall /> : null;
+  }
+
+  return (
+    <SettingsProvider>
+      <AppBody>
+        {children}
+        <ConditionalSnowfall />
+        <Toaster />
+      </AppBody>
+    </SettingsProvider>
+  );
+}
 
 export default function RootLayout({
   children,
@@ -29,12 +39,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
-      <SettingsProvider>
-        <AppBody>
+      <body>
+        <AppWrapper>
           {children}
-          <Toaster />
-        </AppBody>
-      </SettingsProvider>
+        </AppWrapper>
+      </body>
     </html>
   );
 }
