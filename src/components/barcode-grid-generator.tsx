@@ -60,6 +60,7 @@ export function BarcodeGridGenerator({
   const [focusedRowRight, setFocusedRowRight] = useState(0);
 
   
+  const containerCardRef = useRef<HTMLDivElement>(null);
   const gridContainerRef = useRef<HTMLDivElement>(null);
   const leftScrollContainerRef = useRef<HTMLDivElement>(null);
   const rightScrollContainerRef = useRef<HTMLDivElement>(null);
@@ -137,7 +138,7 @@ export function BarcodeGridGenerator({
     };
     
     const shouldCalculate = !parsedBarcodes.some(b => b.context === 'direct');
-    if (!shouldCalculate) {
+    if (!shouldCalculate && parsedBarcodes.length > 0) {
       return null;
     }
 
@@ -497,17 +498,16 @@ export function BarcodeGridGenerator({
   }, [barcodes.length, focusModeThreshold]);
 
   useEffect(() => {
-    // When new barcodes are generated, scroll to the grid and blur the textarea (if in focus mode).
     if (barcodes.length > 0) {
       if (isFocusMode) {
         textareaRef.current?.blur();
       }
-      // Give the browser a moment to render before scrolling
       setTimeout(() => {
-        gridContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const targetRef = isTeamWorkActive ? gridContainerRef : containerCardRef;
+        targetRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 100);
     }
-  }, [barcodes.length, isFocusMode]);
+  }, [barcodes, isFocusMode, isTeamWorkActive]);
 
   useEffect(() => {
     if (!isFocusMode || barcodes.length === 0) return;
@@ -670,7 +670,7 @@ export function BarcodeGridGenerator({
   const displayStats = statistics || { levelIJ: 0, levelKL: 0, levelC: 0, groundFloor: 0 };
     
   return (
-    <Card className="relative overflow-visible">
+    <Card className="relative overflow-visible" ref={containerCardRef}>
       <CardHeader className="flex-col items-center gap-4 sm:flex-row sm:justify-between">
         <CardTitle className="text-2xl font-semibold flex items-center gap-2">
             <Boxes className="w-7 h-7" />
@@ -900,5 +900,3 @@ export function BarcodeGridGenerator({
     </Card>
   );
 }
-
-    
