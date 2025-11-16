@@ -1,7 +1,7 @@
 
 'use client';
 
-import { BarChart2, Settings } from 'lucide-react';
+import { BarChart2, Info, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -17,6 +17,7 @@ import { useSettings } from '@/context/settings-context';
 import { Separator } from './ui/separator';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Switch } from './ui/switch';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 export function SettingsSheet() {
   const {
@@ -50,15 +51,25 @@ export function SettingsSheet() {
         </SheetHeader>
         <div className="py-6 space-y-8">
             <div>
-                <h4 className="text-lg font-medium mb-4 flex items-center gap-2">
-                  <BarChart2 className='w-5 h-5' />
-                  Global Statistics
-                </h4>
+                <div className="flex items-center gap-2 mb-4">
+                  <h4 className="text-lg font-medium flex items-center gap-2">
+                    <BarChart2 className='w-5 h-5' />
+                    Global Statistics
+                  </h4>
+                  {firstGenerationDate && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info className='w-4 h-4 text-muted-foreground' />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>First generation date: {firstGenerationDate}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                </div>
                 <div className="grid gap-2 text-sm">
-                    <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">First generation date:</span>
-                        <span className="font-semibold">{firstGenerationDate || 'N/A'}</span>
-                    </div>
                     <div className="flex items-center justify-between">
                         <span className="text-muted-foreground">Total Consignment Barcodes:</span>
                         <span className="font-semibold">{totalConsignmentBarcodes}</span>
