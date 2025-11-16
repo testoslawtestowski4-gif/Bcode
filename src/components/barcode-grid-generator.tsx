@@ -55,12 +55,12 @@ export function BarcodeGridGenerator({
   const { 
     gridHeight, gridColumns, setGridColumns, 
     pasteOnFocus, setPasteOnFocus, focusModeThreshold, focusModeVisibleRows,
+    isFocusMode, setIsFocusMode,
   } = useSettings();
   
   const debouncedValue = useDebounce(inputValue, 500);
   const PREDEFINED_COLUMNS = [1, 4, 6];
 
-  const [isFocusMode, setIsFocusMode] = useState(false);
   const [focusedRow, setFocusedRow] = useState(0);
   const [focusedRowLeft, setFocusedRowLeft] = useState(0);
   const [focusedRowRight, setFocusedRowRight] = useState(0);
@@ -501,7 +501,7 @@ export function BarcodeGridGenerator({
     setFocusedRow(0);
     setFocusedRowLeft(0);
     setFocusedRowRight(0);
-  }, [barcodes.length, focusModeThreshold]);
+  }, [barcodes.length, focusModeThreshold, setIsFocusMode]);
 
   useEffect(() => {
     const hasBarcodes = barcodes.length > 0;
@@ -695,15 +695,6 @@ export function BarcodeGridGenerator({
                   onCheckedChange={setPasteOnFocus}
               />
               <Label htmlFor="paste-on-click">Paste on click</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-                <Switch
-                    id="focus-mode"
-                    checked={isFocusMode}
-                    onCheckedChange={setIsFocusMode}
-                    disabled={barcodes.length === 0}
-                />
-                <Label htmlFor="focus-mode">Focus Mode</Label>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

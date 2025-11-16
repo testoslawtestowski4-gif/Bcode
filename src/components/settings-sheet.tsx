@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Settings } from 'lucide-react';
@@ -21,6 +22,7 @@ export function SettingsSheet() {
   const {
     columnHeight, setColumnHeight,
     gridHeight, setGridHeight,
+    isFocusMode, setIsFocusMode,
     focusModeThreshold, setFocusModeThreshold,
     focusModeVisibleRows, setFocusModeVisibleRows,
     printFontSize, setPrintFontSize,
@@ -62,7 +64,7 @@ export function SettingsSheet() {
                 <div className="grid gap-6">
                     <div className="grid grid-cols-1 items-center gap-4">
                         <Label htmlFor="grid-height">Barcode Height: {gridHeight}</Label>
-                        <Slider id="grid-height" min={10} max={100} step={5} value={[gridHeight]} onValuecChange={(value) => setGridHeight(value[0])} />
+                        <Slider id="grid-height" min={10} max={100} step={5} value={[gridHeight]} onValueChange={(value) => setGridHeight(value[0])} />
                     </div>
                 </div>
             </div>
@@ -72,6 +74,14 @@ export function SettingsSheet() {
             <div>
                 <h4 className="text-lg font-medium mb-4">Focus Mode</h4>
                 <div className="space-y-6">
+                    <div className="flex items-center space-x-2">
+                        <Switch
+                            id="focus-mode"
+                            checked={isFocusMode}
+                            onCheckedChange={setIsFocusMode}
+                        />
+                        <Label htmlFor="focus-mode">Enable Focus Mode</Label>
+                    </div>
                     <div className="grid grid-cols-1 items-center gap-4">
                         <Label htmlFor="focus-threshold">Auto-enable threshold: {focusModeThreshold} barcodes</Label>
                         <Slider id="focus-threshold" min={10} max={50} step={1} value={[focusModeThreshold]} onValueChange={(value) => setFocusModeThreshold(value[0])} />

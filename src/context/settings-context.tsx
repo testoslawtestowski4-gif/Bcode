@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
@@ -14,6 +15,8 @@ interface SettingsContextType {
   setGridColumns: (columns: number) => void;
   gridHeight: number;
   setGridHeight: (height: number) => void;
+  isFocusMode: boolean;
+  setIsFocusMode: (enabled: boolean) => void;
   focusModeThreshold: number;
   setFocusModeThreshold: (threshold: number) => void;
   focusModeVisibleRows: number;
@@ -49,6 +52,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   // Grid settings
   const [gridColumns, _setGridColumns] = useState(6);
   const [gridHeight, _setGridHeight] = useState(55);
+  const [isFocusMode, _setIsFocusMode] = useState(false);
   const [focusModeThreshold, _setFocusModeThreshold] = useState(15);
   const [focusModeVisibleRows, _setFocusModeVisibleRows] = useState(1);
   
@@ -70,6 +74,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     const storedTheme = localStorage.getItem('app-theme') || 'light';
     const storedPasteOnFocus = localStorage.getItem('paste-on-focus');
     const storedTeamWork = localStorage.getItem('team-work-enabled');
+    const storedIsFocusMode = localStorage.getItem('is-focus-mode');
     const storedFocusThreshold = localStorage.getItem('focus-mode-threshold');
     const storedFocusRows = localStorage.getItem('focus-mode-visible-rows');
     const storedColumnHeight = localStorage.getItem('column-height');
@@ -86,6 +91,10 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
     if (storedTeamWork !== null) {
       _setTeamWorkEnabled(storedTeamWork === 'true');
+    }
+
+    if (storedIsFocusMode !== null) {
+      _setIsFocusMode(storedIsFocusMode === 'true');
     }
 
     if (storedFocusThreshold !== null) {
@@ -137,6 +146,11 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('team-work-enabled', String(enabled));
     _setTeamWorkEnabled(enabled);
   }
+  
+  const setIsFocusMode = (enabled: boolean) => {
+    localStorage.setItem('is-focus-mode', String(enabled));
+    _setIsFocusMode(enabled);
+  };
 
   const setFocusModeThreshold = (threshold: number) => {
     localStorage.setItem('focus-mode-threshold', String(threshold));
@@ -186,6 +200,8 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       setGridColumns,
       gridHeight,
       setGridHeight,
+      isFocusMode,
+      setIsFocusMode,
       focusModeThreshold,
       setFocusModeThreshold,
       focusModeVisibleRows,
