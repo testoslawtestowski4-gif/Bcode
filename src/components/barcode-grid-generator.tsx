@@ -662,7 +662,7 @@ export function BarcodeGridGenerator({
   const currentGridHeight = gridColumns === 1 ? 86 : gridHeight;
   const teamWorkGridColumns = 4; // Hardcode to 4 for Team Work mode
 
-  const showStats = statistics && (isTeamWorkActive || barcodes.length > 0);
+  const showStats = statistics && barcodes.length > 0;
   const displayStats = statistics || { levelIJ: 0, levelKL: 0, levelC: 0, groundFloor: 0 };
     
   return (
