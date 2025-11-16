@@ -12,6 +12,7 @@ import { MainLayout } from '@/components/main-layout';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/context/settings-context';
 import { AnimationSwitcher } from '@/components/animation-switcher';
+import { ConsignmentSwitcher } from '@/components/consignment-switcher';
 
 export default function Home() {
   const { theme, teamWorkEnabled } = useSettings();
@@ -24,9 +25,6 @@ export default function Home() {
   const [allConsignmentBarcodes, setAllConsignmentBarcodes] = useState<BarcodeData[]>([]);
   const [activeConsignmentBarcode, setActiveConsignmentBarcode] = useState<string | null>(null);
   
-  // State for consignment view collapse
-  const [isConsignmentCollapsed, setIsConsignmentCollapsed] = useState(true);
-
   const isSleekTheme = theme === 'sleek-theme';
 
   useEffect(() => {
@@ -36,21 +34,6 @@ export default function Home() {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-  
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const columnEl = document.getElementById('consignment-view');
-      const gridEl = document.getElementById('container-view');
-      
-      if (columnEl && !columnEl.contains(event.target as Node) && gridEl && gridEl.contains(event.target as Node)) {
-        setIsConsignmentCollapsed(true);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
   }, []);
 
   const scrollToTop = () => {
@@ -84,8 +67,6 @@ export default function Home() {
     if (newActiveId) {
       setActiveConsignmentBarcode(newActiveId);
     }
-    
-    setIsConsignmentCollapsed(false);
   };
   
   const activeConsignmentCodeValue = allConsignmentBarcodes.find(b => b.id === activeConsignmentBarcode)?.value || null;
@@ -100,10 +81,23 @@ export default function Home() {
           <div className="container mx-auto flex h-16 items-center justify-between p-4 relative">
               <div className="flex items-center gap-3">
                 <Barcode className="h-8 w-8 text-primary" />
-                <h1 className={cn("text-3xl font-bold text-primary")}>
-                  BCode Maker
-                </h1>
+                {!isTeamWorkActive && (
+                  <h1 className={cn("text-3xl font-bold text-primary")}>
+                    BCode Maker
+                  </h1>
+                )}
               </div>
+              
+              {isTeamWorkActive && (
+                  <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                    <ConsignmentSwitcher 
+                      allBarcodes={allConsignmentBarcodes}
+                      activeBarcode={activeConsignmentBarcode}
+                      setActiveBarcode={setActiveConsignmentBarcode}
+                    />
+                  </div>
+              )}
+
               <div className="flex items-center gap-2">
                   <Button variant="outline" size="icon" onClick={() => setShowDraggableBarcode(!showDraggableBarcode)}>
                     <Barcode className="h-4 w-4" />
@@ -116,14 +110,8 @@ export default function Home() {
           </div>
         </header>
         <main className={cn("flex-grow container mx-auto p-4 sm:p-6 md:p-8", showDraggableBarcode && "pt-44")}>
-            <MainLayout 
-              isCollapsed={isConsignmentCollapsed} 
-              setIsCollapsed={setIsConsignmentCollapsed}
-              isTeamWorkActive={isTeamWorkActive}
-            >
+            <MainLayout isTeamWorkActive={isTeamWorkActive}>
                 <BarcodeColumnGenerator 
-                    isCollapsed={isConsignmentCollapsed}
-                    setIsCollapsed={setIsConsignmentCollapsed}
                     inputValue={consignmentInputValue}
                     setInputValue={setConsignmentInputValue}
                     allBarcodes={allConsignmentBarcodes}
