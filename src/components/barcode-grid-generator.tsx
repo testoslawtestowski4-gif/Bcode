@@ -573,6 +573,7 @@ export function BarcodeGridGenerator({
   };
 
   const currentGridHeight = gridColumns === 1 ? 86 : gridHeight;
+  const teamWorkGridColumns = 4; // Hardcode to 4 for Team Work mode
 
   const showStats = statistics || isSpeedMode;
   const displayStats = statistics || { levelIJ: 0, levelKL: 0, levelC: 0, groundFloor: 0 };
@@ -698,15 +699,15 @@ export function BarcodeGridGenerator({
         <div className="mt-6" ref={gridContainerRef}>
           {barcodes.length > 0 ? (
              isTeamWorkActive ? (
-                <div className="grid grid-cols-2 gap-8">
-                  <div>
+                <div className="flex justify-between gap-8">
+                  <div className="w-[48%]">
                     <h3 className="text-lg font-semibold text-center mb-4">Part 1 ({leftBarcodes.length} items)</h3>
                     <div 
                       className="grid gap-4"
-                      style={{ gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))` }}
+                      style={{ gridTemplateColumns: `repeat(${teamWorkGridColumns}, minmax(0, 1fr))` }}
                     >
                       {leftBarcodes.map((value, index) => {
-                        const isBlurred = isFocusMode && Math.floor(index / gridColumns / focusModeVisibleRows) !== focusedRow;
+                        const isBlurred = isFocusMode && Math.floor(index / teamWorkGridColumns / focusModeVisibleRows) !== focusedRow;
                         return (
                           <GridBarcode
                             key={`${value}-${index}`}
@@ -714,21 +715,21 @@ export function BarcodeGridGenerator({
                             index={index}
                             height={currentGridHeight}
                             isBlurred={isBlurred}
-                            isOneColumn={gridColumns === 1}
+                            isOneColumn={false}
                           />
                         );
                       })}
                     </div>
                   </div>
-                  <div>
+                  <div className="w-[48%]">
                     <h3 className="text-lg font-semibold text-center mb-4">Part 2 ({rightBarcodes.length} items)</h3>
                     <div
                       className="grid gap-4"
-                      style={{ gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))` }}
+                      style={{ gridTemplateColumns: `repeat(${teamWorkGridColumns}, minmax(0, 1fr))` }}
                     >
                       {rightBarcodes.map((value, index) => {
                         const originalIndex = index + midPoint;
-                        const isBlurred = isFocusMode && Math.floor(originalIndex / gridColumns / focusModeVisibleRows) !== focusedRow;
+                        const isBlurred = isFocusMode && Math.floor(originalIndex / teamWorkGridColumns / focusModeVisibleRows) !== focusedRow;
                         return (
                           <GridBarcode
                             key={`${value}-${originalIndex}`}
@@ -736,7 +737,7 @@ export function BarcodeGridGenerator({
                             index={originalIndex}
                             height={currentGridHeight}
                             isBlurred={isBlurred}
-                            isOneColumn={gridColumns === 1}
+                            isOneColumn={false}
                           />
                         );
                       })}
