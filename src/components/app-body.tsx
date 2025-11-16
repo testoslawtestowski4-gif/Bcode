@@ -1,8 +1,11 @@
+
 'use client';
 
 import { useSettings } from '@/context/settings-context';
 import { cn } from '@/lib/utils';
 import { Inter, Source_Code_Pro } from 'next/font/google';
+import { Snowfall } from '@/components/snowfall';
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -14,6 +17,11 @@ const sourceCodePro = Source_Code_Pro({
   variable: '--font-code',
   weight: ['400', '500'],
 });
+
+function ConditionalSnowfall() {
+  const { showSnowfall } = useSettings();
+  return showSnowfall ? <Snowfall /> : null;
+}
 
 export function AppBody({ children }: { children: React.ReactNode }) {
   const { theme } = useSettings();
@@ -28,6 +36,8 @@ export function AppBody({ children }: { children: React.ReactNode }) {
       )}
     >
       {children}
+      <ConditionalSnowfall />
+      <Toaster />
     </body>
   );
 }
