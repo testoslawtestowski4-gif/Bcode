@@ -7,7 +7,7 @@ const Snowfall = () => {
   const snowflakeCount = 150;
 
   return (
-    <div className="snowfall-container pointer-events-none fixed inset-0 -z-10">
+    <div className="snowfall-container pointer-events-none fixed inset-0 z-0">
       {Array.from({ length: snowflakeCount }).map((_, i) => (
         <div
           key={i}

@@ -13,6 +13,7 @@ import { MainLayout } from '@/components/main-layout';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/context/settings-context';
 import { format } from 'date-fns';
+import Snowfall from '@/components/snowfall';
 
 export default function Home() {
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
@@ -33,6 +34,7 @@ export default function Home() {
     setTotalContainerBarcodes,
     firstGenerationDate,
     setFirstGenerationDate,
+    showSnowfall
   } = useSettings();
 
   useEffect(() => {
@@ -101,7 +103,8 @@ export default function Home() {
   
   return (
     <>
-      <div className="flex flex-col min-h-screen bg-background text-foreground">
+      {showSnowfall && <Snowfall />}
+      <div className="flex flex-col min-h-screen bg-background text-foreground relative z-0">
         <header className={cn(
             "w-full bg-background/95 backdrop-blur-sm z-10 border-b border-border"
         )}>
@@ -126,7 +129,7 @@ export default function Home() {
               </div>
           </div>
         </header>
-        <main className={cn("flex-grow container mx-auto p-4 sm:p-6 md:p-8", showDraggableBarcode && "pt-44")}>
+        <main className={cn("flex-grow container mx-auto p-4 sm:p-6 md:p-8 z-10", showDraggableBarcode && "pt-44")}>
             <MainLayout isTeamWorkActive={isTeamWorkActive}>
                 <BarcodeColumnGenerator 
                     inputValue={consignmentInputValue}
@@ -150,7 +153,7 @@ export default function Home() {
                 />
             </MainLayout>
         </main>
-        <footer className="mt-12 py-6 border-t">
+        <footer className="mt-12 py-6 border-t z-10">
           <div className="container flex flex-col items-center justify-center gap-2 text-center">
               <p className="text-sm text-muted-foreground">
                 Created by Damian Suchecki
