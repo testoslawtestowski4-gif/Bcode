@@ -722,6 +722,14 @@ export function BarcodeGridGenerator({
               />
               <Label htmlFor="paste-on-click">Paste on click</Label>
             </div>
+            <div className="flex items-center space-x-2">
+              <Switch
+                  id="focus-mode"
+                  checked={isFocusMode}
+                  onCheckedChange={setIsFocusMode}
+              />
+              <Label htmlFor="focus-mode">Focus Mode</Label>
+            </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon">
@@ -806,36 +814,43 @@ export function BarcodeGridGenerator({
                   </CardTitle>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-muted-foreground">Total: {barcodes.length}</span>
-                  <Button variant="ghost" size="icon" onClick={handlePrintStats} title="Print statistics" disabled={!statistics}>
-                      <Printer className="w-4 h-4" />
-                      <span className="sr-only">Print statistics</span>
-                  </Button>
                   <Button variant="ghost" size="icon" onClick={handleOpenStatsPage} title="Open statistics in new tab" disabled={!statistics}>
                       <ExternalLink className="w-4 h-4" />
                       <span className="sr-only">Open statistics in new tab</span>
                   </Button>
+                  <Button variant="ghost" size="icon" onClick={handlePrintStats} title="Print statistics" disabled={!statistics}>
+                      <Printer className="w-4 h-4" />
+                      <span className="sr-only">Print statistics</span>
+                  </Button>
                 </div>
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <div className="grid grid-cols-2 gap-x-8 gap-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">I & J</span>
-                  <span className="font-semibold text-base">{displayStats.levelIJ}</span>
+                <div className="grid grid-cols-3 gap-4 items-start">
+                    <div className="col-span-1 space-y-2">
+                        <div className="flex items-center justify-between">
+                            <span className="text-muted-foreground text-sm">I & J</span>
+                            <span className="font-semibold text-base">{displayStats.levelIJ}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <span className="text-muted-foreground text-sm">K & L</span>
+                            <span className="font-semibold text-base">{displayStats.levelKL}</span>
+                        </div>
+                    </div>
+                    <div className="col-span-1 space-y-2">
+                        <div className="flex items-center justify-between">
+                            <span className="text-muted-foreground text-sm">Level C</span>
+                            <span className="font-semibold text-base">{displayStats.levelC}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <span className="text-muted-foreground text-sm">Ground</span>
+                            <span className="font-semibold text-base">{displayStats.groundFloor}</span>
+                        </div>
+                    </div>
+                    <div className="col-span-1 flex flex-col items-center justify-center text-center pl-2 border-l">
+                        <span className="text-sm text-muted-foreground">Total</span>
+                        <span className="text-3xl font-bold">{barcodes.length}</span>
+                    </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Level C</span>
-                  <span className="font-semibold text-base">{displayStats.levelC}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">K & L</span>
-                  <span className="font-semibold text-base">{displayStats.levelKL}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Ground Floor</span>
-                  <span className="font-semibold text-base">{displayStats.groundFloor}</span>
-                </div>
-              </div>
             </CardContent>
           </Card>
         </div>
@@ -946,5 +961,7 @@ export function BarcodeGridGenerator({
     </Card>
   );
 }
+
+    
 
     
