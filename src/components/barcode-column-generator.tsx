@@ -23,7 +23,6 @@ interface BarcodeColumnGeneratorProps {
   setAllBarcodes: Dispatch<SetStateAction<BarcodeData[]>>;
   activeBarcode: string | null;
   setActiveBarcode: Dispatch<SetStateAction<string | null>>;
-  setShowSnowfall: (enabled: boolean) => void;
 }
 
 // Validation helper
@@ -36,7 +35,7 @@ export const isValidBarcode = (code: string) => {
 
 export function BarcodeColumnGenerator({ 
   inputValue, setInputValue, allBarcodes, setAllBarcodes,
-  activeBarcode, setActiveBarcode, setShowSnowfall
+  activeBarcode, setActiveBarcode
 }: BarcodeColumnGeneratorProps) {
   const { 
     columnHeight, pasteOnFocus, printFontSize, 
@@ -48,13 +47,6 @@ export function BarcodeColumnGenerator({
   
   const debouncedValue = useDebounce(inputValue, 500);
   const { toast } = useToast();
-
-  useEffect(() => {
-    // Easter egg check for snowfall
-    if (inputValue.toLowerCase().trim() === 'xmass') {
-      setShowSnowfall(true);
-    }
-  }, [inputValue, setShowSnowfall]);
 
   useEffect(() => {
     // Find all alphanumeric sequences in the input text

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { BarChart2, Info, Settings, Snowflake } from 'lucide-react';
+import { BarChart2, Info, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -33,7 +33,6 @@ export function SettingsSheet() {
     gamificationEnabled, setGamificationEnabled,
     totalConsignmentBarcodes, totalContainerBarcodes,
     firstGenerationDate,
-    showSnowfall, setShowSnowfall,
   } = useSettings();
 
   return (
@@ -212,26 +211,6 @@ export function SettingsSheet() {
                     </div>
                 </div>
             </div>
-
-            {showSnowfall && (
-              <>
-                <Separator />
-                <div>
-                  <h4 className="text-lg font-medium mb-4 flex items-center gap-2">
-                    <Snowflake className='w-5 h-5' />
-                    Festive Effects
-                  </h4>
-                  <div className="flex items-center space-x-2">
-                      <Switch
-                          id="snowfall-switch"
-                          checked={showSnowfall}
-                          onCheckedChange={setShowSnowfall}
-                      />
-                      <Label htmlFor="snowfall-switch">Enable Snowfall</Label>
-                  </div>
-                </div>
-              </>
-            )}
         </div>
       </SheetContent>
     </Sheet>

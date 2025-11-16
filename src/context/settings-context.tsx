@@ -51,10 +51,6 @@ interface SettingsContextType {
   setTotalContainerBarcodes: Dispatch<SetStateAction<number>>;
   firstGenerationDate: string | null;
   setFirstGenerationDate: (date: string) => void;
-
-  // Easter Egg Settings
-  showSnowfall: boolean;
-  setShowSnowfall: (enabled: boolean) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -91,10 +87,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const [totalContainerBarcodes, setTotalContainerBarcodes] = useState(0);
   const [firstGenerationDate, _setFirstGenerationDate] = useState<string | null>(null);
 
-  // Easter Egg Settings
-  const [showSnowfall, _setShowSnowfall] = useState(false);
-
-
   useEffect(() => {
     // --- Standard settings loading ---
     const storedTheme = localStorage.getItem('app-theme') || 'light';
@@ -114,27 +106,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     const storedTotalContainer = localStorage.getItem('total-container-barcodes');
     const storedFirstDate = localStorage.getItem('first-generation-date');
     _setTheme(storedTheme);
-
-    // --- Snowfall Easter Egg Logic ---
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth(); // 0-11 (Jan=0, Dec=11)
-    const currentYear = currentDate.getFullYear();
-    const snowDisabledKey = `snowfall-disabled-${currentYear}`;
-
-    // Active in December (11) and January (0)
-    if (currentMonth === 11 || currentMonth === 0) { 
-      const isSnowDisabled = localStorage.getItem(snowDisabledKey) === 'true';
-      if (!isSnowDisabled) {
-        _setShowSnowfall(true);
-      }
-    } else {
-      // Not Dec/Jan, clear any old disabled keys to reset for next year
-      Object.keys(localStorage).forEach(key => {
-        if (key.startsWith('snowfall-disabled-')) {
-          localStorage.removeItem(key);
-        }
-      });
-    }
 
     // --- Rest of settings loading ---
     if (storedPasteOnFocus !== null) _setPasteOnFocus(storedPasteOnFocus === 'true');
@@ -167,12 +138,17 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     _setTheme(newTheme);
   }, []);
 
-  const createBooleanSetter = <T extends (value: boolean) => void>(setter: T, key: string) => {
-    return useCallback((value: boolean) => {
-      localStorage.setItem(key, String(value));
-      setter(value);
+  const createBooleanSetter = <T extends (value: boolean | ((prev: boolean) => boolean)) => void>(setter: T, key: string) => {
+    return useCallback((value: boolean | ((prev: boolean) => boolean)) => {
+      // @ts-ignore
+      setter(prevValue => {
+        const newValue = typeof value === 'function' ? value(prevValue) : value;
+        localStorage.setItem(key, String(newValue));
+        return newValue;
+      });
     }, [setter, key]);
   };
+  
 
   const setPasteOnFocus = createBooleanSetter(_setPasteOnFocus, 'paste-on-focus');
   const setTeamWorkEnabled = createBooleanSetter(_setTeamWorkEnabled, 'team-work-enabled');
@@ -206,14 +182,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [firstGenerationDate]);
 
-  const setShowSnowfall = useCallback((enabled: boolean) => {
-    _setShowSnowfall(enabled);
-    if (!enabled) {
-      const currentYear = new Date().getFullYear();
-      localStorage.setItem(`snowfall-disabled-${currentYear}`, 'true');
-    }
-  }, []);
-
   return (
     <SettingsContext.Provider value={{
       columnHeight, setColumnHeight,
@@ -232,7 +200,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       totalConsignmentBarcodes, setTotalConsignmentBarcodes,
       totalContainerBarcodes, setTotalContainerBarcodes,
       firstGenerationDate, setFirstGenerationDate,
-      showSnowfall, setShowSnowfall,
     }}>
       {children}
     </SettingsContext.Provider>

@@ -13,7 +13,6 @@ import { MainLayout } from '@/components/main-layout';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/context/settings-context';
 import { format } from 'date-fns';
-import { Snowfall } from '@/components/snowfall';
 
 export default function Home() {
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
@@ -34,7 +33,6 @@ export default function Home() {
     setTotalContainerBarcodes,
     firstGenerationDate,
     setFirstGenerationDate,
-    setShowSnowfall,
   } = useSettings();
 
   useEffect(() => {
@@ -137,7 +135,6 @@ export default function Home() {
                     setAllBarcodes={setAllConsignmentBarcodes}
                     activeBarcode={activeConsignmentBarcode}
                     setActiveBarcode={setActiveConsignmentBarcode}
-                    setShowSnowfall={setShowSnowfall}
                 />
                 <BarcodeGridGenerator 
                   inputValue={containerInputValue}
