@@ -30,10 +30,6 @@ interface SettingsContextType {
   // Theme Settings
   theme: string;
   setTheme: (theme: string) => void;
-  
-  // Performance Settings
-  animationsEnabled: boolean;
-  setAnimationsEnabled: (enabled: boolean) => void;
 
   // Paste on Focus setting
   pasteOnFocus: boolean;
@@ -63,9 +59,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
   // Theme settings
   const [theme, _setTheme] = useState('light');
-
-  // Performance settings
-  const [animationsEnabled, _setAnimationsEnabled] = useState(false);
   
   // Paste on Focus setting
   const [pasteOnFocus, _setPasteOnFocus] = useState(true);
@@ -75,7 +68,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const storedTheme = localStorage.getItem('app-theme') || 'light';
-    const storedAnimations = localStorage.getItem('animations-enabled');
     const storedPasteOnFocus = localStorage.getItem('paste-on-focus');
     const storedTeamWork = localStorage.getItem('team-work-enabled');
     const storedFocusThreshold = localStorage.getItem('focus-mode-threshold');
@@ -87,12 +79,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     const storedPrintFontWeight = localStorage.getItem('print-font-weight');
     const storedPrintOrientation = localStorage.getItem('print-orientation');
 
-    if (storedAnimations !== null) {
-        _setAnimationsEnabled(storedAnimations === 'true');
-    } else {
-        _setAnimationsEnabled(false);
-        localStorage.setItem('animations-enabled', 'false');
-    }
 
     if (storedPasteOnFocus !== null) {
       _setPasteOnFocus(storedPasteOnFocus === 'true');
@@ -141,11 +127,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('app-theme', newTheme);
     _setTheme(newTheme);
   };
-
-  const setAnimationsEnabled = (enabled: boolean) => {
-    localStorage.setItem('animations-enabled', String(enabled));
-    _setAnimationsEnabled(enabled);
-  }
 
   const setPasteOnFocus = (enabled: boolean) => {
     localStorage.setItem('paste-on-focus', String(enabled));
@@ -217,8 +198,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       setPrintOrientation,
       theme,
       setTheme,
-      animationsEnabled,
-      setAnimationsEnabled,
       pasteOnFocus,
       setPasteOnFocus,
       teamWorkEnabled,

@@ -16,7 +16,7 @@ const sourceCodePro = Source_Code_Pro({
 });
 
 export function AppBody({ children }: { children: React.ReactNode }) {
-  const { theme, animationsEnabled } = useSettings();
+  const { theme } = useSettings();
 
   return (
     <body
@@ -24,8 +24,7 @@ export function AppBody({ children }: { children: React.ReactNode }) {
         'min-h-screen bg-background font-sans antialiased',
         inter.variable,
         sourceCodePro.variable,
-        theme,
-        !animationsEnabled && 'no-animations'
+        theme
       )}
     >
       {children}

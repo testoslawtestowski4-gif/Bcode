@@ -62,7 +62,7 @@ export function SettingsSheet() {
                 <div className="grid gap-6">
                     <div className="grid grid-cols-1 items-center gap-4">
                         <Label htmlFor="grid-height">Barcode Height: {gridHeight}</Label>
-                        <Slider id="grid-height" min={10} max={100} step={5} value={[gridHeight]} onValueChange={(value) => setGridHeight(value[0])} />
+                        <Slider id="grid-height" min={10} max={100} step={5} value={[gridHeight]} onValuecChange={(value) => setGridHeight(value[0])} />
                     </div>
                 </div>
             </div>

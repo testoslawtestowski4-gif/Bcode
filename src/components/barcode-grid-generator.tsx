@@ -22,6 +22,8 @@ interface ParsedBarcode {
 }
 
 interface BarcodeGridGeneratorProps {
+  inputValue: string;
+  setInputValue: Dispatch<SetStateAction<string>>;
   onConsignmentCodeDetected: (code: string) => void;
   activeConsignmentCodeValue: string | null;
   isTeamWorkActive: boolean;
@@ -29,16 +31,18 @@ interface BarcodeGridGeneratorProps {
 }
 
 export function BarcodeGridGenerator({ 
+  inputValue,
+  setInputValue,
   onConsignmentCodeDetected, 
   activeConsignmentCodeValue,
   isTeamWorkActive,
   setContainerBarcodeCount
 }: BarcodeGridGeneratorProps) {
   const { 
-    gridHeight, gridColumns, setGridColumns, animationsEnabled, 
+    gridHeight, gridColumns, setGridColumns, 
     pasteOnFocus, setPasteOnFocus, focusModeThreshold, focusModeVisibleRows,
   } = useSettings();
-  const [inputValue, setInputValue] = useState('');
+  
   const debouncedValue = useDebounce(inputValue, 500);
   const PREDEFINED_COLUMNS = [1, 4, 6];
 
@@ -48,7 +52,6 @@ export function BarcodeGridGenerator({
   const gridContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const isSpeedMode = !animationsEnabled;
   const { toast } = useToast();
 
   const parsedBarcodes = useMemo(() => {
@@ -574,7 +577,7 @@ export function BarcodeGridGenerator({
   const currentGridHeight = gridColumns === 1 ? 86 : gridHeight;
   const teamWorkGridColumns = 4; // Hardcode to 4 for Team Work mode
 
-  const showStats = statistics || isSpeedMode;
+  const showStats = statistics;
   const displayStats = statistics || { levelIJ: 0, levelKL: 0, levelC: 0, groundFloor: 0 };
     
   return (

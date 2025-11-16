@@ -12,7 +12,6 @@ import { Barcode, ArrowUp, Users } from 'lucide-react';
 import { MainLayout } from '@/components/main-layout';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/context/settings-context';
-import { AnimationSwitcher } from '@/components/animation-switcher';
 import { ConsignmentSwitcher } from '@/components/consignment-switcher';
 
 export default function Home() {
@@ -28,6 +27,7 @@ export default function Home() {
   
   // State for container view (barcodes count)
   const [containerBarcodeCount, setContainerBarcodeCount] = useState(0);
+  const [containerInputValue, setContainerInputValue] = useState('');
 
   const isSleekTheme = theme === 'sleek-theme';
 
@@ -116,7 +116,6 @@ export default function Home() {
                     <Barcode className="h-4 w-4" />
                     <span className="sr-only">Show Draggable Barcode</span>
                   </Button>
-                  <AnimationSwitcher />
                   <ThemeSwitcher />
                   <SettingsSheet />
               </div>
@@ -133,6 +132,8 @@ export default function Home() {
                     setActiveBarcode={setActiveConsignmentBarcode}
                 />
                 <BarcodeGridGenerator 
+                  inputValue={containerInputValue}
+                  setInputValue={setContainerInputValue}
                   onConsignmentCodeDetected={handleConsignmentCodeDetected} 
                   activeConsignmentCodeValue={activeConsignmentCodeValue}
                   isTeamWorkActive={isTeamWorkActive}
