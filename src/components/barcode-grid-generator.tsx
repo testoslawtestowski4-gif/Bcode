@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { WinnerDisplay } from './winner-display';
+import JsBarcode from 'jsbarcode';
 
 
 interface ParsedBarcode {
@@ -529,6 +530,98 @@ export function BarcodeGridGenerator({
     }
   };
 
+  const handlePrintGrid = () => {
+    if (barcodes.length === 0) return;
+
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+        const barcodeHtml = barcodes.map((barcode, index) => 
+            `<div class="barcode-item">
+                <div class="barcode-index">#${index + 1}</div>
+                <svg id="barcode-${index}" class="barcode-svg"></svg>
+                <div class="barcode-value">${barcode}</div>
+            </div>`
+        ).join('');
+
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Print Barcode Grid</title>
+                    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+                    <style>
+                        @media print {
+                            @page { 
+                                size: A4; 
+                                margin: 1cm; 
+                            }
+                            body {
+                                -webkit-print-color-adjust: exact;
+                            }
+                        }
+                        body {
+                            font-family: sans-serif;
+                            display: grid;
+                            grid-template-columns: repeat(4, 1fr);
+                            gap: 1.5cm 1cm;
+                        }
+                        .barcode-item {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                            text-align: center;
+                            page-break-inside: avoid;
+                        }
+                        .barcode-svg {
+                            width: 100%;
+                            height: 40px;
+                        }
+                        .barcode-index {
+                            font-size: 10px;
+                            font-weight: bold;
+                            margin-bottom: 2px;
+                        }
+                        .barcode-value {
+                            font-family: monospace;
+                            font-size: 11px;
+                            margin-top: 2px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${barcodeHtml}
+                    <script>
+                        window.onload = function() {
+                            const barcodes = ${JSON.stringify(barcodes)};
+                            barcodes.forEach((barcode, index) => {
+                                try {
+                                    JsBarcode("#barcode-" + index, barcode, {
+                                        format: "CODE128",
+                                        displayValue: false,
+                                        width: 1.5,
+                                        height: 40,
+                                        margin: 0
+                                    });
+                                } catch (e) {
+                                    // Handle invalid barcodes
+                                    const svg = document.getElementById("barcode-" + index);
+                                    if (svg) {
+                                        svg.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="red" font-size="12">Error</text>';
+                                    }
+                                }
+                            });
+                            setTimeout(() => {
+                                window.print();
+                                window.close();
+                            }, 500); // Small delay to ensure barcodes render
+                        }
+                    </script>
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+  };
 
   useEffect(() => {
     if (barcodes.length > 0) {
@@ -871,7 +964,20 @@ export function BarcodeGridGenerator({
           </Card>
         </div>
 
-        <div className="mt-6" ref={gridContainerRef}>
+        <div className="mt-6 relative" ref={gridContainerRef}>
+          {barcodes.length > 0 && (
+            <Button
+                variant="outline"
+                size="icon"
+                onClick={handlePrintGrid}
+                className="absolute -top-4 right-2 z-10"
+                title="Print Grid"
+            >
+                <Printer className="w-4 h-4" />
+                <span className="sr-only">Print Grid</span>
+            </Button>
+          )}
+
           {barcodes.length > 0 ? (
              isTeamWorkActive ? (
                 <div className="flex justify-between gap-8">
@@ -979,3 +1085,5 @@ export function BarcodeGridGenerator({
     </Card>
   );
 }
+
+    
