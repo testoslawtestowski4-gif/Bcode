@@ -39,6 +39,7 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
   const [focusedRow, setFocusedRow] = useState(0);
   
   const gridContainerRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
   const isSpeedMode = !animationsEnabled;
   const { toast } = useToast();
@@ -460,6 +461,13 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
   }, [barcodes.length, focusModeThreshold]);
 
   useEffect(() => {
+    // When new barcodes are generated and focus mode is on, blur the textarea.
+    if (isFocusMode && barcodes.length > 0) {
+      textareaRef.current?.blur();
+    }
+  }, [barcodes, isFocusMode]);
+
+  useEffect(() => {
     if (!isFocusMode || barcodes.length === 0) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -606,6 +614,7 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
         <div className={`grid grid-cols-1 ${showStats ? 'sm:grid-cols-2' : ''} gap-6`}>
           <div className="relative">
             <Textarea
+              ref={textareaRef}
               placeholder="Paste your list of codes here..."
               className="w-full resize-none"
               rows={5}
