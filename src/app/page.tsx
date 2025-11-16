@@ -153,15 +153,8 @@ export default function Home() {
         <footer className="mt-12 py-6 border-t">
           <div className="container flex flex-col items-center justify-center gap-2 text-center">
               <p className="text-sm text-muted-foreground">
-                Created, designed, and engineered by Damian Suchecki
+                Created by Damian Suchecki
               </p>
-              <a 
-                href="mailto:suchecki.damian@gmail.com" 
-                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                <Mail className="h-4 w-4" />
-                <span>suchecki.damian@gmail.com</span>
-              </a>
           </div>
         </footer>
       </div>
