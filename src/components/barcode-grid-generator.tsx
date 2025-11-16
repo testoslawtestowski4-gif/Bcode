@@ -129,18 +129,17 @@ export function BarcodeGridGenerator({
   };
   
   const statistics = useMemo(() => {
-    const shouldCalculate = !parsedBarcodes.some(b => b.context === 'direct');
-    
-    if (!shouldCalculate) {
-      return null;
-    }
-
     const stats = {
       levelIJ: 0,
       levelKL: 0,
       levelC: 0,
       groundFloor: 0,
     };
+    
+    const shouldCalculate = !parsedBarcodes.some(b => b.context === 'direct');
+    if (!shouldCalculate) {
+      return null;
+    }
 
     for (const barcode of parsedBarcodes) {
         const level = getBarcodeLevel(barcode.context);
@@ -662,7 +661,6 @@ export function BarcodeGridGenerator({
   const currentGridHeight = gridColumns === 1 ? 86 : gridHeight;
   const teamWorkGridColumns = 4; // Hardcode to 4 for Team Work mode
 
-  const showStats = statistics && barcodes.length > 0;
   const displayStats = statistics || { levelIJ: 0, levelKL: 0, levelC: 0, groundFloor: 0 };
     
   return (
@@ -707,81 +705,79 @@ export function BarcodeGridGenerator({
         </div>
       </CardHeader>
       <CardContent className="p-6 pt-0">
-        <div className={`grid grid-cols-1 ${showStats ? (isTeamWorkActive ? 'lg:grid-cols-3' : 'sm:grid-cols-2') : ''} gap-6 items-start`}>
-          {isTeamWorkActive && (
-              <div className="flex flex-col gap-4 lg:col-span-1">
+        <div className={`grid grid-cols-1 ${isTeamWorkActive ? 'lg:grid-cols-3' : 'sm:grid-cols-2'} gap-6 items-start`}>
+          <div className={cn("grid gap-6 items-start", isTeamWorkActive ? "lg:col-span-2 grid-cols-1 sm:grid-cols-2" : "grid-cols-1")}>
+            <div className="flex flex-col gap-4">
+              {isTeamWorkActive && (
                 <ConsignmentSwitcher 
                   allBarcodes={allConsignmentBarcodes}
                   activeBarcode={activeConsignmentBarcode}
                   setActiveBarcode={setActiveConsignmentBarcode}
                   inContainer={true}
                 />
-              </div>
-          )}
-          <div className={cn("relative", isTeamWorkActive ? "lg:col-span-2" : "")}>
-            <Textarea
-              ref={textareaRef}
-              placeholder="Paste your list of codes here..."
-              className="w-full resize-none"
-              rows={5}
-              value={inputValue}
-              onChange={handleInputChange}
-              onClick={handleTextareaClick}
-              onPaste={handleInputChange}
-            />
-             {activeConsignmentCodeValue && !isTeamWorkActive && (
-                <div className="mt-4 flex items-center gap-3 text-foreground">
-                    <ListChecks className="w-6 h-6" />
-                    <div className="flex items-baseline gap-2">
-                        <span className="text-lg font-semibold">Consignment:</span>
-                        <span className="text-lg font-semibold font-code">{activeConsignmentCodeValue}</span>
-                    </div>
-                </div>
-            )}
+              )}
+              <Textarea
+                ref={textareaRef}
+                placeholder="Paste your list of codes here..."
+                className="w-full resize-none"
+                rows={5}
+                value={inputValue}
+                onChange={handleInputChange}
+                onClick={handleTextareaClick}
+                onPaste={handleInputChange}
+              />
+              {!isTeamWorkActive && activeConsignmentCodeValue && (
+                  <div className="mt-4 flex items-center gap-3 text-foreground">
+                      <ListChecks className="w-6 h-6" />
+                      <div className="flex items-baseline gap-2">
+                          <span className="text-lg font-semibold">Consignment:</span>
+                          <span className="text-lg font-semibold font-code">{activeConsignmentCodeValue}</span>
+                      </div>
+                  </div>
+              )}
+            </div>
           </div>
-          {showStats && (
-            <Card>
-              <CardHeader className="p-4 flex flex-row items-center justify-between">
-                  <div className='flex items-center gap-2'>
-                    <BarChart2 className="w-5 h-5" />
-                    <CardTitle className="text-lg">
-                      Statistics
-                    </CardTitle>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-muted-foreground">Total: {barcodes.length}</span>
-                    <Button variant="ghost" size="icon" onClick={handlePrintStats} title="Print statistics" disabled={!statistics}>
-                        <Printer className="w-4 h-4" />
-                        <span className="sr-only">Print statistics</span>
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={handleOpenStatsPage} title="Open statistics in new tab" disabled={!statistics}>
-                        <ExternalLink className="w-4 h-4" />
-                        <span className="sr-only">Open statistics in new tab</span>
-                    </Button>
-                  </div>
-              </CardHeader>
-              <CardContent className="p-4 pt-0">
-                <div className="grid grid-cols-2 gap-x-8 gap-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">I & J</span>
-                    <span className="font-semibold text-base">{displayStats.levelIJ}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Level C</span>
-                    <span className="font-semibold text-base">{displayStats.levelC}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">K & L</span>
-                    <span className="font-semibold text-base">{displayStats.levelKL}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Ground Floor</span>
-                    <span className="font-semibold text-base">{displayStats.groundFloor}</span>
-                  </div>
+          <Card className={cn(isTeamWorkActive ? "lg:col-span-1" : "")}>
+            <CardHeader className="p-4 flex flex-row items-center justify-between">
+                <div className='flex items-center gap-2'>
+                  <BarChart2 className="w-5 h-5" />
+                  <CardTitle className="text-lg">
+                    Statistics
+                  </CardTitle>
                 </div>
-              </CardContent>
-            </Card>
-          )}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-muted-foreground">Total: {barcodes.length}</span>
+                  <Button variant="ghost" size="icon" onClick={handlePrintStats} title="Print statistics" disabled={!statistics}>
+                      <Printer className="w-4 h-4" />
+                      <span className="sr-only">Print statistics</span>
+                  </Button>
+                  <Button variant="ghost" size="icon" onClick={handleOpenStatsPage} title="Open statistics in new tab" disabled={!statistics}>
+                      <ExternalLink className="w-4 h-4" />
+                      <span className="sr-only">Open statistics in new tab</span>
+                  </Button>
+                </div>
+            </CardHeader>
+            <CardContent className="p-4 pt-0">
+              <div className="grid grid-cols-2 gap-x-8 gap-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">I & J</span>
+                  <span className="font-semibold text-base">{displayStats.levelIJ}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Level C</span>
+                  <span className="font-semibold text-base">{displayStats.levelC}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">K & L</span>
+                  <span className="font-semibold text-base">{displayStats.levelKL}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Ground Floor</span>
+                  <span className="font-semibold text-base">{displayStats.groundFloor}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="mt-6" ref={gridContainerRef}>
@@ -890,3 +886,5 @@ export function BarcodeGridGenerator({
     </Card>
   );
 }
+
+    
