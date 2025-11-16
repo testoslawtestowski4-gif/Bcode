@@ -545,7 +545,6 @@ export function BarcodeGridGenerator({
   
       if (isTeamWorkActive) {
         const teamWorkGridColumns = 4;
-        // Team Work Mode Controls
         const totalRowsLeft = Math.ceil(leftBarcodes.length / teamWorkGridColumns);
         const rowChunksLeft = Math.ceil(totalRowsLeft / focusModeVisibleRows);
   
@@ -555,7 +554,7 @@ export function BarcodeGridGenerator({
         switch (event.code) {
           case 'Space':
             if (rowChunksLeft > 0) {
-              if (focusedRowLeft === rowChunksLeft - 1 && !player1Wins) {
+              if (focusedRowLeft === rowChunksLeft - 1 && !player1Wins && !player2Wins) {
                 setPlayer1Wins(true);
               }
               setFocusedRowLeft(prev => (prev + 1) % rowChunksLeft);
@@ -569,7 +568,7 @@ export function BarcodeGridGenerator({
           case 'ArrowDown':
           case 'ArrowRight':
             if (rowChunksRight > 0) {
-                if (focusedRowRight === rowChunksRight - 1 && !player2Wins) {
+                if (focusedRowRight === rowChunksRight - 1 && !player2Wins && !player1Wins) {
                     setPlayer2Wins(true);
                 }
                 setFocusedRowRight(prev => (prev + 1) % rowChunksRight);
@@ -968,3 +967,5 @@ export function BarcodeGridGenerator({
     </Card>
   );
 }
+
+    
