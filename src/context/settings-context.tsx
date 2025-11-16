@@ -131,21 +131,20 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   }, [totalContainerBarcodes]);
 
   const createSetter = useCallback(<T,>(setter: Dispatch<SetStateAction<T>>, key: string) => {
-    return (value: T | ((prev: T) => T)) => {
-      setter(prevValue => {
-        const newValue = typeof value === 'function' ? (value as (prev: T) => T)(prevValue) : value;
-        localStorage.setItem(key, String(newValue));
-        return newValue;
-      });
+    return (value: T) => {
+        localStorage.setItem(key, String(value));
+        setter(value);
+    };
+  }, []);
+  
+  const createBooleanSetter = useCallback((setter: Dispatch<SetStateAction<boolean>>, key: string) => {
+    return (value: boolean) => {
+        localStorage.setItem(key, String(value));
+        setter(value);
     };
   }, []);
 
   const setTheme = createSetter(_setTheme, 'app-theme');
-  const setPasteOnFocus = createSetter(_setPasteOnFocus, 'paste-on-focus');
-  const setTeamWorkEnabled = createSetter(_setTeamWorkEnabled, 'team-work-enabled');
-  const setGamificationEnabled = createSetter(_setGamificationEnabled, 'gamification-enabled');
-  const setIsFocusMode = createSetter(_setIsFocusMode, 'is-focus-mode');
-  const setPrintFontWeight = createSetter(_setPrintFontWeight, 'print-font-weight');
   const setColumnHeight = createSetter(_setColumnHeight, 'column-height');
   const setGridHeight = createSetter(_setGridHeight, 'grid-height');
   const setGridColumns = createSetter(_setGridColumns, 'grid-columns');
@@ -153,6 +152,12 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const setFocusModeVisibleRows = createSetter(_setFocusModeVisibleRows, 'focus-mode-visible-rows');
   const setPrintFontSize = createSetter(_setPrintFontSize, 'print-font-size');
   const setPrintOrientation = createSetter<PrintOrientation>(_setPrintOrientation, 'print-orientation');
+  
+  const setPasteOnFocus = createBooleanSetter(_setPasteOnFocus, 'paste-on-focus');
+  const setTeamWorkEnabled = createBooleanSetter(_setTeamWorkEnabled, 'team-work-enabled');
+  const setGamificationEnabled = createBooleanSetter(_setGamificationEnabled, 'gamification-enabled');
+  const setIsFocusMode = createBooleanSetter(_setIsFocusMode, 'is-focus-mode');
+  const setPrintFontWeight = createBooleanSetter(_setPrintFontWeight, 'print-font-weight');
 
   const setFirstGenerationDate = useCallback((date: string) => {
     if (!firstGenerationDate) {
