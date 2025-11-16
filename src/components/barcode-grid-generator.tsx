@@ -503,11 +503,10 @@ export function BarcodeGridGenerator({
         textareaRef.current?.blur();
       }
       setTimeout(() => {
-        const targetRef = isTeamWorkActive ? gridContainerRef : containerCardRef;
-        targetRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        containerCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 100);
     }
-  }, [barcodes, isFocusMode, isTeamWorkActive]);
+  }, [barcodes, isFocusMode]);
 
   useEffect(() => {
     if (!isFocusMode || barcodes.length === 0) return;
@@ -713,7 +712,7 @@ export function BarcodeGridGenerator({
       <CardContent className="p-6 pt-0">
         <div className={cn(
             "grid gap-6 items-start",
-            isTeamWorkActive ? "grid-cols-10" : "grid-cols-1 sm:grid-cols-2"
+            isTeamWorkActive ? "grid-cols-10" : "grid-cols-2"
         )}>
           {isTeamWorkActive && (
               <div className="col-span-3">
@@ -900,3 +899,5 @@ export function BarcodeGridGenerator({
     </Card>
   );
 }
+
+    
