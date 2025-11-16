@@ -568,19 +568,22 @@ export function BarcodeGridGenerator({
     itemsPerChunk: number
   ) => {
     if (!scrollContainer) return;
-    
-    const firstIndexOfChunk = focusedRowIndex * itemsPerChunk;
+  
+    const chunkToScrollTo = Math.max(0, focusedRowIndex - 2);
+    const firstIndexOfChunk = chunkToScrollTo * itemsPerChunk;
     const rowElement = rowRefs[firstIndexOfChunk];
-    
+  
     if (rowElement) {
         const containerTop = scrollContainer.getBoundingClientRect().top;
         const rowTop = rowElement.getBoundingClientRect().top;
         const scrollOffset = rowTop - containerTop + scrollContainer.scrollTop;
-
+  
         scrollContainer.scrollTo({
             top: scrollOffset,
             behavior: 'smooth',
         });
+    } else if (focusedRowIndex === 0) {
+        scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -772,7 +775,6 @@ export function BarcodeGridGenerator({
                     <div
                       ref={leftScrollContainerRef}
                       className="grid-scroll-container pr-2"
-                      style={{ maxHeight: `${focusModeVisibleRows * (currentGridHeight + 45)}px` }}
                     >
                       <div 
                         className="grid gap-4"
@@ -803,7 +805,6 @@ export function BarcodeGridGenerator({
                     <div
                       ref={rightScrollContainerRef}
                       className="grid-scroll-container pr-2"
-                      style={{ maxHeight: `${focusModeVisibleRows * (currentGridHeight + 45)}px` }}
                     >
                       <div
                         className="grid gap-4"
@@ -871,3 +872,5 @@ export function BarcodeGridGenerator({
     </Card>
   );
 }
+
+    

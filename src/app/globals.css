@@ -136,10 +136,6 @@
     --card-foreground: 240 10% 3.9%;
     --muted-foreground: 240 3.8% 46.1%;
   }
-  .no-animations * {
-    transition: none !important;
-    animation: none !important;
-  }
 }
 
 @layer components {
@@ -147,6 +143,7 @@
     overflow-y: scroll;
     scrollbar-width: thin; /* For Firefox */
     scrollbar-color: hsl(var(--border)) hsl(var(--background)); /* For Firefox */
+    max-height: 70vh;
   }
 
   /* For Chrome, Safari and Opera */
@@ -165,3 +162,5 @@
     border: 2px solid hsl(var(--background));
   }
 }
+
+    
