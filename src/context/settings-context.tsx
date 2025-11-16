@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect, Dispatch, SetStateAction } from 'react';
 
 type PrintOrientation = 'landscape' | 'portrait';
 
@@ -41,6 +41,12 @@ interface SettingsContextType {
   // Team Work setting
   teamWorkEnabled: boolean;
   setTeamWorkEnabled: (enabled: boolean) => void;
+
+  // Statistics
+  totalConsignmentBarcodes: number;
+  setTotalConsignmentBarcodes: Dispatch<SetStateAction<number>>;
+  totalContainerBarcodes: number;
+  setTotalContainerBarcodes: Dispatch<SetStateAction<number>>;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -70,6 +76,10 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   // Team Work setting
   const [teamWorkEnabled, _setTeamWorkEnabled] = useState(false);
 
+  // Statistics
+  const [totalConsignmentBarcodes, setTotalConsignmentBarcodes] = useState(0);
+  const [totalContainerBarcodes, setTotalContainerBarcodes] = useState(0);
+
   useEffect(() => {
     const storedTheme = localStorage.getItem('app-theme') || 'light';
     const storedPasteOnFocus = localStorage.getItem('paste-on-focus');
@@ -83,6 +93,8 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     const storedPrintFontSize = localStorage.getItem('print-font-size');
     const storedPrintFontWeight = localStorage.getItem('print-font-weight');
     const storedPrintOrientation = localStorage.getItem('print-orientation');
+    const storedTotalConsignment = localStorage.getItem('total-consignment-barcodes');
+    const storedTotalContainer = localStorage.getItem('total-container-barcodes');
 
 
     if (storedPasteOnFocus !== null) {
@@ -129,8 +141,24 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
         _setPrintOrientation(storedPrintOrientation as PrintOrientation);
     }
 
+    if (storedTotalConsignment !== null) {
+      setTotalConsignmentBarcodes(Number(storedTotalConsignment));
+    }
+
+    if (storedTotalContainer !== null) {
+      setTotalContainerBarcodes(Number(storedTotalContainer));
+    }
+
     _setTheme(storedTheme);
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('total-consignment-barcodes', String(totalConsignmentBarcodes));
+  }, [totalConsignmentBarcodes]);
+  
+  useEffect(() => {
+    localStorage.setItem('total-container-barcodes', String(totalContainerBarcodes));
+  }, [totalContainerBarcodes]);
 
   const setTheme = (newTheme: string) => {
     localStorage.setItem('app-theme', newTheme);
@@ -218,6 +246,10 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       setPasteOnFocus,
       teamWorkEnabled,
       setTeamWorkEnabled,
+      totalConsignmentBarcodes,
+      setTotalConsignmentBarcodes,
+      totalContainerBarcodes,
+      setTotalContainerBarcodes,
     }}>
       {children}
     </SettingsContext.Provider>

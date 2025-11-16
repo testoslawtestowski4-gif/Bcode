@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Barcode, ArrowUp, Mail } from 'lucide-react';
 import { MainLayout } from '@/components/main-layout';
 import { cn } from '@/lib/utils';
+import { useSettings } from '@/context/settings-context';
 
 export default function Home() {
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
@@ -25,6 +26,22 @@ export default function Home() {
   // State for container view (barcodes count)
   const [containerBarcodeCount, setContainerBarcodeCount] = useState(0);
   const [containerInputValue, setContainerInputValue] = useState('');
+
+  const { setTotalConsignmentBarcodes, setTotalContainerBarcodes } = useSettings();
+
+  useEffect(() => {
+    if (allConsignmentBarcodes.length > 0) {
+      setTotalConsignmentBarcodes(prev => prev + allConsignmentBarcodes.length);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allConsignmentBarcodes]);
+
+  useEffect(() => {
+    if (containerBarcodeCount > 0) {
+      setTotalContainerBarcodes(prev => prev + containerBarcodeCount);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [containerBarcodeCount]);
 
   useEffect(() => {
     const handleScroll = () => {

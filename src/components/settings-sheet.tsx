@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Settings } from 'lucide-react';
+import { BarChart2, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -28,7 +28,8 @@ export function SettingsSheet() {
     printFontSize, setPrintFontSize,
     printFontWeight, setPrintFontWeight,
     printOrientation, setPrintOrientation,
-    teamWorkEnabled, setTeamWorkEnabled
+    teamWorkEnabled, setTeamWorkEnabled,
+    totalConsignmentBarcodes, totalContainerBarcodes,
   } = useSettings();
 
   return (
@@ -47,6 +48,25 @@ export function SettingsSheet() {
           </SheetDescription>
         </SheetHeader>
         <div className="py-6 space-y-8">
+            <div>
+                <h4 className="text-lg font-medium mb-4 flex items-center gap-2">
+                  <BarChart2 className='w-5 h-5' />
+                  Global Statistics
+                </h4>
+                <div className="grid gap-2 text-sm">
+                    <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Total Consignment Barcodes:</span>
+                        <span className="font-semibold">{totalConsignmentBarcodes}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Total Container Barcodes:</span>
+                        <span className="font-semibold">{totalContainerBarcodes}</span>
+                    </div>
+                </div>
+            </div>
+
+            <Separator />
+            
             <div>
                 <h4 className="text-lg font-medium mb-4">Column View</h4>
                 <div className="grid gap-6">
