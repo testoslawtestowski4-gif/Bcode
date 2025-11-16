@@ -48,6 +48,9 @@ export function BarcodeGridGenerator({
 
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [focusedRow, setFocusedRow] = useState(0);
+  const [focusedRowLeft, setFocusedRowLeft] = useState(0);
+  const [focusedRowRight, setFocusedRowRight] = useState(0);
+
   
   const gridContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -478,6 +481,8 @@ export function BarcodeGridGenerator({
       setIsFocusMode(false);
     }
     setFocusedRow(0);
+    setFocusedRowLeft(0);
+    setFocusedRowRight(0);
   }, [barcodes.length, focusModeThreshold]);
 
   useEffect(() => {
@@ -489,30 +494,68 @@ export function BarcodeGridGenerator({
 
   useEffect(() => {
     if (!isFocusMode || barcodes.length === 0) return;
-
+  
     const handleKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement;
       if (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT') {
         return;
       }
       
-      const totalRows = Math.ceil(barcodes.length / gridColumns);
-      const rowChunks = Math.ceil(totalRows / focusModeVisibleRows);
-
-      if (event.code === 'Space') {
-        event.preventDefault();
-        if (totalRows > 0) {
-          setFocusedRow(prevRow => (prevRow + 1) % rowChunks);
+      event.preventDefault();
+  
+      if (isTeamWorkActive) {
+        const teamWorkGridColumns = 4;
+        // Team Work Mode Controls
+        const totalRowsLeft = Math.ceil(leftBarcodes.length / teamWorkGridColumns);
+        const rowChunksLeft = Math.ceil(totalRowsLeft / focusModeVisibleRows);
+  
+        const totalRowsRight = Math.ceil(rightBarcodes.length / teamWorkGridColumns);
+        const rowChunksRight = Math.ceil(totalRowsRight / focusModeVisibleRows);
+  
+        switch (event.code) {
+          case 'Space':
+            if (rowChunksLeft > 0) setFocusedRowLeft(prev => (prev + 1) % rowChunksLeft);
+            break;
+          case 'KeyZ':
+            if (rowChunksLeft > 0) setFocusedRowLeft(prev => (prev - 1 + rowChunksLeft) % rowChunksLeft);
+            break;
+          case 'ArrowDown':
+          case 'ArrowRight':
+            if (rowChunksRight > 0) setFocusedRowRight(prev => (prev + 1) % rowChunksRight);
+            break;
+          case 'ArrowUp':
+          case 'ArrowLeft':
+            if (rowChunksRight > 0) setFocusedRowRight(prev => (prev - 1 + rowChunksRight) % rowChunksRight);
+            break;
+        }
+  
+      } else {
+        // Standard Mode Controls
+        const totalRows = Math.ceil(barcodes.length / gridColumns);
+        const rowChunks = Math.ceil(totalRows / focusModeVisibleRows);
+  
+        if (rowChunks > 0) {
+            switch (event.code) {
+                case 'Space':
+                case 'ArrowDown':
+                case 'ArrowRight':
+                    setFocusedRow(prev => (prev + 1) % rowChunks);
+                    break;
+                case 'ArrowUp':
+                case 'ArrowLeft':
+                    setFocusedRow(prev => (prev - 1 + rowChunks) % rowChunks);
+                    break;
+            }
         }
       }
     };
-
+  
     window.addEventListener('keydown', handleKeyDown);
-
+  
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isFocusMode, barcodes.length, gridColumns, focusModeVisibleRows]);
+  }, [isFocusMode, isTeamWorkActive, barcodes.length, leftBarcodes.length, rightBarcodes.length, gridColumns, focusModeVisibleRows]);
 
   useEffect(() => {
     if (isFocusMode) {
@@ -700,7 +743,9 @@ export function BarcodeGridGenerator({
                       style={{ gridTemplateColumns: `repeat(${teamWorkGridColumns}, minmax(0, 1fr))` }}
                     >
                       {leftBarcodes.map((value, index) => {
-                        const isBlurred = isFocusMode && Math.floor(index / teamWorkGridColumns / focusModeVisibleRows) !== focusedRow;
+                        const rowIndex = Math.floor(index / teamWorkGridColumns);
+                        const focusChunkIndex = Math.floor(rowIndex / focusModeVisibleRows);
+                        const isBlurred = isFocusMode && focusChunkIndex !== focusedRowLeft;
                         return (
                           <GridBarcode
                             key={`${value}-${index}`}
@@ -709,6 +754,7 @@ export function BarcodeGridGenerator({
                             height={currentGridHeight}
                             isBlurred={isBlurred}
                             isOneColumn={false}
+                            onClick={() => isFocusMode && setFocusedRowLeft(focusChunkIndex)}
                           />
                         );
                       })}
@@ -722,7 +768,9 @@ export function BarcodeGridGenerator({
                     >
                       {rightBarcodes.map((value, index) => {
                         const originalIndex = index + midPoint;
-                        const isBlurred = isFocusMode && Math.floor(originalIndex / teamWorkGridColumns / focusModeVisibleRows) !== focusedRow;
+                        const rowIndex = Math.floor(index / teamWorkGridColumns);
+                        const focusChunkIndex = Math.floor(rowIndex / focusModeVisibleRows);
+                        const isBlurred = isFocusMode && focusChunkIndex !== focusedRowRight;
                         return (
                           <GridBarcode
                             key={`${value}-${originalIndex}`}
@@ -731,6 +779,7 @@ export function BarcodeGridGenerator({
                             height={currentGridHeight}
                             isBlurred={isBlurred}
                             isOneColumn={false}
+                            onClick={() => isFocusMode && setFocusedRowRight(focusChunkIndex)}
                           />
                         );
                       })}
