@@ -569,7 +569,7 @@ export function BarcodeGridGenerator({
   ) => {
     if (!scrollContainer) return;
   
-    const chunkToScrollTo = Math.max(0, focusedRowIndex - 2);
+    const chunkToScrollTo = Math.max(0, focusedRowIndex - 1);
     const firstIndexOfChunk = chunkToScrollTo * itemsPerChunk;
     const rowElement = rowRefs[firstIndexOfChunk];
   
