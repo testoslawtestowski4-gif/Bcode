@@ -155,6 +155,10 @@ export default function Home() {
               <p className="text-sm text-muted-foreground">
                 Created by Damian Suchecki
               </p>
+              <a href="mailto:suchecki.damian@gmail.com" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary">
+                <Mail className="h-4 w-4" />
+                <span>suchecki.damian@gmail.com</span>
+              </a>
           </div>
         </footer>
       </div>
