@@ -12,10 +12,14 @@ export function WinnerDisplay() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShow(false);
-    }, 8000); // Confetti will stop after 8 seconds
+    }, 4000); // Disappear after 4 seconds
 
     return () => clearTimeout(timer);
   }, []);
+
+  if (!show) {
+    return null;
+  }
 
   return (
     <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80 backdrop-blur-sm">
@@ -24,15 +28,14 @@ export function WinnerDisplay() {
           YOU WIN!
         </h2>
       </div>
-      {show && (
-        <Confetti
-          width={width}
-          height={height}
-          recycle={false}
-          numberOfPieces={400}
-          gravity={0.15}
-        />
-      )}
+      <Confetti
+        width={width}
+        height={height}
+        recycle={false}
+        numberOfPieces={400}
+        gravity={0.15}
+        run={show}
+      />
     </div>
   );
 }
