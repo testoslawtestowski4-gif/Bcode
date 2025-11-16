@@ -707,9 +707,8 @@ export function BarcodeGridGenerator({
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="w-28 justify-between">
+                <Button variant="outline" size="icon">
                   <LayoutGrid className="w-4 h-4" />
-                  <span>Cols: {gridColumns}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
