@@ -44,6 +44,10 @@ interface SettingsContextType {
   gamificationEnabled: boolean;
   setGamificationEnabled: (enabled: boolean) => void;
 
+  // Festive Effects
+  showSnowfall: boolean;
+  setShowSnowfall: (enabled: boolean) => void;
+
   // Statistics
   totalConsignmentBarcodes: number;
   setTotalConsignmentBarcodes: Dispatch<SetStateAction<number>>;
@@ -81,6 +85,9 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const [teamWorkEnabled, _setTeamWorkEnabled] = useState(false);
   const [gamificationEnabled, _setGamificationEnabled] = useState(true);
 
+  // Snowfall
+  const [showSnowfall, _setShowSnowfall] = useState(false);
+
 
   // Statistics
   const [totalConsignmentBarcodes, setTotalConsignmentBarcodes] = useState(0);
@@ -88,7 +95,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const [firstGenerationDate, _setFirstGenerationDate] = useState<string | null>(null);
 
   useEffect(() => {
-    // --- Standard settings loading ---
     const storedTheme = localStorage.getItem('app-theme') || 'light';
     const storedPasteOnFocus = localStorage.getItem('paste-on-focus');
     const storedTeamWork = localStorage.getItem('team-work-enabled');
@@ -105,9 +111,9 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     const storedTotalConsignment = localStorage.getItem('total-consignment-barcodes');
     const storedTotalContainer = localStorage.getItem('total-container-barcodes');
     const storedFirstDate = localStorage.getItem('first-generation-date');
-    _setTheme(storedTheme);
+    const storedShowSnowfall = localStorage.getItem('show-snowfall');
 
-    // --- Rest of settings loading ---
+    _setTheme(storedTheme);
     if (storedPasteOnFocus !== null) _setPasteOnFocus(storedPasteOnFocus === 'true');
     if (storedTeamWork !== null) _setTeamWorkEnabled(storedTeamWork === 'true');
     if (storedGamification !== null) _setGamificationEnabled(storedGamification === 'true');
@@ -123,6 +129,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     if (storedTotalConsignment !== null) setTotalConsignmentBarcodes(Number(storedTotalConsignment));
     if (storedTotalContainer !== null) setTotalContainerBarcodes(Number(storedTotalContainer));
     if (storedFirstDate !== null) _setFirstGenerationDate(storedFirstDate);
+    if (storedShowSnowfall !== null) _setShowSnowfall(storedShowSnowfall === 'true');
   }, []);
 
   useEffect(() => {
@@ -133,48 +140,31 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('total-container-barcodes', String(totalContainerBarcodes));
   }, [totalContainerBarcodes]);
 
-  const setTheme = useCallback((newTheme: string) => {
-    localStorage.setItem('app-theme', newTheme);
-    _setTheme(newTheme);
-  }, []);
-
-  const createBooleanSetter = <T extends (value: boolean | ((prev: boolean) => boolean)) => void>(setter: T, key: string) => {
-    return useCallback((value: boolean | ((prev: boolean) => boolean)) => {
-      // @ts-ignore
+  const createSetter = useCallback(<T,>(setter: Dispatch<SetStateAction<T>>, key: string) => {
+    return (value: T | ((prev: T) => T)) => {
       setter(prevValue => {
-        const newValue = typeof value === 'function' ? value(prevValue) : value;
+        const newValue = typeof value === 'function' ? (value as (prev: T) => T)(prevValue) : value;
         localStorage.setItem(key, String(newValue));
         return newValue;
       });
-    }, [setter, key]);
-  };
-  
-
-  const setPasteOnFocus = createBooleanSetter(_setPasteOnFocus, 'paste-on-focus');
-  const setTeamWorkEnabled = createBooleanSetter(_setTeamWorkEnabled, 'team-work-enabled');
-  const setGamificationEnabled = createBooleanSetter(_setGamificationEnabled, 'gamification-enabled');
-  const setIsFocusMode = createBooleanSetter(_setIsFocusMode, 'is-focus-mode');
-  const setPrintFontWeight = createBooleanSetter(_setPrintFontWeight, 'print-font-weight');
-
-  const createNumberSetter = <T extends (value: number) => void>(setter: T, key: string) => {
-    return useCallback((value: number) => {
-      localStorage.setItem(key, String(value));
-      setter(value);
-    }, [setter, key]);
-  };
-  
-  const setColumnHeight = createNumberSetter(_setColumnHeight, 'column-height');
-  const setGridHeight = createNumberSetter(_setGridHeight, 'grid-height');
-  const setGridColumns = createNumberSetter(_setGridColumns, 'grid-columns');
-  const setFocusModeThreshold = createNumberSetter(_setFocusModeThreshold, 'focus-mode-threshold');
-  const setFocusModeVisibleRows = createNumberSetter(_setFocusModeVisibleRows, 'focus-mode-visible-rows');
-  const setPrintFontSize = createNumberSetter(_setPrintFontSize, 'print-font-size');
-
-  const setPrintOrientation = useCallback((orientation: PrintOrientation) => {
-    localStorage.setItem('print-orientation', orientation);
-    _setPrintOrientation(orientation);
+    };
   }, []);
-  
+
+  const setTheme = createSetter(_setTheme, 'app-theme');
+  const setPasteOnFocus = createSetter(_setPasteOnFocus, 'paste-on-focus');
+  const setTeamWorkEnabled = createSetter(_setTeamWorkEnabled, 'team-work-enabled');
+  const setGamificationEnabled = createSetter(_setGamificationEnabled, 'gamification-enabled');
+  const setIsFocusMode = createSetter(_setIsFocusMode, 'is-focus-mode');
+  const setPrintFontWeight = createSetter(_setPrintFontWeight, 'print-font-weight');
+  const setColumnHeight = createSetter(_setColumnHeight, 'column-height');
+  const setGridHeight = createSetter(_setGridHeight, 'grid-height');
+  const setGridColumns = createSetter(_setGridColumns, 'grid-columns');
+  const setFocusModeThreshold = createSetter(_setFocusModeThreshold, 'focus-mode-threshold');
+  const setFocusModeVisibleRows = createSetter(_setFocusModeVisibleRows, 'focus-mode-visible-rows');
+  const setPrintFontSize = createSetter(_setPrintFontSize, 'print-font-size');
+  const setPrintOrientation = createSetter<PrintOrientation>(_setPrintOrientation, 'print-orientation');
+  const setShowSnowfall = createSetter(_setShowSnowfall, 'show-snowfall');
+
   const setFirstGenerationDate = useCallback((date: string) => {
     if (!firstGenerationDate) {
       localStorage.setItem('first-generation-date', date);
@@ -197,6 +187,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       pasteOnFocus, setPasteOnFocus,
       teamWorkEnabled, setTeamWorkEnabled,
       gamificationEnabled, setGamificationEnabled,
+      showSnowfall, setShowSnowfall,
       totalConsignmentBarcodes, setTotalConsignmentBarcodes,
       totalContainerBarcodes, setTotalContainerBarcodes,
       firstGenerationDate, setFirstGenerationDate,
