@@ -55,6 +55,8 @@ export function BarcodeGridGenerator({
   const gridContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const leftRowRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const rightRowRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { toast } = useToast();
 
   const parsedBarcodes = useMemo(() => {
@@ -558,7 +560,7 @@ export function BarcodeGridGenerator({
   }, [isFocusMode, isTeamWorkActive, barcodes.length, leftBarcodes.length, rightBarcodes.length, gridColumns, focusModeVisibleRows]);
 
   useEffect(() => {
-    if (isFocusMode) {
+    if (isFocusMode && !isTeamWorkActive) {
       const firstIndexOfChunk = focusedRow * focusModeVisibleRows * gridColumns;
       const rowElement = rowRefs.current[firstIndexOfChunk];
       rowElement?.scrollIntoView({
@@ -566,7 +568,31 @@ export function BarcodeGridGenerator({
         block: 'center',
       });
     }
-  }, [focusedRow, isFocusMode, gridColumns, focusModeVisibleRows]);
+  }, [focusedRow, isFocusMode, gridColumns, focusModeVisibleRows, isTeamWorkActive]);
+
+  useEffect(() => {
+    if (isFocusMode && isTeamWorkActive) {
+        const teamWorkGridColumns = 4;
+        const firstIndexOfChunk = focusedRowLeft * focusModeVisibleRows * teamWorkGridColumns;
+        const rowElement = leftRowRefs.current[firstIndexOfChunk];
+        rowElement?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+        });
+    }
+  }, [focusedRowLeft, isFocusMode, isTeamWorkActive, focusModeVisibleRows]);
+
+  useEffect(() => {
+      if (isFocusMode && isTeamWorkActive) {
+          const teamWorkGridColumns = 4;
+          const firstIndexOfChunk = focusedRowRight * focusModeVisibleRows * teamWorkGridColumns;
+          const rowElement = rightRowRefs.current[firstIndexOfChunk];
+          rowElement?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+          });
+      }
+  }, [focusedRowRight, isFocusMode, isTeamWorkActive, focusModeVisibleRows]);
 
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement> | React.ClipboardEvent<HTMLTextAreaElement>) => {
@@ -748,6 +774,7 @@ export function BarcodeGridGenerator({
                         const isBlurred = isFocusMode && focusChunkIndex !== focusedRowLeft;
                         return (
                           <GridBarcode
+                            ref={el => { leftRowRefs.current[index] = el; }}
                             key={`${value}-${index}`}
                             value={value}
                             index={index}
@@ -773,6 +800,7 @@ export function BarcodeGridGenerator({
                         const isBlurred = isFocusMode && focusChunkIndex !== focusedRowRight;
                         return (
                           <GridBarcode
+                            ref={el => { rightRowRefs.current[originalIndex] = el; }}
                             key={`${value}-${originalIndex}`}
                             value={value}
                             index={originalIndex}
