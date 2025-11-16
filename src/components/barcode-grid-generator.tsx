@@ -509,6 +509,14 @@ export function BarcodeGridGenerator({
   }, [barcodes, isFocusMode]);
 
   useEffect(() => {
+    if (isTeamWorkActive) {
+        setTimeout(() => {
+            containerCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    }
+  }, [isTeamWorkActive]);
+
+  useEffect(() => {
     if (!isFocusMode || barcodes.length === 0) return;
   
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -714,16 +722,17 @@ export function BarcodeGridGenerator({
             "grid gap-6 items-start",
             isTeamWorkActive ? "grid-cols-10" : "grid-cols-2"
         )}>
-          {isTeamWorkActive && (
-              <div className="col-span-3">
-                <ConsignmentSwitcher 
-                  allBarcodes={allConsignmentBarcodes}
-                  activeBarcode={activeConsignmentBarcode}
-                  setActiveBarcode={setActiveConsignmentBarcode}
-                  inContainer={true}
-                />
-              </div>
-          )}
+          <div className={cn(
+              "col-span-3",
+              !isTeamWorkActive && "hidden"
+          )}>
+            <ConsignmentSwitcher 
+              allBarcodes={allConsignmentBarcodes}
+              activeBarcode={activeConsignmentBarcode}
+              setActiveBarcode={setActiveConsignmentBarcode}
+              inContainer={true}
+            />
+          </div>
 
           <div className={cn(
             "flex flex-col gap-4",
@@ -899,5 +908,3 @@ export function BarcodeGridGenerator({
     </Card>
   );
 }
-
-    
