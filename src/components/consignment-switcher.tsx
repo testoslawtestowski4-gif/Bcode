@@ -28,7 +28,7 @@ export function ConsignmentSwitcher({ allBarcodes, activeBarcode, setActiveBarco
                     format: 'CODE128',
                     displayValue: false,
                     background: 'transparent',
-                    lineColor: 'hsl(var(--foreground))',
+                    lineColor: '#000000',
                     height: 30,
                     width: 1.5,
                     margin: 0,
@@ -62,7 +62,7 @@ export function ConsignmentSwitcher({ allBarcodes, activeBarcode, setActiveBarco
             inContainer ? 'flex-col gap-2 w-full' : 'p-2 h-14 w-80'
         )}>
             <div className={cn("flex items-center gap-3 flex-grow overflow-hidden", inContainer && "w-full flex-col")}>
-                <div className={cn("flex-shrink-0", inContainer ? 'w-full h-12' : 'w-32')}>
+                <div className={cn("flex-shrink-0 p-2 rounded-md barcode-card", inContainer ? 'w-full h-16' : 'w-32')}>
                     <svg ref={svgRef} className="w-full h-full" />
                 </div>
             </div>

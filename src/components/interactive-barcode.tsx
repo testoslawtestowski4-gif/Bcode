@@ -46,7 +46,7 @@ export function InteractiveBarcode({
           format: 'CODE128',
           displayValue: false,
           background: 'transparent',
-          lineColor: 'hsl(var(--card-foreground))',
+          lineColor: '#000000',
           height: height,
         });
       } catch (e) {

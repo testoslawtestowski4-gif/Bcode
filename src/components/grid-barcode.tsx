@@ -27,7 +27,7 @@ export const GridBarcode = forwardRef<HTMLDivElement, GridBarcodeProps>(
             format: 'CODE128',
             displayValue: false,
             background: 'transparent',
-            lineColor: 'hsl(var(--card-foreground))',
+            lineColor: '#000000',
             height: height,
           });
           setIsValid(true);
