@@ -7,50 +7,38 @@ import { SettingsSheet } from "@/components/settings-sheet";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { DraggableBarcode } from '@/components/draggable-barcode';
 import { Button } from '@/components/ui/button';
-import { Barcode, ArrowUp, Users } from 'lucide-react';
+import { Barcode, ArrowUp } from 'lucide-react';
 import { MainLayout } from '@/components/main-layout';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/context/settings-context';
 import { AnimationSwitcher } from '@/components/animation-switcher';
 
 export default function Home() {
-  const { animationsEnabled, theme, teamWorkEnabled } = useSettings();
+  const { theme, teamWorkEnabled } = useSettings();
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isTeamWorkActive, setIsTeamWorkActive] = useState(false);
 
-
-  // State lifted up from BarcodeColumnGenerator
+  // State for consignment view
   const [consignmentInputValue, setConsignmentInputValue] = useState('');
   const [allConsignmentBarcodes, setAllConsignmentBarcodes] = useState<BarcodeData[]>([]);
   const [activeConsignmentBarcode, setActiveConsignmentBarcode] = useState<string | null>(null);
+  
+  // State for consignment view collapse
+  const [isConsignmentCollapsed, setIsConsignmentCollapsed] = useState(true);
 
   const isSleekTheme = theme === 'sleek-theme';
 
-  // When animations are disabled, the consignment view is always visible.
-  const isSpeedMode = !animationsEnabled;
-  const [isConsignmentCollapsed, setIsConsignmentCollapsed] = useState(isSpeedMode ? false : true);
-
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 300) {
-        setShowScrollTop(true);
-      } else {
-        setShowScrollTop(false);
-      }
+      setShowScrollTop(window.scrollY > 300);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
+  
   useEffect(() => {
-    // In speed mode, the panel is always open.
-    if (isSpeedMode) {
-      setIsConsignmentCollapsed(false);
-      return;
-    }
-    
     const handleClickOutside = (event: MouseEvent) => {
       const columnEl = document.getElementById('consignment-view');
       const gridEl = document.getElementById('container-view');
@@ -63,7 +51,7 @@ export default function Home() {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isSpeedMode]);
+  }, []);
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -82,12 +70,10 @@ export default function Home() {
       let newBarcodes = [...prevBarcodes];
 
       if (existingBarcode) {
-        // Move existing barcode to the top
         newBarcodes = newBarcodes.filter(b => b.id !== existingBarcode.id);
         newBarcodes.unshift(existingBarcode);
         newActiveId = existingBarcode.id;
       } else {
-        // Add new barcode to the top
         const newBarcode: BarcodeData = { id: `${code}-${Date.now()}`, value: code };
         newBarcodes.unshift(newBarcode);
         newActiveId = newBarcode.id;
@@ -99,7 +85,7 @@ export default function Home() {
       setActiveConsignmentBarcode(newActiveId);
     }
     
-    setIsConsignmentCollapsed(false); // Ensure the panel is visible
+    setIsConsignmentCollapsed(false);
   };
   
   const activeConsignmentCodeValue = allConsignmentBarcodes.find(b => b.id === activeConsignmentBarcode)?.value || null;

@@ -18,10 +18,23 @@ export function MainLayout({ children, isCollapsed, setIsCollapsed, isTeamWorkAc
     const isSpeedMode = !animationsEnabled;
     const [consignmentView, containerView] = children;
 
-    const effectiveIsCollapsed = isTeamWorkActive ? false : (isSpeedMode ? false : isCollapsed);
-    const consignmentWidth = isTeamWorkActive ? 'lg:w-[30%]' : (effectiveIsCollapsed ? 'lg:w-[120px]' : 'lg:w-[35%]');
-    const containerWidth = isTeamWorkActive ? 'lg:w-[70%]' : (effectiveIsCollapsed ? 'lg:w-[calc(100% - 120px - 2rem)]' : 'lg:w-[65%]');
+    const effectiveIsCollapsed = isSpeedMode ? false : isCollapsed;
 
+    if (isTeamWorkActive) {
+        return (
+            <div className="flex flex-col gap-8 items-start relative mt-8">
+                <div id="consignment-view-wrapper" className="w-full">
+                    {consignmentView}
+                </div>
+                <div id="container-view" className="w-full">
+                    {containerView}
+                </div>
+            </div>
+        );
+    }
+    
+    const consignmentWidth = effectiveIsCollapsed ? 'lg:w-[120px]' : 'lg:w-[35%]';
+    const containerWidth = effectiveIsCollapsed ? 'lg:w-[calc(100% - 120px - 2rem)]' : 'lg:w-[65%]';
 
     return (
         <div className="flex flex-col lg:flex-row gap-8 items-start relative mt-8">
@@ -37,12 +50,12 @@ export function MainLayout({ children, isCollapsed, setIsCollapsed, isTeamWorkAc
                     id="consignment-view"
                     className={cn(
                         'transition-opacity duration-300',
-                        effectiveIsCollapsed && !isTeamWorkActive && 'opacity-0 h-0 pointer-events-none'
+                        effectiveIsCollapsed && 'opacity-0 h-0 pointer-events-none'
                     )}
                 >
                     {consignmentView}
                 </div>
-                {effectiveIsCollapsed && !isSpeedMode && !isTeamWorkActive && (
+                {effectiveIsCollapsed && !isSpeedMode && (
                     <div className="hidden lg:block sticky top-20 w-[120px]">
                          <div className="h-full w-full" style={{height: 'calc(100vh - 12rem)'}}>
                             <Button 
