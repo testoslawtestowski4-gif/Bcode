@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -106,7 +107,6 @@ export default function Home() {
                     <Button
                       variant="outline"
                       onClick={() => setIsTeamWorkActive(prev => !prev)}
-                      disabled={containerBarcodeCount <= 12}
                     >
                       <Users className="mr-2 h-4 w-4" />
                       {isTeamWorkActive ? 'Standard View' : 'Team Work'}
