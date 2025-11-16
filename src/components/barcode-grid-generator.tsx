@@ -58,7 +58,7 @@ export function BarcodeGridGenerator({
   const { 
     gridHeight, gridColumns, setGridColumns, 
     pasteOnFocus, setPasteOnFocus, focusModeThreshold, focusModeVisibleRows,
-    isFocusMode, setIsFocusMode, teamWorkEnabled
+    isFocusMode, setIsFocusMode, teamWorkEnabled, gamificationEnabled
   } = useSettings();
   
   const debouncedValue = useDebounce(inputValue, 500);
@@ -554,7 +554,7 @@ export function BarcodeGridGenerator({
         switch (event.code) {
           case 'Space':
             if (rowChunksLeft > 0) {
-              if (focusedRowLeft === rowChunksLeft - 1 && !player1Wins && !player2Wins) {
+              if (gamificationEnabled && focusedRowLeft === rowChunksLeft - 1 && !player1Wins && !player2Wins) {
                 setPlayer1Wins(true);
               }
               setFocusedRowLeft(prev => (prev + 1) % rowChunksLeft);
@@ -568,7 +568,7 @@ export function BarcodeGridGenerator({
           case 'ArrowDown':
           case 'ArrowRight':
             if (rowChunksRight > 0) {
-                if (focusedRowRight === rowChunksRight - 1 && !player2Wins && !player1Wins) {
+                if (gamificationEnabled && focusedRowRight === rowChunksRight - 1 && !player2Wins && !player1Wins) {
                     setPlayer2Wins(true);
                 }
                 setFocusedRowRight(prev => (prev + 1) % rowChunksRight);
@@ -608,7 +608,7 @@ export function BarcodeGridGenerator({
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isFocusMode, isTeamWorkActive, barcodes.length, leftBarcodes.length, rightBarcodes.length, gridColumns, focusModeVisibleRows, isCustomMode, focusedRowLeft, focusedRowRight, player1Wins, player2Wins]);
+  }, [isFocusMode, isTeamWorkActive, barcodes.length, leftBarcodes.length, rightBarcodes.length, gridColumns, focusModeVisibleRows, isCustomMode, focusedRowLeft, focusedRowRight, player1Wins, player2Wins, gamificationEnabled]);
 
   const scrollToRow = (
     scrollContainer: HTMLDivElement | null, 
@@ -865,7 +865,7 @@ export function BarcodeGridGenerator({
                 <div className="flex justify-between gap-8">
                   <div className="w-[48%] relative">
                     <h3 className="text-lg font-semibold text-center mb-4">Player 1 ({leftBarcodes.length} items)</h3>
-                    {player1Wins && <WinnerDisplay />}
+                    {player1Wins && gamificationEnabled && <WinnerDisplay />}
                     <div
                       ref={leftScrollContainerRef}
                       className="grid-scroll-container pr-2"
@@ -896,7 +896,7 @@ export function BarcodeGridGenerator({
                   </div>
                   <div className="w-[48%] relative">
                     <h3 className="text-lg font-semibold text-center mb-4">Player 2 ({rightBarcodes.length} items)</h3>
-                    {player2Wins && <WinnerDisplay />}
+                    {player2Wins && gamificationEnabled && <WinnerDisplay />}
                     <div
                       ref={rightScrollContainerRef}
                       className="grid-scroll-container pr-2"
@@ -967,5 +967,7 @@ export function BarcodeGridGenerator({
     </Card>
   );
 }
+
+    
 
     

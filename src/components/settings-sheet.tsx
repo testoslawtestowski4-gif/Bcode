@@ -30,6 +30,7 @@ export function SettingsSheet() {
     printFontWeight, setPrintFontWeight,
     printOrientation, setPrintOrientation,
     teamWorkEnabled, setTeamWorkEnabled,
+    gamificationEnabled, setGamificationEnabled,
     totalConsignmentBarcodes, totalContainerBarcodes,
     firstGenerationDate,
   } = useSettings();
@@ -144,13 +145,26 @@ export function SettingsSheet() {
             
             <div>
                 <h4 className="text-lg font-medium mb-4">Team Work</h4>
-                <div className="flex items-center space-x-2">
-                    <Switch
-                        id="team-work-switch"
-                        checked={teamWorkEnabled}
-                        onCheckedChange={setTeamWorkEnabled}
-                    />
-                    <Label htmlFor="team-work-switch">Enable Team Work Feature</Label>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                      <Switch
+                          id="team-work-switch"
+                          checked={teamWorkEnabled}
+                          onCheckedChange={setTeamWorkEnabled}
+                      />
+                      <Label htmlFor="team-work-switch">Enable Team Work Feature</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                      <Switch
+                          id="gamification-switch"
+                          checked={gamificationEnabled}
+                          onCheckedChange={setGamificationEnabled}
+                          disabled={!teamWorkEnabled}
+                      />
+                      <Label htmlFor="gamification-switch" className={!teamWorkEnabled ? 'text-muted-foreground' : ''}>
+                        Enable Gamification
+                      </Label>
+                  </div>
                 </div>
             </div>
 
@@ -202,3 +216,5 @@ export function SettingsSheet() {
     </Sheet>
   );
 }
+
+    

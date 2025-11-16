@@ -41,6 +41,8 @@ interface SettingsContextType {
   // Team Work setting
   teamWorkEnabled: boolean;
   setTeamWorkEnabled: (enabled: boolean) => void;
+  gamificationEnabled: boolean;
+  setGamificationEnabled: (enabled: boolean) => void;
 
   // Statistics
   totalConsignmentBarcodes: number;
@@ -77,6 +79,8 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
   // Team Work setting
   const [teamWorkEnabled, _setTeamWorkEnabled] = useState(false);
+  const [gamificationEnabled, _setGamificationEnabled] = useState(true);
+
 
   // Statistics
   const [totalConsignmentBarcodes, setTotalConsignmentBarcodes] = useState(0);
@@ -88,6 +92,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     const storedTheme = localStorage.getItem('app-theme') || 'light';
     const storedPasteOnFocus = localStorage.getItem('paste-on-focus');
     const storedTeamWork = localStorage.getItem('team-work-enabled');
+    const storedGamification = localStorage.getItem('gamification-enabled');
     const storedIsFocusMode = localStorage.getItem('is-focus-mode');
     const storedFocusThreshold = localStorage.getItem('focus-mode-threshold');
     const storedFocusRows = localStorage.getItem('focus-mode-visible-rows');
@@ -108,6 +113,10 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
     if (storedTeamWork !== null) {
       _setTeamWorkEnabled(storedTeamWork === 'true');
+    }
+
+    if (storedGamification !== null) {
+      _setGamificationEnabled(storedGamification === 'true');
     }
 
     if (storedIsFocusMode !== null) {
@@ -182,6 +191,11 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const setTeamWorkEnabled = (enabled: boolean) => {
     localStorage.setItem('team-work-enabled', String(enabled));
     _setTeamWorkEnabled(enabled);
+  }
+
+  const setGamificationEnabled = (enabled: boolean) => {
+    localStorage.setItem('gamification-enabled', String(enabled));
+    _setGamificationEnabled(enabled);
   }
   
   const setIsFocusMode = (enabled: boolean) => {
@@ -263,6 +277,8 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       setPasteOnFocus,
       teamWorkEnabled,
       setTeamWorkEnabled,
+      gamificationEnabled,
+      setGamificationEnabled,
       totalConsignmentBarcodes,
       setTotalConsignmentBarcodes,
       totalContainerBarcodes,
@@ -282,3 +298,5 @@ export const useSettings = () => {
   }
   return context;
 };
+
+    
