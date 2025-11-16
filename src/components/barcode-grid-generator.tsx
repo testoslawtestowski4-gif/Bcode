@@ -99,7 +99,7 @@ export function BarcodeGridGenerator({
     const lines = debouncedValue.split('\n');
 
     for (const line of lines) {
-        if (/web_dropoff/i.test(line) && /container/i.test(line)) {
+        if (/web-dropoff/i.test(line) && /container/i.test(line)) {
             continue;
         }
 
