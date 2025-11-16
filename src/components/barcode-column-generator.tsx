@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
@@ -28,7 +29,8 @@ interface BarcodeColumnGeneratorProps {
 export const isValidBarcode = (code: string) => {
   // Must start with one or more letters, followed by 3 to 5 digits, and nothing else.
   // Must not start with 'web' (case-insensitive).
-  return /^[a-zA-Z]+\d{3,5}$/.test(code) && !/^web/i.test(code);
+  // Must not contain 'WEBHANG' (case-insensitive).
+  return /^[a-zA-Z]+\d{3,5}$/.test(code) && !/^web/i.test(code) && !/webhang/i.test(code);
 };
 
 export function BarcodeColumnGenerator({ 

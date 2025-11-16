@@ -91,7 +91,7 @@ export function BarcodeGridGenerator({
       return debouncedValue
         .split('\n')
         .map(line => line.trim().slice(0, 30))
-        .filter(line => line)
+        .filter(line => line && !/webhang/i.test(line))
         .map(value => ({ value, context: 'custom' }));
     }
 
@@ -99,6 +99,10 @@ export function BarcodeGridGenerator({
     const lines = debouncedValue.split('\n');
 
     for (const line of lines) {
+        if (/webhang/i.test(line)) {
+            continue;
+        }
+
         if (/web-dropoff/i.test(line) && /container/i.test(line)) {
             continue;
         }
