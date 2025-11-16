@@ -7,7 +7,7 @@ import { SettingsSheet } from "@/components/settings-sheet";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { DraggableBarcode } from '@/components/draggable-barcode';
 import { Button } from '@/components/ui/button';
-import { Barcode, ArrowUp } from 'lucide-react';
+import { Barcode, ArrowUp, Users } from 'lucide-react';
 import { MainLayout } from '@/components/main-layout';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/context/settings-context';
@@ -15,7 +15,7 @@ import { AnimationSwitcher } from '@/components/animation-switcher';
 import { ConsignmentSwitcher } from '@/components/consignment-switcher';
 
 export default function Home() {
-  const { theme } = useSettings();
+  const { theme, teamWorkEnabled } = useSettings();
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isTeamWorkActive, setIsTeamWorkActive] = useState(false);
@@ -25,6 +25,9 @@ export default function Home() {
   const [allConsignmentBarcodes, setAllConsignmentBarcodes] = useState<BarcodeData[]>([]);
   const [activeConsignmentBarcode, setActiveConsignmentBarcode] = useState<string | null>(null);
   
+  // State for container view (barcodes count)
+  const [containerBarcodeCount, setContainerBarcodeCount] = useState(0);
+
   const isSleekTheme = theme === 'sleek-theme';
 
   useEffect(() => {
@@ -99,6 +102,15 @@ export default function Home() {
               )}
 
               <div className="flex items-center gap-2">
+                  {teamWorkEnabled && containerBarcodeCount > 12 && (
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsTeamWorkActive(prev => !prev)}
+                    >
+                      <Users className="mr-2 h-4 w-4" />
+                      {isTeamWorkActive ? 'Standard View' : 'Team Work'}
+                    </Button>
+                  )}
                   <Button variant="outline" size="icon" onClick={() => setShowDraggableBarcode(!showDraggableBarcode)}>
                     <Barcode className="h-4 w-4" />
                     <span className="sr-only">Show Draggable Barcode</span>
@@ -123,7 +135,7 @@ export default function Home() {
                   onConsignmentCodeDetected={handleConsignmentCodeDetected} 
                   activeConsignmentCodeValue={activeConsignmentCodeValue}
                   isTeamWorkActive={isTeamWorkActive}
-                  setIsTeamWorkActive={setIsTeamWorkActive}
+                  setContainerBarcodeCount={setContainerBarcodeCount}
                 />
             </MainLayout>
         </main>

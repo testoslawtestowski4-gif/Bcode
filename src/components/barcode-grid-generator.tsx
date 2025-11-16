@@ -7,10 +7,9 @@ import { GridBarcode } from '@/components/grid-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
 import { Button } from './ui/button';
-import { Boxes, BarChart2, ExternalLink, Printer, ListChecks, Users } from 'lucide-react';
+import { Boxes, BarChart2, ExternalLink, Printer, ListChecks } from 'lucide-react';
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
-import { Separator } from './ui/separator';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { isValidBarcode } from './barcode-column-generator';
@@ -25,19 +24,18 @@ interface BarcodeGridGeneratorProps {
   onConsignmentCodeDetected: (code: string) => void;
   activeConsignmentCodeValue: string | null;
   isTeamWorkActive: boolean;
-  setIsTeamWorkActive: Dispatch<SetStateAction<boolean>>;
+  setContainerBarcodeCount: Dispatch<SetStateAction<number>>;
 }
 
 export function BarcodeGridGenerator({ 
   onConsignmentCodeDetected, 
   activeConsignmentCodeValue,
   isTeamWorkActive,
-  setIsTeamWorkActive
+  setContainerBarcodeCount
 }: BarcodeGridGeneratorProps) {
   const { 
     gridHeight, gridColumns, setGridColumns, animationsEnabled, 
     pasteOnFocus, setPasteOnFocus, focusModeThreshold, focusModeVisibleRows,
-    teamWorkEnabled 
   } = useSettings();
   const [inputValue, setInputValue] = useState('');
   const debouncedValue = useDebounce(inputValue, 500);
@@ -86,16 +84,13 @@ export function BarcodeGridGenerator({
     return Array.from(matches.values());
   }, [debouncedValue]);
 
-  // Effect to reset team work mode when input changes
-  useEffect(() => {
-    if (isTeamWorkActive) {
-      setIsTeamWorkActive(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
-
   const barcodes = useMemo(() => parsedBarcodes.map(b => b.value), [parsedBarcodes]);
   
+  // Effect to update parent component with barcode count
+  useEffect(() => {
+    setContainerBarcodeCount(barcodes.length);
+  }, [barcodes.length, setContainerBarcodeCount]);
+
   const midPoint = Math.ceil(barcodes.length / 2);
   const leftBarcodes = barcodes.slice(0, midPoint);
   const rightBarcodes = barcodes.slice(midPoint);
@@ -589,15 +584,6 @@ export function BarcodeGridGenerator({
             Container
         </CardTitle>
         <div className="flex items-center gap-4 flex-wrap justify-center">
-            {teamWorkEnabled && barcodes.length > 12 && (
-              <Button
-                variant="outline"
-                onClick={() => setIsTeamWorkActive(prev => !prev)}
-              >
-                <Users className="mr-2 h-4 w-4" />
-                {isTeamWorkActive ? 'Standard View' : 'Team Work'}
-              </Button>
-            )}
             <div className="flex items-center space-x-2">
               <Switch
                   id="paste-on-click"
