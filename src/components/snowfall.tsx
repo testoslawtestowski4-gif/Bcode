@@ -17,8 +17,8 @@ const Snowfall = () => {
               '--size': `${Math.random() * 0.2 + 0.1}rem`,
               '--left-initial': `${Math.random() * 100}vw`,
               '--left-final': `${Math.random() * 100}vw`,
-              '--animation-delay': `${Math.random() * -10}s`,
-              '--animation-duration': `${5 + Math.random() * 5}s`,
+              '--animation-delay': `${Math.random() * -20}s`,
+              '--animation-duration': `${10 + Math.random() * 10}s`,
             } as React.CSSProperties
           }
         />
