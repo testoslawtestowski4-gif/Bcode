@@ -85,12 +85,12 @@ export function BarcodeGridGenerator({
     }
   
     if (isCustomMode) {
-      // Custom mode: treat the entire input as a single barcode value, up to 30 chars
-      const customValue = debouncedValue.trim().slice(0, 30);
-      if (customValue) {
-        return [{ value: customValue, context: 'custom' }];
-      }
-      return [];
+      // Custom mode: treat each line as a barcode value, up to 30 chars per line
+      return debouncedValue
+        .split('\n')
+        .map(line => line.trim().slice(0, 30))
+        .filter(line => line)
+        .map(value => ({ value, context: 'custom' }));
     }
 
     const hasWebDropoff = /web-dropoff/i.test(debouncedValue);
@@ -128,6 +128,15 @@ export function BarcodeGridGenerator({
   useEffect(() => {
     setContainerBarcodeCount(barcodes.length);
   }, [barcodes.length, setContainerBarcodeCount]);
+
+  // Auto-enable focus mode
+  useEffect(() => {
+    if (barcodes.length >= focusModeThreshold) {
+      if (!isFocusMode) setIsFocusMode(true);
+    } else {
+      if (isFocusMode) setIsFocusMode(false);
+    }
+  }, [barcodes.length, focusModeThreshold, isFocusMode, setIsFocusMode]);
 
   const midPoint = Math.ceil(barcodes.length / 2);
   const leftBarcodes = barcodes.slice(0, midPoint);
@@ -698,7 +707,7 @@ export function BarcodeGridGenerator({
         <div className="flex items-center gap-4 flex-wrap justify-center">
             {teamWorkEnabled && (
               <Button
-                variant="outline"
+                variant={isTeamWorkActive ? 'default': 'outline'}
                 onClick={() => setIsTeamWorkActive(prev => !prev)}
               >
                 <Users className="mr-2 h-4 w-4" />
@@ -765,7 +774,7 @@ export function BarcodeGridGenerator({
               </Button>
               <Textarea
                 ref={textareaRef}
-                placeholder={isCustomMode ? "Enter any text up to 30 characters..." : "Paste your list of codes here..."}
+                placeholder={isCustomMode ? "Enter one code per line..." : "Paste your list of codes here..."}
                 className={cn(
                     "w-full resize-none h-full",
                     isCustomMode && "border-blue-500 focus:border-blue-500 focus-visible:ring-blue-500"
@@ -775,7 +784,6 @@ export function BarcodeGridGenerator({
                 onChange={handleInputChange}
                 onClick={handleTextareaClick}
                 onPaste={handleInputChange}
-                maxLength={isCustomMode ? 30 : undefined}
               />
             </div>
             {!isTeamWorkActive && activeConsignmentCodeValue && (
