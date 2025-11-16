@@ -81,6 +81,9 @@ export function BarcodeGridGenerator({
 
   const parsedBarcodes = useMemo(() => {
     if (!debouncedValue) {
+      if (!isTeamWorkActive && textareaRef.current) {
+        textareaRef.current.blur();
+      }
       return [];
     }
   
@@ -120,7 +123,7 @@ export function BarcodeGridGenerator({
     }
     
     return Array.from(matches.values());
-  }, [debouncedValue, isCustomMode]);
+  }, [debouncedValue, isCustomMode, isTeamWorkActive]);
 
   const barcodes = useMemo(() => parsedBarcodes.map(b => b.value), [parsedBarcodes]);
   
@@ -961,6 +964,8 @@ export function BarcodeGridGenerator({
     </Card>
   );
 }
+
+    
 
     
 
