@@ -8,7 +8,7 @@ import { GridBarcode } from '@/components/grid-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
 import { Button } from './ui/button';
-import { Boxes, BarChart2, ExternalLink, Printer, ListChecks, LayoutGrid } from 'lucide-react';
+import { Boxes, BarChart2, ExternalLink, Printer, ListChecks, LayoutGrid, Users } from 'lucide-react';
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 import { format } from 'date-fns';
@@ -35,6 +35,7 @@ interface BarcodeGridGeneratorProps {
   onConsignmentCodeDetected: (code: string) => void;
   activeConsignmentCodeValue: string | null;
   isTeamWorkActive: boolean;
+  setIsTeamWorkActive: Dispatch<SetStateAction<boolean>>;
   setContainerBarcodeCount: Dispatch<SetStateAction<number>>;
   allConsignmentBarcodes: BarcodeData[];
   activeConsignmentBarcode: string | null;
@@ -47,6 +48,7 @@ export function BarcodeGridGenerator({
   onConsignmentCodeDetected, 
   activeConsignmentCodeValue,
   isTeamWorkActive,
+  setIsTeamWorkActive,
   setContainerBarcodeCount,
   allConsignmentBarcodes,
   activeConsignmentBarcode,
@@ -55,7 +57,7 @@ export function BarcodeGridGenerator({
   const { 
     gridHeight, gridColumns, setGridColumns, 
     pasteOnFocus, setPasteOnFocus, focusModeThreshold, focusModeVisibleRows,
-    isFocusMode, setIsFocusMode,
+    isFocusMode, setIsFocusMode, teamWorkEnabled
   } = useSettings();
   
   const debouncedValue = useDebounce(inputValue, 500);
@@ -494,14 +496,14 @@ export function BarcodeGridGenerator({
 
   useEffect(() => {
     if (barcodes.length > focusModeThreshold) {
-      setIsFocusMode(true);
+      if (!isFocusMode) setIsFocusMode(true);
     } else {
-      setIsFocusMode(false);
+      if (isFocusMode) setIsFocusMode(false);
     }
     setFocusedRow(0);
     setFocusedRowLeft(0);
     setFocusedRowRight(0);
-  }, [barcodes.length, focusModeThreshold, setIsFocusMode]);
+  }, [barcodes.length, focusModeThreshold, setIsFocusMode, isFocusMode]);
 
   useEffect(() => {
     const hasBarcodes = barcodes.length > 0;
@@ -593,6 +595,8 @@ export function BarcodeGridGenerator({
   ) => {
     if (!scrollContainer) return;
   
+    // We want to start scrolling only after the user moves to the second chunk.
+    // The "focused" row for scrolling purposes becomes the one just before the actual active one.
     const chunkToScrollTo = Math.max(0, focusedRowIndex - 1);
     const firstIndexOfChunk = chunkToScrollTo * itemsPerChunk;
     const rowElement = rowRefs[firstIndexOfChunk];
@@ -600,13 +604,15 @@ export function BarcodeGridGenerator({
     if (rowElement) {
         const containerTop = scrollContainer.getBoundingClientRect().top;
         const rowTop = rowElement.getBoundingClientRect().top;
-        const scrollOffset = rowTop - containerTop + scrollContainer.scrollTop;
+        // We add a small offset to not have the top of the element stick right to the top
+        const scrollOffset = rowTop - containerTop + scrollContainer.scrollTop - 8; 
   
         scrollContainer.scrollTo({
             top: scrollOffset,
             behavior: 'smooth',
         });
     } else if (focusedRowIndex === 0) {
+        // When going back to the first chunk, scroll all the way to the top.
         scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -688,6 +694,15 @@ export function BarcodeGridGenerator({
             Container
         </CardTitle>
         <div className="flex items-center gap-4 flex-wrap justify-center">
+            {teamWorkEnabled && (
+              <Button
+                variant="outline"
+                onClick={() => setIsTeamWorkActive(prev => !prev)}
+              >
+                <Users className="mr-2 h-4 w-4" />
+                {isTeamWorkActive ? 'Standard View' : 'Team Work'}
+              </Button>
+            )}
             <div className="flex items-center space-x-2">
               <Switch
                   id="paste-on-click"

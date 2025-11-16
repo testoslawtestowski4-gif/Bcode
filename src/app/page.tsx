@@ -8,14 +8,13 @@ import { SettingsSheet } from "@/components/settings-sheet";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { DraggableBarcode } from '@/components/draggable-barcode';
 import { Button } from '@/components/ui/button';
-import { Barcode, ArrowUp, Users } from 'lucide-react';
+import { Barcode, ArrowUp } from 'lucide-react';
 import { MainLayout } from '@/components/main-layout';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/context/settings-context';
-import { ConsignmentSwitcher } from '@/components/consignment-switcher';
 
 export default function Home() {
-  const { theme, teamWorkEnabled } = useSettings();
+  const { theme } = useSettings();
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isTeamWorkActive, setIsTeamWorkActive] = useState(false);
@@ -91,15 +90,6 @@ export default function Home() {
               </div>
 
               <div className="flex items-center gap-2">
-                  {teamWorkEnabled && (
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsTeamWorkActive(prev => !prev)}
-                    >
-                      <Users className="mr-2 h-4 w-4" />
-                      {isTeamWorkActive ? 'Standard View' : 'Team Work'}
-                    </Button>
-                  )}
                   <Button variant="outline" size="icon" onClick={() => setShowDraggableBarcode(!showDraggableBarcode)}>
                     <Barcode className="h-4 w-4" />
                     <span className="sr-only">Show Draggable Barcode</span>
@@ -125,6 +115,7 @@ export default function Home() {
                   onConsignmentCodeDetected={handleConsignmentCodeDetected} 
                   activeConsignmentCodeValue={activeConsignmentCodeValue}
                   isTeamWorkActive={isTeamWorkActive}
+                  setIsTeamWorkActive={setIsTeamWorkActive}
                   setContainerBarcodeCount={setContainerBarcodeCount}
                   allConsignmentBarcodes={allConsignmentBarcodes}
                   activeConsignmentBarcode={activeConsignmentBarcode}
