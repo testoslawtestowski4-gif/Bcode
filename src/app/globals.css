@@ -178,7 +178,7 @@
   }
 
   .snowflake {
-    @apply rounded-full bg-white/80 absolute top-0 left-0;
+    @apply rounded-full bg-white/70 absolute top-0 left-0;
     width: var(--size);
     height: var(--size);
     animation: snowfall-animation linear infinite;
