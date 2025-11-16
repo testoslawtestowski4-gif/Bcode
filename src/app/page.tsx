@@ -102,10 +102,11 @@ export default function Home() {
               )}
 
               <div className="flex items-center gap-2">
-                  {teamWorkEnabled && containerBarcodeCount > 12 && (
+                  {teamWorkEnabled && (
                     <Button
                       variant="outline"
                       onClick={() => setIsTeamWorkActive(prev => !prev)}
+                      disabled={containerBarcodeCount <= 12}
                     >
                       <Users className="mr-2 h-4 w-4" />
                       {isTeamWorkActive ? 'Standard View' : 'Team Work'}
