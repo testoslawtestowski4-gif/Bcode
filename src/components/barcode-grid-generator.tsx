@@ -83,11 +83,15 @@ export function BarcodeGridGenerator({
       }
     }
     
-    const allParsed = Array.from(matches.values());
+    return Array.from(matches.values());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedValue]);
+
+  // Effect to reset team work mode when input changes
+  useEffect(() => {
     if (isTeamWorkActive) {
       setIsTeamWorkActive(false);
     }
-    return allParsed;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue]);
 
