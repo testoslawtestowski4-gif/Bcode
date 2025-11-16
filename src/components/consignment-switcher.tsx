@@ -62,7 +62,7 @@ export function ConsignmentSwitcher({ allBarcodes, activeBarcode, setActiveBarco
             inContainer ? 'flex-col gap-2 w-full' : 'p-2 h-14 w-80'
         )}>
             <div className={cn("flex items-center gap-3 flex-grow overflow-hidden", inContainer && "w-full flex-col")}>
-                <div className={cn("flex-shrink-0 p-2 rounded-md barcode-card", inContainer ? 'w-full h-16' : 'w-32')}>
+                <div className={cn("flex-shrink-0 p-2 rounded-md bg-white", inContainer ? 'w-full h-16' : 'w-32')}>
                     <svg ref={svgRef} className="w-full h-full" />
                 </div>
             </div>
