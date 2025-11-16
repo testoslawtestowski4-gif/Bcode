@@ -8,7 +8,7 @@ import { SettingsSheet } from "@/components/settings-sheet";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { DraggableBarcode } from '@/components/draggable-barcode';
 import { Button } from '@/components/ui/button';
-import { Barcode, ArrowUp } from 'lucide-react';
+import { Barcode, ArrowUp, Mail } from 'lucide-react';
 import { MainLayout } from '@/components/main-layout';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/context/settings-context';
@@ -84,9 +84,12 @@ export default function Home() {
           <div className="container mx-auto flex h-16 items-center justify-between p-4 relative">
               <div className="flex items-center gap-3">
                 <Barcode className="h-8 w-8 text-primary" />
-                <h1 className={cn("text-3xl font-bold text-primary")}>
-                  BCode Maker
-                </h1>
+                <div>
+                  <h1 className={cn("text-3xl font-bold text-primary leading-none")}>
+                    BCode Maker
+                  </h1>
+                  <p className="text-xs text-muted-foreground mt-1">Scan, Ship, Repeat!</p>
+                </div>
               </div>
 
               <div className="flex items-center gap-2">
@@ -125,10 +128,17 @@ export default function Home() {
         </main>
         {!isSleekTheme && (
           <footer className="mt-12 py-6 border-t">
-            <div className="container flex flex-col items-center justify-center gap-4 text-center">
+            <div className="container flex flex-col items-center justify-center gap-2 text-center">
                 <p className="text-sm text-muted-foreground">
-                  © <a href="mailto:suchecki.damian@gmail.com" className="underline hover:text-primary">Damian Suchecki</a> · ✉ suchecki.damian@gmail.com
+                  Created, designed, and engineered by Damian Suchecki
                 </p>
+                <a 
+                  href="mailto:suchecki.damian@gmail.com" 
+                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  <Mail className="h-4 w-4" />
+                  <span>suchecki.damian@gmail.com</span>
+                </a>
             </div>
           </footer>
         )}
