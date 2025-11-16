@@ -776,7 +776,7 @@ export function BarcodeGridGenerator({
                 ref={textareaRef}
                 placeholder={isCustomMode ? "Enter one code per line..." : "Paste your list of codes here..."}
                 className={cn(
-                    "w-full resize-none h-full",
+                    "w-full resize-none h-full custom-scrollbar",
                     isCustomMode && "border-blue-500 focus:border-blue-500 focus-visible:ring-blue-500"
                 )}
                 rows={5}

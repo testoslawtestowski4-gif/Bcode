@@ -140,27 +140,29 @@
 
 @layer components {
   .grid-scroll-container {
-    overflow-y: scroll;
-    scrollbar-width: thin; /* For Firefox */
-    scrollbar-color: hsl(var(--border)) hsl(var(--background)); /* For Firefox */
+    @apply custom-scrollbar;
     max-height: 70vh;
   }
 
+  .custom-scrollbar {
+    overflow-y: auto;
+    scrollbar-width: thin; /* For Firefox */
+    scrollbar-color: hsl(var(--border)) hsl(var(--background)); /* For Firefox */
+  }
+
   /* For Chrome, Safari and Opera */
-  .grid-scroll-container::-webkit-scrollbar {
+  .custom-scrollbar::-webkit-scrollbar {
     width: 8px;
   }
 
-  .grid-scroll-container::-webkit-scrollbar-track {
+  .custom-scrollbar::-webkit-scrollbar-track {
     background: hsl(var(--background));
     border-radius: 4px;
   }
 
-  .grid-scroll-container::-webkit-scrollbar-thumb {
+  .custom-scrollbar::-webkit-scrollbar-thumb {
     background-color: hsl(var(--border));
     border-radius: 4px;
     border: 2px solid hsl(var(--background));
   }
 }
-
-    
