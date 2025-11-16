@@ -129,7 +129,7 @@ export function InteractiveBarcode({
         <div
           className={cn(
             'h-full flex flex-col',
-            showActiveState ? 'opacity-100' : 'opacity-40'
+            showActiveState ? 'opacity-100' : 'opacity-0'
           )}
         >
           <CardContent className="p-4 pt-4 flex-grow flex items-center">
@@ -161,4 +161,3 @@ export function InteractiveBarcode({
     </Card>
   );
 }
-
