@@ -10,35 +10,39 @@ interface MainLayoutProps {
     children: [ReactNode, ReactNode];
     isCollapsed: boolean;
     setIsCollapsed: (isCollapsed: boolean) => void;
+    isTeamWorkActive: boolean;
 }
 
-export function MainLayout({ children, isCollapsed, setIsCollapsed }: MainLayoutProps) {
+export function MainLayout({ children, isCollapsed, setIsCollapsed, isTeamWorkActive }: MainLayoutProps) {
     const { animationsEnabled } = useSettings();
     const isSpeedMode = !animationsEnabled;
     const [consignmentView, containerView] = children;
 
-    const effectiveIsCollapsed = isSpeedMode ? false : isCollapsed;
+    const effectiveIsCollapsed = isTeamWorkActive ? false : (isSpeedMode ? false : isCollapsed);
+    const consignmentWidth = isTeamWorkActive ? 'lg:w-[30%]' : (effectiveIsCollapsed ? 'lg:w-[120px]' : 'lg:w-[35%]');
+    const containerWidth = isTeamWorkActive ? 'lg:w-[70%]' : (effectiveIsCollapsed ? 'lg:w-[calc(100% - 120px - 2rem)]' : 'lg:w-[65%]');
+
 
     return (
         <div className="flex flex-col lg:flex-row gap-8 items-start relative mt-8">
             <div
                 id="consignment-view-wrapper"
                 className={cn(
-                    'w-full lg:w-[35%] lg:flex-shrink-0 relative',
+                    'w-full lg:flex-shrink-0 relative',
                     'transition-all duration-500 ease-in-out',
-                    effectiveIsCollapsed && 'lg:w-[120px]'
+                    consignmentWidth
                 )}
             >
                 <div
                     id="consignment-view"
                     className={cn(
                         'transition-opacity duration-300',
-                        effectiveIsCollapsed && 'opacity-0 h-0 pointer-events-none'
+                        effectiveIsCollapsed && !isTeamWorkActive && 'opacity-0 h-0 pointer-events-none'
                     )}
                 >
                     {consignmentView}
                 </div>
-                {effectiveIsCollapsed && !isSpeedMode && (
+                {effectiveIsCollapsed && !isSpeedMode && !isTeamWorkActive && (
                     <div className="hidden lg:block sticky top-20 w-[120px]">
                          <div className="h-full w-full" style={{height: 'calc(100vh - 12rem)'}}>
                             <Button 
@@ -60,7 +64,7 @@ export function MainLayout({ children, isCollapsed, setIsCollapsed }: MainLayout
                 className={cn(
                     'w-full flex-grow',
                     'transition-all duration-500 ease-in-out',
-                    effectiveIsCollapsed ? 'lg:w-[calc(100% - 120px - 2rem)]' : 'lg:w-[65%]'
+                    containerWidth
                 )}
             >
                 {containerView}

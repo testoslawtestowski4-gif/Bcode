@@ -38,6 +38,10 @@ interface SettingsContextType {
   // Paste on Focus setting
   pasteOnFocus: boolean;
   setPasteOnFocus: (enabled: boolean) => void;
+
+  // Team Work setting
+  teamWorkEnabled: boolean;
+  setTeamWorkEnabled: (enabled: boolean) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -66,10 +70,14 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   // Paste on Focus setting
   const [pasteOnFocus, _setPasteOnFocus] = useState(true);
 
+  // Team Work setting
+  const [teamWorkEnabled, _setTeamWorkEnabled] = useState(false);
+
   useEffect(() => {
     const storedTheme = localStorage.getItem('app-theme') || 'light';
     const storedAnimations = localStorage.getItem('animations-enabled');
     const storedPasteOnFocus = localStorage.getItem('paste-on-focus');
+    const storedTeamWork = localStorage.getItem('team-work-enabled');
     const storedFocusThreshold = localStorage.getItem('focus-mode-threshold');
     const storedFocusRows = localStorage.getItem('focus-mode-visible-rows');
     const storedColumnHeight = localStorage.getItem('column-height');
@@ -88,6 +96,10 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
     if (storedPasteOnFocus !== null) {
       _setPasteOnFocus(storedPasteOnFocus === 'true');
+    }
+
+    if (storedTeamWork !== null) {
+      _setTeamWorkEnabled(storedTeamWork === 'true');
     }
 
     if (storedFocusThreshold !== null) {
@@ -138,6 +150,11 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const setPasteOnFocus = (enabled: boolean) => {
     localStorage.setItem('paste-on-focus', String(enabled));
     _setPasteOnFocus(enabled);
+  }
+
+  const setTeamWorkEnabled = (enabled: boolean) => {
+    localStorage.setItem('team-work-enabled', String(enabled));
+    _setTeamWorkEnabled(enabled);
   }
 
   const setFocusModeThreshold = (threshold: number) => {
@@ -203,7 +220,9 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       animationsEnabled,
       setAnimationsEnabled,
       pasteOnFocus,
-      setPasteOnFocus
+      setPasteOnFocus,
+      teamWorkEnabled,
+      setTeamWorkEnabled,
     }}>
       {children}
     </SettingsContext.Provider>

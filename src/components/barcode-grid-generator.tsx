@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, Dispatch, SetStateAction } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { GridBarcode } from '@/components/grid-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
 import { Button } from './ui/button';
-import { Boxes, BarChart2, ArrowDownToLine, ExternalLink, Printer, ListChecks } from 'lucide-react';
+import { Boxes, BarChart2, ExternalLink, Printer, ListChecks, Users } from 'lucide-react';
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 import { Separator } from './ui/separator';
@@ -24,12 +24,20 @@ interface ParsedBarcode {
 interface BarcodeGridGeneratorProps {
   onConsignmentCodeDetected: (code: string) => void;
   activeConsignmentCodeValue: string | null;
+  isTeamWorkActive: boolean;
+  setIsTeamWorkActive: Dispatch<SetStateAction<boolean>>;
 }
 
-export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignmentCodeValue }: BarcodeGridGeneratorProps) {
+export function BarcodeGridGenerator({ 
+  onConsignmentCodeDetected, 
+  activeConsignmentCodeValue,
+  isTeamWorkActive,
+  setIsTeamWorkActive
+}: BarcodeGridGeneratorProps) {
   const { 
     gridHeight, gridColumns, setGridColumns, animationsEnabled, 
-    pasteOnFocus, setPasteOnFocus, focusModeThreshold, focusModeVisibleRows 
+    pasteOnFocus, setPasteOnFocus, focusModeThreshold, focusModeVisibleRows,
+    teamWorkEnabled 
   } = useSettings();
   const [inputValue, setInputValue] = useState('');
   const debouncedValue = useDebounce(inputValue, 500);
@@ -75,10 +83,20 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
       }
     }
     
-    return Array.from(matches.values());
+    const allParsed = Array.from(matches.values());
+    if (isTeamWorkActive) {
+      setIsTeamWorkActive(false);
+    }
+    return allParsed;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue]);
 
   const barcodes = useMemo(() => parsedBarcodes.map(b => b.value), [parsedBarcodes]);
+  
+  const midPoint = Math.ceil(barcodes.length / 2);
+  const leftBarcodes = barcodes.slice(0, midPoint);
+  const rightBarcodes = barcodes.slice(midPoint);
+
 
   const levelIJPatterns = ['2-b1-web-dropoff', '2-b2-web-dropoff', '2-b3-web-dropoff'];
   const levelKLPatterns = ['2-c1-web-dropoff', '2-c2-web-dropoff', '2-c3-web-dropoff'];
@@ -567,16 +585,15 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
             Container
         </CardTitle>
         <div className="flex items-center gap-4 flex-wrap justify-center">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleScrollToGrid}
-              disabled={barcodes.length === 0}
-              title="Scroll to grid"
-            >
-              <ArrowDownToLine className="w-4 h-4" />
-              <span className="sr-only">Scroll to grid</span>
-            </Button>
+            {teamWorkEnabled && barcodes.length > 12 && (
+              <Button
+                variant="outline"
+                onClick={() => setIsTeamWorkActive(prev => !prev)}
+              >
+                <Users className="mr-2 h-4 w-4" />
+                {isTeamWorkActive ? 'Standard View' : 'Team Work'}
+              </Button>
+            )}
             <div className="flex items-center space-x-2">
               <Switch
                   id="paste-on-click"
@@ -680,34 +697,82 @@ export function BarcodeGridGenerator({ onConsignmentCodeDetected, activeConsignm
 
         <div className="mt-6" ref={gridContainerRef}>
           {barcodes.length > 0 ? (
-            <div 
-              className="grid gap-4"
-              style={{ gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))` }}
-            >
-              {barcodes.map((value, index) => {
-                const rowIndex = Math.floor(index / gridColumns);
-                const focusChunkIndex = Math.floor(rowIndex / focusModeVisibleRows);
-                const isBlurred = isFocusMode && focusChunkIndex !== focusedRow;
-                const isOneColumn = gridColumns === 1;
+             isTeamWorkActive ? (
+                <div className="grid grid-cols-2 gap-8">
+                  <div>
+                    <h3 className="text-lg font-semibold text-center mb-4">Part 1 ({leftBarcodes.length} items)</h3>
+                    <div 
+                      className="grid gap-4"
+                      style={{ gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))` }}
+                    >
+                      {leftBarcodes.map((value, index) => {
+                        const isBlurred = isFocusMode && Math.floor(index / gridColumns / focusModeVisibleRows) !== focusedRow;
+                        return (
+                          <GridBarcode
+                            key={`${value}-${index}`}
+                            value={value}
+                            index={index}
+                            height={currentGridHeight}
+                            isBlurred={isBlurred}
+                            isOneColumn={gridColumns === 1}
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-center mb-4">Part 2 ({rightBarcodes.length} items)</h3>
+                    <div
+                      className="grid gap-4"
+                      style={{ gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))` }}
+                    >
+                      {rightBarcodes.map((value, index) => {
+                        const originalIndex = index + midPoint;
+                        const isBlurred = isFocusMode && Math.floor(originalIndex / gridColumns / focusModeVisibleRows) !== focusedRow;
+                        return (
+                          <GridBarcode
+                            key={`${value}-${originalIndex}`}
+                            value={value}
+                            index={originalIndex}
+                            height={currentGridHeight}
+                            isBlurred={isBlurred}
+                            isOneColumn={gridColumns === 1}
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div 
+                  className="grid gap-4"
+                  style={{ gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))` }}
+                >
+                  {barcodes.map((value, index) => {
+                    const rowIndex = Math.floor(index / gridColumns);
+                    const focusChunkIndex = Math.floor(rowIndex / focusModeVisibleRows);
+                    const isBlurred = isFocusMode && focusChunkIndex !== focusedRow;
+                    const isOneColumn = gridColumns === 1;
 
-                return (
-                  <GridBarcode
-                    ref={el => {
-                      if (rowRefs.current) {
-                        rowRefs.current[index] = el;
-                      }
-                    }}
-                    key={`${value}-${index}`} 
-                    value={value} 
-                    index={index}
-                    height={currentGridHeight}
-                    isBlurred={isBlurred}
-                    onClick={() => isFocusMode && setFocusedRow(focusChunkIndex)}
-                    isOneColumn={isOneColumn}
-                  />
-                );
-              })}
-            </div>
+                    return (
+                      <GridBarcode
+                        ref={el => {
+                          if (rowRefs.current) {
+                            rowRefs.current[index] = el;
+                          }
+                        }}
+                        key={`${value}-${index}`} 
+                        value={value} 
+                        index={index}
+                        height={currentGridHeight}
+                        isBlurred={isBlurred}
+                        onClick={() => isFocusMode && setFocusedRow(focusChunkIndex)}
+                        isOneColumn={isOneColumn}
+                      />
+                    );
+                  })}
+                </div>
+              )
           ) : (
             <div className="text-center py-10 text-muted-foreground">
               <p>Your grid of barcodes will appear here.</p>

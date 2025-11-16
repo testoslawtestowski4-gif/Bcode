@@ -7,16 +7,18 @@ import { SettingsSheet } from "@/components/settings-sheet";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { DraggableBarcode } from '@/components/draggable-barcode';
 import { Button } from '@/components/ui/button';
-import { Barcode, ArrowUp } from 'lucide-react';
+import { Barcode, ArrowUp, Users } from 'lucide-react';
 import { MainLayout } from '@/components/main-layout';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/context/settings-context';
 import { AnimationSwitcher } from '@/components/animation-switcher';
 
 export default function Home() {
-  const { animationsEnabled, theme } = useSettings();
+  const { animationsEnabled, theme, teamWorkEnabled } = useSettings();
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [isTeamWorkActive, setIsTeamWorkActive] = useState(false);
+
 
   // State lifted up from BarcodeColumnGenerator
   const [consignmentInputValue, setConsignmentInputValue] = useState('');
@@ -128,7 +130,11 @@ export default function Home() {
           </div>
         </header>
         <main className={cn("flex-grow container mx-auto p-4 sm:p-6 md:p-8", showDraggableBarcode && "pt-44")}>
-            <MainLayout isCollapsed={isConsignmentCollapsed} setIsCollapsed={setIsConsignmentCollapsed}>
+            <MainLayout 
+              isCollapsed={isConsignmentCollapsed} 
+              setIsCollapsed={setIsConsignmentCollapsed}
+              isTeamWorkActive={isTeamWorkActive}
+            >
                 <BarcodeColumnGenerator 
                     isCollapsed={isConsignmentCollapsed}
                     setIsCollapsed={setIsConsignmentCollapsed}
@@ -138,10 +144,13 @@ export default function Home() {
                     setAllBarcodes={setAllConsignmentBarcodes}
                     activeBarcode={activeConsignmentBarcode}
                     setActiveBarcode={setActiveConsignmentBarcode}
+                    isTeamWorkActive={isTeamWorkActive}
                 />
                 <BarcodeGridGenerator 
                   onConsignmentCodeDetected={handleConsignmentCodeDetected} 
                   activeConsignmentCodeValue={activeConsignmentCodeValue}
+                  isTeamWorkActive={isTeamWorkActive}
+                  setIsTeamWorkActive={setIsTeamWorkActive}
                 />
             </MainLayout>
         </main>

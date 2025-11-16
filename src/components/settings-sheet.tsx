@@ -25,7 +25,8 @@ export function SettingsSheet() {
     focusModeVisibleRows, setFocusModeVisibleRows,
     printFontSize, setPrintFontSize,
     printFontWeight, setPrintFontWeight,
-    printOrientation, setPrintOrientation
+    printOrientation, setPrintOrientation,
+    teamWorkEnabled, setTeamWorkEnabled
   } = useSettings();
 
   return (
@@ -90,6 +91,20 @@ export function SettingsSheet() {
                             ))}
                         </RadioGroup>
                     </div>
+                </div>
+            </div>
+
+            <Separator />
+            
+            <div>
+                <h4 className="text-lg font-medium mb-4">Team Work</h4>
+                <div className="flex items-center space-x-2">
+                    <Switch
+                        id="team-work-switch"
+                        checked={teamWorkEnabled}
+                        onCheckedChange={setTeamWorkEnabled}
+                    />
+                    <Label htmlFor="team-work-switch">Enable Team Work Feature</Label>
                 </div>
             </div>
 
