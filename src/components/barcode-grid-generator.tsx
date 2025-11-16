@@ -22,6 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { WinnerDisplay } from './winner-display';
 
 
 interface ParsedBarcode {
@@ -67,6 +68,8 @@ export function BarcodeGridGenerator({
   const [focusedRowLeft, setFocusedRowLeft] = useState(0);
   const [focusedRowRight, setFocusedRowRight] = useState(0);
   const [isCustomMode, setIsCustomMode] = useState(false);
+  const [player1Wins, setPlayer1Wins] = useState(false);
+  const [player2Wins, setPlayer2Wins] = useState(false);
 
   
   const containerCardRef = useRef<HTMLDivElement>(null);
@@ -85,7 +88,6 @@ export function BarcodeGridGenerator({
     }
   
     if (isCustomMode) {
-      // Custom mode: treat each line as a barcode value, up to 30 chars per line
       return debouncedValue
         .split('\n')
         .map(line => line.trim().slice(0, 30))
@@ -97,7 +99,6 @@ export function BarcodeGridGenerator({
     const matches = new Map<string, ParsedBarcode>();
 
     if (hasWebDropoff) {
-      // Mode 1: Parse from "web-dropoff" context
       const regex = /(\d{7}).*?((?:\d-\w\d-|\w+-)?web-dropoff)/gi;
       let match;
       while ((match = regex.exec(debouncedValue)) !== null) {
@@ -108,7 +109,6 @@ export function BarcodeGridGenerator({
         }
       }
     } else {
-      // Mode 2: Parse standalone 7-digit numbers
       const regex = /\b(\d{7})\b/g;
       let match;
       while ((match = regex.exec(debouncedValue)) !== null) {
@@ -127,16 +127,14 @@ export function BarcodeGridGenerator({
         textareaRef.current?.blur();
         window.focus();
     }
-  }, [parsedBarcodes, isTeamWorkActive]);
+  }, [parsedBarcodes.length, isTeamWorkActive]);
 
   const barcodes = useMemo(() => parsedBarcodes.map(b => b.value), [parsedBarcodes]);
   
-  // Effect to update parent component with barcode count
   useEffect(() => {
     setContainerBarcodeCount(barcodes.length);
   }, [barcodes.length, setContainerBarcodeCount]);
 
-  // Auto-enable focus mode
   useEffect(() => {
     if (barcodes.length >= focusModeThreshold) {
       if (!isFocusMode) setIsFocusMode(true);
@@ -522,17 +520,15 @@ export function BarcodeGridGenerator({
 
   useEffect(() => {
     if (barcodes.length > 0) {
-        setTimeout(() => {
-            containerCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
+      containerCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, [barcodes.length]);
 
   useEffect(() => {
     if (isTeamWorkActive) {
-        setTimeout(() => {
-            containerCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
+        setPlayer1Wins(false);
+        setPlayer2Wins(false);
+        containerCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, [isTeamWorkActive]);
 
@@ -558,18 +554,32 @@ export function BarcodeGridGenerator({
   
         switch (event.code) {
           case 'Space':
-            if (rowChunksLeft > 0) setFocusedRowLeft(prev => (prev + 1) % rowChunksLeft);
+            if (rowChunksLeft > 0) {
+              if (focusedRowLeft === rowChunksLeft - 1 && !player1Wins) {
+                setPlayer1Wins(true);
+              }
+              setFocusedRowLeft(prev => (prev + 1) % rowChunksLeft);
+            }
             break;
           case 'KeyZ':
-            if (rowChunksLeft > 0) setFocusedRowLeft(prev => (prev - 1 + rowChunksLeft) % rowChunksLeft);
+            if (rowChunksLeft > 0) {
+                setFocusedRowLeft(prev => (prev - 1 + rowChunksLeft) % rowChunksLeft);
+            }
             break;
           case 'ArrowDown':
           case 'ArrowRight':
-            if (rowChunksRight > 0) setFocusedRowRight(prev => (prev + 1) % rowChunksRight);
+            if (rowChunksRight > 0) {
+                if (focusedRowRight === rowChunksRight - 1 && !player2Wins) {
+                    setPlayer2Wins(true);
+                }
+                setFocusedRowRight(prev => (prev + 1) % rowChunksRight);
+            }
             break;
           case 'ArrowUp':
           case 'ArrowLeft':
-            if (rowChunksRight > 0) setFocusedRowRight(prev => (prev - 1 + rowChunksRight) % rowChunksRight);
+            if (rowChunksRight > 0) {
+                setFocusedRowRight(prev => (prev - 1 + rowChunksRight) % rowChunksRight);
+            }
             break;
         }
   
@@ -599,7 +609,7 @@ export function BarcodeGridGenerator({
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isFocusMode, isTeamWorkActive, barcodes.length, leftBarcodes.length, rightBarcodes.length, gridColumns, focusModeVisibleRows, isCustomMode]);
+  }, [isFocusMode, isTeamWorkActive, barcodes.length, leftBarcodes.length, rightBarcodes.length, gridColumns, focusModeVisibleRows, isCustomMode, focusedRowLeft, focusedRowRight, player1Wins, player2Wins]);
 
   const scrollToRow = (
     scrollContainer: HTMLDivElement | null, 
@@ -609,8 +619,6 @@ export function BarcodeGridGenerator({
   ) => {
     if (!scrollContainer) return;
   
-    // We want to start scrolling only after the user moves to the second chunk.
-    // The "focused" row for scrolling purposes becomes the one just before the actual active one.
     const chunkToScrollTo = Math.max(0, focusedRowIndex - 1);
     const firstIndexOfChunk = chunkToScrollTo * itemsPerChunk;
     const rowElement = rowRefs[firstIndexOfChunk];
@@ -618,7 +626,6 @@ export function BarcodeGridGenerator({
     if (rowElement) {
         const containerTop = scrollContainer.getBoundingClientRect().top;
         const rowTop = rowElement.getBoundingClientRect().top;
-        // We add a small offset to not have the top of the element stick right to the top
         const scrollOffset = rowTop - containerTop + scrollContainer.scrollTop - 8; 
   
         scrollContainer.scrollTo({
@@ -626,7 +633,6 @@ export function BarcodeGridGenerator({
             behavior: 'smooth',
         });
     } else if (focusedRowIndex === 0) {
-        // When going back to the first chunk, scroll all the way to the top.
         scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -663,7 +669,6 @@ export function BarcodeGridGenerator({
     const potentialCodes = value.match(/[a-zA-Z0-9]+/g) || [];
     const validConsignmentCodes = potentialCodes.filter(isValidBarcode);
     if (validConsignmentCodes.length > 0) {
-      // Find the last valid code in the pasted text, as it's often the most relevant one.
       onConsignmentCodeDetected(validConsignmentCodes[validConsignmentCodes.length - 1]);
     }
   };
@@ -672,7 +677,7 @@ export function BarcodeGridGenerator({
     if (!pasteOnFocus) return;
 
     try {
-      setInputValue(''); // Explicitly clear the input value first
+      setInputValue(''); 
       const text = await navigator.clipboard.readText();
       if (text) {
         setInputValue(text);
@@ -859,8 +864,9 @@ export function BarcodeGridGenerator({
           {barcodes.length > 0 ? (
              isTeamWorkActive ? (
                 <div className="flex justify-between gap-8">
-                  <div className="w-[48%]">
-                    <h3 className="text-lg font-semibold text-center mb-4">Part 1 ({leftBarcodes.length} items)</h3>
+                  <div className="w-[48%] relative">
+                    <h3 className="text-lg font-semibold text-center mb-4">Player 1 ({leftBarcodes.length} items)</h3>
+                    {player1Wins && <WinnerDisplay />}
                     <div
                       ref={leftScrollContainerRef}
                       className="grid-scroll-container pr-2"
@@ -889,8 +895,9 @@ export function BarcodeGridGenerator({
                       </div>
                     </div>
                   </div>
-                  <div className="w-[48%]">
-                    <h3 className="text-lg font-semibold text-center mb-4">Part 2 ({rightBarcodes.length} items)</h3>
+                  <div className="w-[48%] relative">
+                    <h3 className="text-lg font-semibold text-center mb-4">Player 2 ({rightBarcodes.length} items)</h3>
+                    {player2Wins && <WinnerDisplay />}
                     <div
                       ref={rightScrollContainerRef}
                       className="grid-scroll-container pr-2"
@@ -961,11 +968,3 @@ export function BarcodeGridGenerator({
     </Card>
   );
 }
-
-    
-
-    
-
-    
-
-    

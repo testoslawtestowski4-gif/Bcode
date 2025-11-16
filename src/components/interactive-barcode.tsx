@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useRef } from 'react';
@@ -119,7 +120,6 @@ export function InteractiveBarcode({
       onClick={isInteractive ? onClick : undefined}
       className={cn(
         'barcode-card',
-        'transition-all duration-300',
         'overflow-hidden relative flex items-stretch',
         isInteractive && 'cursor-pointer',
         showActiveState ? 'border-primary shadow-lg' : (isInteractive ? 'hover:border-primary/50' : '')
@@ -129,7 +129,7 @@ export function InteractiveBarcode({
         <div
           className={cn(
             'h-full flex flex-col',
-            showActiveState ? 'opacity-100 blur-none' : 'opacity-40 blur-lg'
+            showActiveState ? 'opacity-100' : 'opacity-40'
           )}
         >
           <CardContent className="p-4 pt-4 flex-grow flex items-center">
@@ -161,3 +161,4 @@ export function InteractiveBarcode({
     </Card>
   );
 }
+
