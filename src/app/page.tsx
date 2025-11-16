@@ -34,6 +34,7 @@ export default function Home() {
     setTotalContainerBarcodes,
     firstGenerationDate,
     setFirstGenerationDate,
+    setShowSnowfall,
   } = useSettings();
 
   useEffect(() => {
@@ -136,6 +137,7 @@ export default function Home() {
                     setAllBarcodes={setAllConsignmentBarcodes}
                     activeBarcode={activeConsignmentBarcode}
                     setActiveBarcode={setActiveConsignmentBarcode}
+                    setShowSnowfall={setShowSnowfall}
                 />
                 <BarcodeGridGenerator 
                   inputValue={containerInputValue}

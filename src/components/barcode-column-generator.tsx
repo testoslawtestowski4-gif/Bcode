@@ -23,6 +23,7 @@ interface BarcodeColumnGeneratorProps {
   setAllBarcodes: Dispatch<SetStateAction<BarcodeData[]>>;
   activeBarcode: string | null;
   setActiveBarcode: Dispatch<SetStateAction<string | null>>;
+  setShowSnowfall: (enabled: boolean) => void;
 }
 
 // Validation helper
@@ -35,11 +36,11 @@ export const isValidBarcode = (code: string) => {
 
 export function BarcodeColumnGenerator({ 
   inputValue, setInputValue, allBarcodes, setAllBarcodes,
-  activeBarcode, setActiveBarcode
+  activeBarcode, setActiveBarcode, setShowSnowfall
 }: BarcodeColumnGeneratorProps) {
   const { 
     columnHeight, pasteOnFocus, printFontSize, 
-    printFontWeight, printOrientation, setShowSnowfall
+    printFontWeight, printOrientation
   } = useSettings();
   const [barcodes, setBarcodes] = useState<BarcodeData[]>([]); // This is the displayed list
   const [filterPrefixes, setFilterPrefixes] = useState<string[]>([]);
