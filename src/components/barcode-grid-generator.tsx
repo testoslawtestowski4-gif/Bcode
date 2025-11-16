@@ -8,7 +8,7 @@ import { GridBarcode } from '@/components/grid-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
 import { Button } from './ui/button';
-import { Boxes, BarChart2, ExternalLink, Printer, ListChecks, LayoutGrid, Users } from 'lucide-react';
+import { Boxes, BarChart2, ExternalLink, Printer, ListChecks, LayoutGrid, Users, Wand2 } from 'lucide-react';
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 import { format } from 'date-fns';
@@ -66,6 +66,7 @@ export function BarcodeGridGenerator({
   const [focusedRow, setFocusedRow] = useState(0);
   const [focusedRowLeft, setFocusedRowLeft] = useState(0);
   const [focusedRowRight, setFocusedRowRight] = useState(0);
+  const [isCustomMode, setIsCustomMode] = useState(false);
 
   
   const containerCardRef = useRef<HTMLDivElement>(null);
@@ -80,6 +81,15 @@ export function BarcodeGridGenerator({
 
   const parsedBarcodes = useMemo(() => {
     if (!debouncedValue) {
+      return [];
+    }
+  
+    if (isCustomMode) {
+      // Custom mode: treat the entire input as a single barcode value, up to 30 chars
+      const customValue = debouncedValue.trim().slice(0, 30);
+      if (customValue) {
+        return [{ value: customValue, context: 'custom' }];
+      }
       return [];
     }
 
@@ -110,7 +120,7 @@ export function BarcodeGridGenerator({
     }
     
     return Array.from(matches.values());
-  }, [debouncedValue]);
+  }, [debouncedValue, isCustomMode]);
 
   const barcodes = useMemo(() => parsedBarcodes.map(b => b.value), [parsedBarcodes]);
   
@@ -145,7 +155,7 @@ export function BarcodeGridGenerator({
       groundFloor: 0,
     };
     
-    const shouldCalculate = !parsedBarcodes.some(b => b.context === 'direct');
+    const shouldCalculate = !parsedBarcodes.some(b => b.context === 'direct' || b.context === 'custom');
     if (!shouldCalculate && parsedBarcodes.length > 0) {
       return null;
     }
@@ -495,19 +505,7 @@ export function BarcodeGridGenerator({
 
 
   useEffect(() => {
-    if (barcodes.length > focusModeThreshold) {
-      if (!isFocusMode) setIsFocusMode(true);
-    } else {
-      if (isFocusMode) setIsFocusMode(false);
-    }
-    setFocusedRow(0);
-    setFocusedRowLeft(0);
-    setFocusedRowRight(0);
-  }, [barcodes.length, focusModeThreshold, setIsFocusMode, isFocusMode]);
-
-  useEffect(() => {
-    const hasBarcodes = barcodes.length > 0;
-    if (hasBarcodes) {
+    if (barcodes.length > 0) {
         setTimeout(() => {
             containerCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 100);
@@ -527,7 +525,7 @@ export function BarcodeGridGenerator({
   
     const handleKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement;
-      if (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT') {
+      if (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT' || isCustomMode) {
         return;
       }
       
@@ -585,7 +583,7 @@ export function BarcodeGridGenerator({
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isFocusMode, isTeamWorkActive, barcodes.length, leftBarcodes.length, rightBarcodes.length, gridColumns, focusModeVisibleRows]);
+  }, [isFocusMode, isTeamWorkActive, barcodes.length, leftBarcodes.length, rightBarcodes.length, gridColumns, focusModeVisibleRows, isCustomMode]);
 
   const scrollToRow = (
     scrollContainer: HTMLDivElement | null, 
@@ -644,6 +642,8 @@ export function BarcodeGridGenerator({
     const value = 'target' in event ? event.target.value : event.clipboardData.getData('text');
     setInputValue(value);
 
+    if (isCustomMode) return;
+
     const potentialCodes = value.match(/[a-zA-Z0-9]+/g) || [];
     const validConsignmentCodes = potentialCodes.filter(isValidBarcode);
     if (validConsignmentCodes.length > 0) {
@@ -665,10 +665,12 @@ export function BarcodeGridGenerator({
           description: `Pasted ${text.length} characters into 'Container' field.`,
         });
 
-        const potentialCodes = text.match(/[a-zA-Z0-9]+/g) || [];
-        const validConsignmentCodes = potentialCodes.filter(isValidBarcode);
-        if (validConsignmentCodes.length > 0) {
-          onConsignmentCodeDetected(validConsignmentCodes[validConsignmentCodes.length - 1]);
+        if (!isCustomMode) {
+            const potentialCodes = text.match(/[a-zA-Z0-9]+/g) || [];
+            const validConsignmentCodes = potentialCodes.filter(isValidBarcode);
+            if (validConsignmentCodes.length > 0) {
+                onConsignmentCodeDetected(validConsignmentCodes[validConsignmentCodes.length - 1]);
+            }
         }
       }
     } catch (err) {
@@ -751,16 +753,31 @@ export function BarcodeGridGenerator({
             "flex flex-col gap-4",
             isTeamWorkActive ? "col-span-4" : "col-span-1"
           )}>
-            <Textarea
-              ref={textareaRef}
-              placeholder="Paste your list of codes here..."
-              className="w-full resize-none h-full"
-              rows={5}
-              value={inputValue}
-              onChange={handleInputChange}
-              onClick={handleTextareaClick}
-              onPaste={handleInputChange}
-            />
+             <div className="relative">
+              <Button 
+                variant={isCustomMode ? "default" : "outline"}
+                size="icon"
+                className="absolute -top-4 right-2 z-10 h-8 w-8"
+                onClick={() => setIsCustomMode(prev => !prev)}
+              >
+                <Wand2 className="h-4 w-4" />
+                <span className="sr-only">Toggle Custom Input</span>
+              </Button>
+              <Textarea
+                ref={textareaRef}
+                placeholder={isCustomMode ? "Enter any text up to 30 characters..." : "Paste your list of codes here..."}
+                className={cn(
+                    "w-full resize-none h-full",
+                    isCustomMode && "border-blue-500 focus:border-blue-500 focus-visible:ring-blue-500"
+                )}
+                rows={5}
+                value={inputValue}
+                onChange={handleInputChange}
+                onClick={handleTextareaClick}
+                onPaste={handleInputChange}
+                maxLength={isCustomMode ? 30 : undefined}
+              />
+            </div>
             {!isTeamWorkActive && activeConsignmentCodeValue && (
                 <div className="mt-4 flex items-center gap-3 text-foreground">
                     <ListChecks className="w-6 h-6" />
@@ -921,3 +938,5 @@ export function BarcodeGridGenerator({
     </Card>
   );
 }
+
+    
