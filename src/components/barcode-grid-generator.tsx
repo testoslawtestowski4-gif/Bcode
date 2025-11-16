@@ -8,7 +8,7 @@ import { GridBarcode } from '@/components/grid-barcode';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSettings } from '@/context/settings-context';
 import { Button } from './ui/button';
-import { Boxes, BarChart2, ExternalLink, Printer, ListChecks } from 'lucide-react';
+import { Boxes, BarChart2, ExternalLink, Printer, ListChecks, LayoutGrid } from 'lucide-react';
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 import { format } from 'date-fns';
@@ -16,6 +16,12 @@ import { useToast } from '@/hooks/use-toast';
 import { BarcodeData, isValidBarcode } from './barcode-column-generator';
 import { cn } from '@/lib/utils';
 import { ConsignmentSwitcher } from './consignment-switcher';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 
 interface ParsedBarcode {
@@ -498,15 +504,13 @@ export function BarcodeGridGenerator({
   }, [barcodes.length, focusModeThreshold]);
 
   useEffect(() => {
-    if (barcodes.length > 0) {
-      if (isFocusMode) {
-        textareaRef.current?.blur();
-      }
-      setTimeout(() => {
-        containerCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
+    const hasBarcodes = barcodes.length > 0;
+    if (hasBarcodes) {
+        setTimeout(() => {
+            containerCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
     }
-  }, [barcodes, isFocusMode]);
+  }, [barcodes.length]);
 
   useEffect(() => {
     if (isTeamWorkActive) {
@@ -701,20 +705,24 @@ export function BarcodeGridGenerator({
                 />
                 <Label htmlFor="focus-mode">Focus Mode</Label>
             </div>
-            <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground hidden md:inline">Columns:</span>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="w-28 justify-between">
+                  <LayoutGrid className="w-4 h-4" />
+                  <span>Cols: {gridColumns}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
                 {PREDEFINED_COLUMNS.map((cols) => (
-                  <Button
+                  <DropdownMenuItem
                     key={cols}
-                    variant={gridColumns === cols ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setGridColumns(cols)}
-                    className="px-4"
+                    onSelect={() => setGridColumns(cols)}
                   >
                     {cols}
-                  </Button>
+                  </DropdownMenuItem>
                 ))}
-            </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
         </div>
       </CardHeader>
       <CardContent className="p-6 pt-0">
