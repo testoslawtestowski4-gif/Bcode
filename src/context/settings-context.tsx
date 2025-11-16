@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode, useEffect, Dispatch, SetStateAction } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect, Dispatch, SetStateAction, useCallback } from 'react';
 
 type PrintOrientation = 'landscape' | 'portrait';
 
@@ -161,85 +161,85 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('total-container-barcodes', String(totalContainerBarcodes));
   }, [totalContainerBarcodes]);
 
-  const setTheme = (newTheme: string) => {
+  const setTheme = useCallback((newTheme: string) => {
     localStorage.setItem('app-theme', newTheme);
     _setTheme(newTheme);
-  };
+  }, []);
 
-  const setPasteOnFocus = (enabled: boolean) => {
+  const setPasteOnFocus = useCallback((enabled: boolean) => {
     localStorage.setItem('paste-on-focus', String(enabled));
     _setPasteOnFocus(enabled);
-  }
+  }, []);
 
-  const setTeamWorkEnabled = (enabled: boolean) => {
+  const setTeamWorkEnabled = useCallback((enabled: boolean) => {
     localStorage.setItem('team-work-enabled', String(enabled));
     _setTeamWorkEnabled(enabled);
-  }
+  }, []);
 
-  const setGamificationEnabled = (enabled: boolean) => {
+  const setGamificationEnabled = useCallback((enabled: boolean) => {
     localStorage.setItem('gamification-enabled', String(enabled));
     _setGamificationEnabled(enabled);
-  }
+  }, []);
   
-  const setIsFocusMode = (enabled: boolean) => {
+  const setIsFocusMode = useCallback((enabled: boolean) => {
     localStorage.setItem('is-focus-mode', String(enabled));
     _setIsFocusMode(enabled);
-  };
+  }, []);
 
-  const setFocusModeThreshold = (threshold: number) => {
+  const setFocusModeThreshold = useCallback((threshold: number) => {
     localStorage.setItem('focus-mode-threshold', String(threshold));
     _setFocusModeThreshold(threshold);
-  };
+  }, []);
 
-  const setFocusModeVisibleRows = (rows: number) => {
+  const setFocusModeVisibleRows = useCallback((rows: number) => {
     localStorage.setItem('focus-mode-visible-rows', String(rows));
     _setFocusModeVisibleRows(rows);
-  };
+  }, []);
 
-  const setColumnHeight = (height: number) => {
+  const setColumnHeight = useCallback((height: number) => {
     localStorage.setItem('column-height', String(height));
     _setColumnHeight(height);
-  };
+  }, []);
 
-  const setGridHeight = (height: number) => {
+  const setGridHeight = useCallback((height: number) => {
     localStorage.setItem('grid-height', String(height));
     _setGridHeight(height);
-  };
+  }, []);
   
-  const setGridColumns = (columns: number) => {
+  const setGridColumns = useCallback((columns: number) => {
     localStorage.setItem('grid-columns', String(columns));
     _setGridColumns(columns);
-  };
+  }, []);
 
-  const setPrintFontSize = (size: number) => {
+  const setPrintFontSize = useCallback((size: number) => {
     localStorage.setItem('print-font-size', String(size));
     _setPrintFontSize(size);
-  }
+  }, []);
 
-  const setPrintFontWeight = (bold: boolean) => {
+  const setPrintFontWeight = useCallback((bold: boolean) => {
     localStorage.setItem('print-font-weight', String(bold));
     _setPrintFontWeight(bold);
-  }
+  }, []);
 
-  const setPrintOrientation = (orientation: PrintOrientation) => {
+  const setPrintOrientation = useCallback((orientation: PrintOrientation) => {
     localStorage.setItem('print-orientation', orientation);
     _setPrintOrientation(orientation);
-  }
+  }, []);
   
-  const setFirstGenerationDate = (date: string) => {
+  const setFirstGenerationDate = useCallback((date: string) => {
     if (!firstGenerationDate) {
       localStorage.setItem('first-generation-date', date);
       _setFirstGenerationDate(date);
     }
-  };
+  }, [firstGenerationDate]);
 
-  const setShowSnowfall = (enabled: boolean) => {
+  const setShowSnowfall = useCallback((enabled: boolean) => {
     _setShowSnowfall(enabled);
     if (!enabled) {
       const currentYear = new Date().getFullYear();
       localStorage.setItem(`snowfall-disabled-${currentYear}`, 'true');
     }
-  };
+  }, []);
 
   return (
     <SettingsContext.Provider value={{
