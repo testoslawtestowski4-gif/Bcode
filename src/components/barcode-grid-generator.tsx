@@ -95,32 +95,40 @@ export function BarcodeGridGenerator({
         .map(value => ({ value, context: 'custom' }));
     }
 
-    const hasWebDropoff = /web-dropoff/i.test(debouncedValue);
     const matches = new Map<string, ParsedBarcode>();
+    const lines = debouncedValue.split('\n');
 
-    if (hasWebDropoff) {
-      const regex = /(\d{7}).*?((?:\d-\w\d-|\w+-)?web-dropoff)/gi;
-      let match;
-      while ((match = regex.exec(debouncedValue)) !== null) {
-        const value = match[1];
-        const context = match[2].toLowerCase();
-        if (!matches.has(value)) {
-          matches.set(value, { value, context });
+    for (const line of lines) {
+        if (/web_dropoff/i.test(line) && /container/i.test(line)) {
+            continue;
         }
-      }
-    } else {
-      const regex = /\b(\d{7})\b/g;
-      let match;
-      while ((match = regex.exec(debouncedValue)) !== null) {
-        const value = match[1];
-        if (!matches.has(value)) {
-          matches.set(value, { value, context: 'direct' });
+
+        const hasWebDropoff = /web-dropoff/i.test(line);
+
+        if (hasWebDropoff) {
+            const regex = /(\d{7}).*?((?:\d-\w\d-|\w+-)?web-dropoff)/gi;
+            let match;
+            while ((match = regex.exec(line)) !== null) {
+                const value = match[1];
+                const context = match[2].toLowerCase();
+                if (!matches.has(value)) {
+                    matches.set(value, { value, context });
+                }
+            }
+        } else {
+            const regex = /\b(\d{7})\b/g;
+            let match;
+            while ((match = regex.exec(line)) !== null) {
+                const value = match[1];
+                if (!matches.has(value)) {
+                    matches.set(value, { value, context: 'direct' });
+                }
+            }
         }
-      }
     }
     
     return Array.from(matches.values());
-  }, [debouncedValue, isCustomMode, isTeamWorkActive]);
+  }, [debouncedValue, isCustomMode]);
 
   useEffect(() => {
     if (parsedBarcodes.length > 0 && !isTeamWorkActive) {
@@ -967,7 +975,3 @@ export function BarcodeGridGenerator({
     </Card>
   );
 }
-
-    
-
-    
