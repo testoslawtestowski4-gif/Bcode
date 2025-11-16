@@ -117,17 +117,18 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
     // --- Snowfall Easter Egg Logic ---
     const currentDate = new Date();
-    const currentMonth = currentDate.getMonth(); // 0-11 (December is 11)
+    const currentMonth = currentDate.getMonth(); // 0-11 (Jan=0, Dec=11)
     const currentYear = currentDate.getFullYear();
     const snowDisabledKey = `snowfall-disabled-${currentYear}`;
 
-    if (currentMonth === 11) { // It's December
+    // Active in December (11) and January (0)
+    if (currentMonth === 11 || currentMonth === 0) { 
       const isSnowDisabled = localStorage.getItem(snowDisabledKey) === 'true';
       if (!isSnowDisabled) {
         _setShowSnowfall(true);
       }
     } else {
-      // Not December, clear any old disabled keys to reset for next year
+      // Not Dec/Jan, clear any old disabled keys to reset for next year
       Object.keys(localStorage).forEach(key => {
         if (key.startsWith('snowfall-disabled-')) {
           localStorage.removeItem(key);
@@ -166,60 +167,32 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     _setTheme(newTheme);
   }, []);
 
-  const setPasteOnFocus = useCallback((enabled: boolean) => {
-    localStorage.setItem('paste-on-focus', String(enabled));
-    _setPasteOnFocus(enabled);
-  }, []);
+  const createBooleanSetter = <T extends (value: boolean) => void>(setter: T, key: string) => {
+    return useCallback((value: boolean) => {
+      localStorage.setItem(key, String(value));
+      setter(value);
+    }, [setter, key]);
+  };
 
-  const setTeamWorkEnabled = useCallback((enabled: boolean) => {
-    localStorage.setItem('team-work-enabled', String(enabled));
-    _setTeamWorkEnabled(enabled);
-  }, []);
+  const setPasteOnFocus = createBooleanSetter(_setPasteOnFocus, 'paste-on-focus');
+  const setTeamWorkEnabled = createBooleanSetter(_setTeamWorkEnabled, 'team-work-enabled');
+  const setGamificationEnabled = createBooleanSetter(_setGamificationEnabled, 'gamification-enabled');
+  const setIsFocusMode = createBooleanSetter(_setIsFocusMode, 'is-focus-mode');
+  const setPrintFontWeight = createBooleanSetter(_setPrintFontWeight, 'print-font-weight');
 
-  const setGamificationEnabled = useCallback((enabled: boolean) => {
-    localStorage.setItem('gamification-enabled', String(enabled));
-    _setGamificationEnabled(enabled);
-  }, []);
+  const createNumberSetter = <T extends (value: number) => void>(setter: T, key: string) => {
+    return useCallback((value: number) => {
+      localStorage.setItem(key, String(value));
+      setter(value);
+    }, [setter, key]);
+  };
   
-  const setIsFocusMode = useCallback((enabled: boolean) => {
-    localStorage.setItem('is-focus-mode', String(enabled));
-    _setIsFocusMode(enabled);
-  }, []);
-
-  const setFocusModeThreshold = useCallback((threshold: number) => {
-    localStorage.setItem('focus-mode-threshold', String(threshold));
-    _setFocusModeThreshold(threshold);
-  }, []);
-
-  const setFocusModeVisibleRows = useCallback((rows: number) => {
-    localStorage.setItem('focus-mode-visible-rows', String(rows));
-    _setFocusModeVisibleRows(rows);
-  }, []);
-
-  const setColumnHeight = useCallback((height: number) => {
-    localStorage.setItem('column-height', String(height));
-    _setColumnHeight(height);
-  }, []);
-
-  const setGridHeight = useCallback((height: number) => {
-    localStorage.setItem('grid-height', String(height));
-    _setGridHeight(height);
-  }, []);
-  
-  const setGridColumns = useCallback((columns: number) => {
-    localStorage.setItem('grid-columns', String(columns));
-    _setGridColumns(columns);
-  }, []);
-
-  const setPrintFontSize = useCallback((size: number) => {
-    localStorage.setItem('print-font-size', String(size));
-    _setPrintFontSize(size);
-  }, []);
-
-  const setPrintFontWeight = useCallback((bold: boolean) => {
-    localStorage.setItem('print-font-weight', String(bold));
-    _setPrintFontWeight(bold);
-  }, []);
+  const setColumnHeight = createNumberSetter(_setColumnHeight, 'column-height');
+  const setGridHeight = createNumberSetter(_setGridHeight, 'grid-height');
+  const setGridColumns = createNumberSetter(_setGridColumns, 'grid-columns');
+  const setFocusModeThreshold = createNumberSetter(_setFocusModeThreshold, 'focus-mode-threshold');
+  const setFocusModeVisibleRows = createNumberSetter(_setFocusModeVisibleRows, 'focus-mode-visible-rows');
+  const setPrintFontSize = createNumberSetter(_setPrintFontSize, 'print-font-size');
 
   const setPrintOrientation = useCallback((orientation: PrintOrientation) => {
     localStorage.setItem('print-orientation', orientation);

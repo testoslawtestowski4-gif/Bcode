@@ -49,11 +49,13 @@ export function BarcodeColumnGenerator({
   const { toast } = useToast();
 
   useEffect(() => {
-    // Easter egg check
-    if (debouncedValue.toLowerCase().trim() === 'xmass') {
+    // Easter egg check for snowfall
+    if (inputValue.toLowerCase().trim() === 'xmass') {
       setShowSnowfall(true);
     }
-    
+  }, [inputValue, setShowSnowfall]);
+
+  useEffect(() => {
     // Find all alphanumeric sequences in the input text
     const potentialCodes = debouncedValue.match(/[a-zA-Z0-9]+/g) || [];
     
@@ -74,7 +76,7 @@ export function BarcodeColumnGenerator({
     setFilterPrefixes(Array.from(prefixes).sort());
     
     setActiveFilter('ALL'); // Reset filter on new input
-  }, [debouncedValue, setAllBarcodes, setShowSnowfall]);
+  }, [debouncedValue, setAllBarcodes]);
 
   useEffect(() => {
     let filteredBarcodes: BarcodeData[];
