@@ -497,11 +497,17 @@ export function BarcodeGridGenerator({
   }, [barcodes.length, focusModeThreshold]);
 
   useEffect(() => {
-    // When new barcodes are generated and focus mode is on, blur the textarea.
-    if (isFocusMode && barcodes.length > 0) {
-      textareaRef.current?.blur();
+    // When new barcodes are generated, scroll to the grid and blur the textarea (if in focus mode).
+    if (barcodes.length > 0) {
+      if (isFocusMode) {
+        textareaRef.current?.blur();
+      }
+      // Give the browser a moment to render before scrolling
+      setTimeout(() => {
+        gridContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
     }
-  }, [barcodes, isFocusMode]);
+  }, [barcodes.length, isFocusMode]);
 
   useEffect(() => {
     if (!isFocusMode || barcodes.length === 0) return;
@@ -707,20 +713,22 @@ export function BarcodeGridGenerator({
       <CardContent className="p-6 pt-0">
         <div className={cn(
             "grid gap-6 items-start",
-            isTeamWorkActive ? "grid-cols-1 lg:grid-cols-3" : "grid-cols-1 sm:grid-cols-2"
+            isTeamWorkActive ? "grid-cols-10" : "grid-cols-1 sm:grid-cols-2"
         )}>
           {isTeamWorkActive && (
-              <ConsignmentSwitcher 
-                allBarcodes={allConsignmentBarcodes}
-                activeBarcode={activeConsignmentBarcode}
-                setActiveBarcode={setActiveConsignmentBarcode}
-                inContainer={true}
-              />
+              <div className="col-span-3">
+                <ConsignmentSwitcher 
+                  allBarcodes={allConsignmentBarcodes}
+                  activeBarcode={activeConsignmentBarcode}
+                  setActiveBarcode={setActiveConsignmentBarcode}
+                  inContainer={true}
+                />
+              </div>
           )}
 
           <div className={cn(
             "flex flex-col gap-4",
-            isTeamWorkActive && "lg:col-span-1"
+            isTeamWorkActive ? "col-span-4" : "col-span-1"
           )}>
             <Textarea
               ref={textareaRef}
@@ -743,7 +751,7 @@ export function BarcodeGridGenerator({
             )}
           </div>
           
-          <Card className={cn(isTeamWorkActive ? "lg:col-span-1" : "")}>
+          <Card className={cn(isTeamWorkActive ? "col-span-3" : "col-span-1")}>
             <CardHeader className="p-4 flex flex-row items-center justify-between">
                 <div className='flex items-center gap-2'>
                   <BarChart2 className="w-5 h-5" />
@@ -892,3 +900,5 @@ export function BarcodeGridGenerator({
     </Card>
   );
 }
+
+    
