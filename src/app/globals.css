@@ -166,23 +166,3 @@
     border: 2px solid hsl(var(--background));
   }
 }
-
-@layer utilities {
-  @keyframes snowfall-animation {
-    0% {
-      transform: translate3d(var(--left-initial), -10vh, 0);
-    }
-    100% {
-      transform: translate3d(var(--left-final), 110vh, 0);
-    }
-  }
-
-  .snowflake {
-    @apply rounded-full bg-white/70 absolute top-0 left-0;
-    width: var(--size);
-    height: var(--size);
-    animation: snowfall-animation linear infinite;
-    animation-delay: var(--animation-delay);
-    animation-duration: var(--animation-duration);
-  }
-}

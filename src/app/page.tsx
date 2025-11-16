@@ -13,7 +13,6 @@ import { MainLayout } from '@/components/main-layout';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/context/settings-context';
 import { format } from 'date-fns';
-import Snowfall from '@/components/snowfall';
 
 export default function Home() {
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
@@ -34,7 +33,6 @@ export default function Home() {
     setTotalContainerBarcodes,
     firstGenerationDate,
     setFirstGenerationDate,
-    showSnowfall
   } = useSettings();
 
   useEffect(() => {
@@ -103,7 +101,6 @@ export default function Home() {
   
   return (
     <>
-      {showSnowfall && <Snowfall />}
       <div className="flex flex-col min-h-screen bg-background text-foreground relative z-0">
         <header className={cn(
             "w-full bg-background/95 backdrop-blur-sm z-10 border-b border-border"

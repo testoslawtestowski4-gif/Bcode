@@ -44,10 +44,6 @@ interface SettingsContextType {
   gamificationEnabled: boolean;
   setGamificationEnabled: (enabled: boolean) => void;
 
-  // Festive Effects
-  showSnowfall: boolean;
-  setShowSnowfall: (enabled: boolean) => void;
-
   // Statistics
   totalConsignmentBarcodes: number;
   setTotalConsignmentBarcodes: Dispatch<SetStateAction<number>>;
@@ -85,10 +81,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const [teamWorkEnabled, _setTeamWorkEnabled] = useState(false);
   const [gamificationEnabled, _setGamificationEnabled] = useState(true);
 
-  // Snowfall
-  const [showSnowfall, _setShowSnowfall] = useState(false);
-
-
   // Statistics
   const [totalConsignmentBarcodes, setTotalConsignmentBarcodes] = useState(0);
   const [totalContainerBarcodes, setTotalContainerBarcodes] = useState(0);
@@ -111,7 +103,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     const storedTotalConsignment = localStorage.getItem('total-consignment-barcodes');
     const storedTotalContainer = localStorage.getItem('total-container-barcodes');
     const storedFirstDate = localStorage.getItem('first-generation-date');
-    const storedShowSnowfall = localStorage.getItem('show-snowfall');
 
     _setTheme(storedTheme);
     if (storedPasteOnFocus !== null) _setPasteOnFocus(storedPasteOnFocus === 'true');
@@ -129,7 +120,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     if (storedTotalConsignment !== null) setTotalConsignmentBarcodes(Number(storedTotalConsignment));
     if (storedTotalContainer !== null) setTotalContainerBarcodes(Number(storedTotalContainer));
     if (storedFirstDate !== null) _setFirstGenerationDate(storedFirstDate);
-    if (storedShowSnowfall !== null) _setShowSnowfall(storedShowSnowfall === 'true');
   }, []);
 
   useEffect(() => {
@@ -163,7 +153,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const setFocusModeVisibleRows = createSetter(_setFocusModeVisibleRows, 'focus-mode-visible-rows');
   const setPrintFontSize = createSetter(_setPrintFontSize, 'print-font-size');
   const setPrintOrientation = createSetter<PrintOrientation>(_setPrintOrientation, 'print-orientation');
-  const setShowSnowfall = createSetter(_setShowSnowfall, 'show-snowfall');
 
   const setFirstGenerationDate = useCallback((date: string) => {
     if (!firstGenerationDate) {
@@ -187,7 +176,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       pasteOnFocus, setPasteOnFocus,
       teamWorkEnabled, setTeamWorkEnabled,
       gamificationEnabled, setGamificationEnabled,
-      showSnowfall, setShowSnowfall,
       totalConsignmentBarcodes, setTotalConsignmentBarcodes,
       totalContainerBarcodes, setTotalContainerBarcodes,
       firstGenerationDate, setFirstGenerationDate,
