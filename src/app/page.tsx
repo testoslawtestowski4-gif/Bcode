@@ -15,7 +15,7 @@ import { AnimationSwitcher } from '@/components/animation-switcher';
 import { ConsignmentSwitcher } from '@/components/consignment-switcher';
 
 export default function Home() {
-  const { theme, teamWorkEnabled } = useSettings();
+  const { theme } = useSettings();
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isTeamWorkActive, setIsTeamWorkActive] = useState(false);

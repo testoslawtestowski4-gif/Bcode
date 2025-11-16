@@ -16,9 +16,6 @@ export interface BarcodeData {
 }
 
 interface BarcodeColumnGeneratorProps {
-  isCollapsed: boolean;
-  setIsCollapsed: (isCollapsed: boolean) => void;
-  // Lifted state
   inputValue: string;
   setInputValue: Dispatch<SetStateAction<string>>;
   allBarcodes: BarcodeData[];
@@ -36,7 +33,6 @@ export const isValidBarcode = (code: string) => {
 };
 
 export function BarcodeColumnGenerator({ 
-  isCollapsed, setIsCollapsed,
   inputValue, setInputValue, allBarcodes, setAllBarcodes,
   activeBarcode, setActiveBarcode,
   isTeamWorkActive
@@ -103,7 +99,6 @@ export function BarcodeColumnGenerator({
   };
 
   const handleTextareaClick = async () => {
-    setIsCollapsed(false);
     if (!pasteOnFocus) return;
 
     try {
