@@ -11,10 +11,8 @@ import { Button } from '@/components/ui/button';
 import { Barcode, ArrowUp, Mail } from 'lucide-react';
 import { MainLayout } from '@/components/main-layout';
 import { cn } from '@/lib/utils';
-import { useSettings } from '@/context/settings-context';
 
 export default function Home() {
-  const { theme } = useSettings();
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isTeamWorkActive, setIsTeamWorkActive] = useState(false);
@@ -27,8 +25,6 @@ export default function Home() {
   // State for container view (barcodes count)
   const [containerBarcodeCount, setContainerBarcodeCount] = useState(0);
   const [containerInputValue, setContainerInputValue] = useState('');
-
-  const isSleekTheme = theme === 'sleek-theme';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -78,8 +74,7 @@ export default function Home() {
     <>
       <div className="flex flex-col min-h-screen bg-background text-foreground">
         <header className={cn(
-            "w-full bg-background/95 backdrop-blur-sm z-10", 
-            !isSleekTheme && "border-b border-border"
+            "w-full bg-background/95 backdrop-blur-sm z-10 border-b border-border"
         )}>
           <div className="container mx-auto flex h-16 items-center justify-between p-4 relative">
               <div className="flex items-center gap-3">
@@ -126,22 +121,20 @@ export default function Home() {
                 />
             </MainLayout>
         </main>
-        {!isSleekTheme && (
-          <footer className="mt-12 py-6 border-t">
-            <div className="container flex flex-col items-center justify-center gap-2 text-center">
-                <p className="text-sm text-muted-foreground">
-                  Created, designed, and engineered by Damian Suchecki
-                </p>
-                <a 
-                  href="mailto:suchecki.damian@gmail.com" 
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                  <Mail className="h-4 w-4" />
-                  <span>suchecki.damian@gmail.com</span>
-                </a>
-            </div>
-          </footer>
-        )}
+        <footer className="mt-12 py-6 border-t">
+          <div className="container flex flex-col items-center justify-center gap-2 text-center">
+              <p className="text-sm text-muted-foreground">
+                Created, designed, and engineered by Damian Suchecki
+              </p>
+              <a 
+                href="mailto:suchecki.damian@gmail.com" 
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                <Mail className="h-4 w-4" />
+                <span>suchecki.damian@gmail.com</span>
+              </a>
+          </div>
+        </footer>
       </div>
       {showDraggableBarcode && <DraggableBarcode onClose={() => setShowDraggableBarcode(false)} />}
       <Button
