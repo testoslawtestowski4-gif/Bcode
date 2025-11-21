@@ -78,6 +78,7 @@ export function BarcodeGridGenerator({
       const nextState = !prev;
       if (nextState) {
         // Entering custom mode
+        setInputValue('');
         setPasteOnFocusBeforeCustom(pasteOnFocus);
         setPasteOnFocus(false);
       } else {
@@ -772,10 +773,9 @@ export function BarcodeGridGenerator({
 
     if (isCustomMode) return;
 
-    const potentialCodes = value.match(/[a-zA-Z0-9]+/g) || [];
-    const validConsignmentCodes = potentialCodes.filter(isValidBarcode);
-    if (validConsignmentCodes.length > 0) {
-      onConsignmentCodeDetected(validConsignmentCodes[validConsignmentCodes.length - 1]);
+    const firstLine = value.split('\n')[0].trim();
+    if (isValidBarcode(firstLine)) {
+        onConsignmentCodeDetected(firstLine);
     }
   };
 
@@ -793,11 +793,10 @@ export function BarcodeGridGenerator({
         });
 
         if (!isCustomMode) {
-            const potentialCodes = text.match(/[a-zA-Z0-9]+/g) || [];
-            const validConsignmentCodes = potentialCodes.filter(isValidBarcode);
-            if (validConsignmentCodes.length > 0) {
-                onConsignmentCodeDetected(validConsignmentCodes[validConsignmentCodes.length - 1]);
-            }
+          const firstLine = text.split('\n')[0].trim();
+          if (isValidBarcode(firstLine)) {
+              onConsignmentCodeDetected(firstLine);
+          }
         }
       }
     } catch (err) {
