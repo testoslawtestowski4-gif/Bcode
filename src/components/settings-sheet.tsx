@@ -18,6 +18,7 @@ import { Separator } from './ui/separator';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Switch } from './ui/switch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { cn } from '@/lib/utils';
 
 export function SettingsSheet() {
   const {
@@ -26,6 +27,7 @@ export function SettingsSheet() {
     isFocusMode, setIsFocusMode,
     focusModeThreshold, setFocusModeThreshold,
     focusModeVisibleRows, setFocusModeVisibleRows,
+    autoManagedFocusMode, setAutoManagedFocusMode,
     printFontSize, setPrintFontSize,
     printFontWeight, setPrintFontWeight,
     printOrientation, setPrintOrientation,
@@ -113,11 +115,20 @@ export function SettingsSheet() {
                 <div className="space-y-6">
                     <div className="flex items-center space-x-2">
                         <Switch
+                            id="auto-focus-mode"
+                            checked={autoManagedFocusMode}
+                            onCheckedChange={setAutoManagedFocusMode}
+                        />
+                        <Label htmlFor="auto-focus-mode">Auto-managed Focus Mode</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <Switch
                             id="focus-mode"
                             checked={isFocusMode}
                             onCheckedChange={setIsFocusMode}
+                            disabled={autoManagedFocusMode}
                         />
-                        <Label htmlFor="focus-mode">Enable Focus Mode</Label>
+                        <Label htmlFor="focus-mode" className={cn(autoManagedFocusMode && 'text-muted-foreground')}>Enable Focus Mode</Label>
                     </div>
                     <div className="grid grid-cols-1 items-center gap-4">
                         <Label htmlFor="focus-threshold">Auto-enable threshold: {focusModeThreshold} barcodes</Label>

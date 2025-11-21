@@ -21,6 +21,8 @@ interface SettingsContextType {
   setFocusModeThreshold: (threshold: number) => void;
   focusModeVisibleRows: number;
   setFocusModeVisibleRows: (rows: number) => void;
+  autoManagedFocusMode: boolean;
+  setAutoManagedFocusMode: (enabled: boolean) => void;
 
   // Print Settings
   printFontSize: number;
@@ -65,6 +67,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const [isFocusMode, _setIsFocusMode] = useState(false);
   const [focusModeThreshold, _setFocusModeThreshold] = useState(15);
   const [focusModeVisibleRows, _setFocusModeVisibleRows] = useState(1);
+  const [autoManagedFocusMode, _setAutoManagedFocusMode] = useState(true);
   
   // Print settings
   const [printFontSize, _setPrintFontSize] = useState(140);
@@ -92,6 +95,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     const storedTeamWork = localStorage.getItem('team-work-enabled');
     const storedGamification = localStorage.getItem('gamification-enabled');
     const storedIsFocusMode = localStorage.getItem('is-focus-mode');
+    const storedAutoFocus = localStorage.getItem('auto-focus-mode');
     const storedFocusThreshold = localStorage.getItem('focus-mode-threshold');
     const storedFocusRows = localStorage.getItem('focus-mode-visible-rows');
     const storedColumnHeight = localStorage.getItem('column-height');
@@ -109,6 +113,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     if (storedTeamWork !== null) _setTeamWorkEnabled(storedTeamWork === 'true');
     if (storedGamification !== null) _setGamificationEnabled(storedGamification === 'true');
     if (storedIsFocusMode !== null) _setIsFocusMode(storedIsFocusMode === 'true');
+    if (storedAutoFocus !== null) _setAutoManagedFocusMode(storedAutoFocus === 'true');
     if (storedFocusThreshold !== null) _setFocusModeThreshold(Number(storedFocusThreshold));
     if (storedFocusRows !== null) _setFocusModeVisibleRows(Number(storedFocusRows));
     if (storedColumnHeight !== null) _setColumnHeight(Number(storedColumnHeight));
@@ -129,6 +134,17 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     localStorage.setItem('total-container-barcodes', String(totalContainerBarcodes));
   }, [totalContainerBarcodes]);
+
+  // Safely update focus mode based on total barcodes
+  useEffect(() => {
+    if (autoManagedFocusMode) {
+      if (totalContainerBarcodes >= focusModeThreshold) {
+        if (!isFocusMode) _setIsFocusMode(true);
+      } else {
+        if (isFocusMode) _setIsFocusMode(false);
+      }
+    }
+  }, [totalContainerBarcodes, focusModeThreshold, autoManagedFocusMode, isFocusMode]);
 
   const createSetter = useCallback(<T,>(setter: Dispatch<SetStateAction<T>>, key: string) => {
     return (value: T) => {
@@ -157,6 +173,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const setTeamWorkEnabled = createBooleanSetter(_setTeamWorkEnabled, 'team-work-enabled');
   const setGamificationEnabled = createBooleanSetter(_setGamificationEnabled, 'gamification-enabled');
   const setIsFocusMode = createBooleanSetter(_setIsFocusMode, 'is-focus-mode');
+  const setAutoManagedFocusMode = createBooleanSetter(_setAutoManagedFocusMode, 'auto-focus-mode');
   const setPrintFontWeight = createBooleanSetter(_setPrintFontWeight, 'print-font-weight');
 
   const setFirstGenerationDate = useCallback((date: string) => {
@@ -174,6 +191,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       isFocusMode, setIsFocusMode,
       focusModeThreshold, setFocusModeThreshold,
       focusModeVisibleRows, setFocusModeVisibleRows,
+      autoManagedFocusMode, setAutoManagedFocusMode,
       printFontSize, setPrintFontSize,
       printFontWeight, setPrintFontWeight,
       printOrientation, setPrintOrientation,

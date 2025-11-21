@@ -58,8 +58,8 @@ export function BarcodeGridGenerator({
 }: BarcodeGridGeneratorProps) {
   const { 
     gridHeight, gridColumns, setGridColumns, 
-    pasteOnFocus, setPasteOnFocus, focusModeThreshold, focusModeVisibleRows,
-    isFocusMode, setIsFocusMode, teamWorkEnabled, gamificationEnabled
+    pasteOnFocus, setPasteOnFocus, focusModeVisibleRows,
+    isFocusMode, teamWorkEnabled, gamificationEnabled
   } = useSettings();
   
   const debouncedValue = useDebounce(inputValue, 500);
@@ -157,14 +157,6 @@ export function BarcodeGridGenerator({
   useEffect(() => {
     setContainerBarcodeCount(barcodes.length);
   }, [barcodes.length, setContainerBarcodeCount]);
-
-  useEffect(() => {
-    if (barcodes.length >= focusModeThreshold) {
-      if (!isFocusMode) setIsFocusMode(true);
-    } else {
-      if (isFocusMode) setIsFocusMode(false);
-    }
-  }, [barcodes.length, focusModeThreshold, isFocusMode, setIsFocusMode]);
 
   const midPoint = Math.ceil(barcodes.length / 2);
   const leftBarcodes = barcodes.slice(0, midPoint);
