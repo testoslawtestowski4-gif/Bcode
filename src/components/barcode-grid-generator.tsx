@@ -103,7 +103,7 @@ export function BarcodeGridGenerator({
     if (!debouncedValue) {
       return [];
     }
-  
+
     if (isCustomMode) {
       return debouncedValue
         .split('\n')
@@ -111,26 +111,29 @@ export function BarcodeGridGenerator({
         .filter(line => line && !/webhang/i.test(line))
         .map(value => ({ value, context: 'custom' }));
     }
-  
+
     const matches = new Map<string, ParsedBarcode>();
     const lines = debouncedValue.split('\n');
 
     for (const line of lines) {
-      // Rule 2: Ignore lines with "Container"
-      if (/Container/i.test(line)) {
+      const trimmedLine = line.trim();
+      const sevenDigitRegex = /\b(\d{7})\b/g;
+      
+      // Condition: Line is ONLY a 7-digit number
+      if (/^\d{7}$/.test(trimmedLine)) {
+        if (!matches.has(trimmedLine)) {
+          matches.set(trimmedLine, { value: trimmedLine, context: 'direct' });
+        }
         continue;
       }
       
-      // Rule 1: The line must have "web-dropoff"
-      if (/web-dropoff/i.test(line)) {
-        const sevenDigitRegex = /(\d{7})/g;
+      // Condition: Line contains 'web-dropoff' but not 'Container'
+      if (/web-dropoff/i.test(trimmedLine) && !/Container/i.test(trimmedLine)) {
         let match;
-        while ((match = sevenDigitRegex.exec(line)) !== null) {
+        while ((match = sevenDigitRegex.exec(trimmedLine)) !== null) {
           const value = match[1];
-          // Rule for duplicates: Map will only keep the first occurrence
           if (!matches.has(value)) {
-            // Simplified context from the part of the line that contained web-dropoff
-            const contextMatch = line.match(/((\d-\w\d-|\w+-)?web-dropoff)/i);
+            const contextMatch = trimmedLine.match(/((\d-\w\d-|\w+-)?web-dropoff)/i);
             const context = contextMatch ? contextMatch[1].toLowerCase() : 'web-dropoff';
             matches.set(value, { value, context });
           }
@@ -1092,9 +1095,3 @@ export function BarcodeGridGenerator({
     </Card>
   );
 }
-
-    
-
-    
-
-    
