@@ -76,9 +76,9 @@ export function BarcodeGridGenerator({
   const toggleCustomMode = () => {
     setIsCustomMode(prev => {
       const nextState = !prev;
+      setInputValue(''); // Clear input on mode change
       if (nextState) {
         // Entering custom mode
-        setInputValue('');
         setPasteOnFocusBeforeCustom(pasteOnFocus);
         setPasteOnFocus(false);
       } else {
