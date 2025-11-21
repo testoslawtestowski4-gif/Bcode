@@ -100,27 +100,26 @@ export function BarcodeGridGenerator({
     const lines = debouncedValue.split('\n');
 
     for (const line of lines) {
-        if (/webhang/i.test(line)) {
+        if (/webhang/i.test(line) || /container/i.test(line)) {
             continue;
         }
 
-        if (/web-dropoff/i.test(line) && /container/i.test(line)) {
-            continue;
-        }
+        const hasInshipAndWebDropoff = /inship/i.test(line) && /web-dropoff/i.test(line);
 
-        const hasWebDropoff = /web-dropoff/i.test(line);
-
-        if (hasWebDropoff) {
-            const regex = /(\d{7}).*?((?:\d-\w\d-|\w+-)?web-dropoff)/gi;
+        if (hasInshipAndWebDropoff) {
+            // Regex to find 7 digits and the web-dropoff context only when 'inship' is also present
+            const regex = /(\d{7}).*?(inship.*?((?:\d-\w\d-|\w+-)?web-dropoff))/gi;
             let match;
             while ((match = regex.exec(line)) !== null) {
                 const value = match[1];
-                const context = match[2].toLowerCase();
+                // Use the more specific context for stats
+                const context = (match[3] || 'web-dropoff').toLowerCase();
                 if (!matches.has(value)) {
                     matches.set(value, { value, context });
                 }
             }
         } else {
+            // Fallback for direct 7-digit codes if needed (when not in 'inship' context)
             const regex = /\b(\d{7})\b/g;
             let match;
             while ((match = regex.exec(line)) !== null) {
@@ -1085,6 +1084,8 @@ export function BarcodeGridGenerator({
     </Card>
   );
 }
+
+    
 
     
 
