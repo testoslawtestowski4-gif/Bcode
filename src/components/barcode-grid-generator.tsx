@@ -71,6 +71,22 @@ export function BarcodeGridGenerator({
   const [isCustomMode, setIsCustomMode] = useState(false);
   const [player1Wins, setPlayer1Wins] = useState(false);
   const [player2Wins, setPlayer2Wins] = useState(false);
+  const [pasteOnFocusBeforeCustom, setPasteOnFocusBeforeCustom] = useState(pasteOnFocus);
+
+  const toggleCustomMode = () => {
+    setIsCustomMode(prev => {
+      const nextState = !prev;
+      if (nextState) {
+        // Entering custom mode
+        setPasteOnFocusBeforeCustom(pasteOnFocus);
+        setPasteOnFocus(false);
+      } else {
+        // Exiting custom mode
+        setPasteOnFocus(pasteOnFocusBeforeCustom);
+      }
+      return nextState;
+    });
+  };
 
   
   const containerCardRef = useRef<HTMLDivElement>(null);
@@ -95,44 +111,36 @@ export function BarcodeGridGenerator({
         .filter(line => line && !/webhang/i.test(line))
         .map(value => ({ value, context: 'custom' }));
     }
-
+  
     const matches = new Map<string, ParsedBarcode>();
     const lines = debouncedValue.split('\n');
 
     for (const line of lines) {
-        if (/webhang/i.test(line) || /container/i.test(line)) {
-            continue;
+      // Rule 2: Ignore lines with "Container"
+      if (/Container/i.test(line)) {
+        continue;
+      }
+      
+      // Rule 1: The line must have "web-dropoff"
+      if (/web-dropoff/i.test(line)) {
+        const sevenDigitRegex = /(\d{7})/g;
+        let match;
+        while ((match = sevenDigitRegex.exec(line)) !== null) {
+          const value = match[1];
+          // Rule for duplicates: Map will only keep the first occurrence
+          if (!matches.has(value)) {
+            // Simplified context from the part of the line that contained web-dropoff
+            const contextMatch = line.match(/((\d-\w\d-|\w+-)?web-dropoff)/i);
+            const context = contextMatch ? contextMatch[1].toLowerCase() : 'web-dropoff';
+            matches.set(value, { value, context });
+          }
         }
-
-        const hasInshipAndWebDropoff = /inship/i.test(line) && /web-dropoff/i.test(line);
-
-        if (hasInshipAndWebDropoff) {
-            // Regex to find 7 digits and the web-dropoff context only when 'inship' is also present
-            const regex = /(\d{7}).*?(inship.*?((?:\d-\w\d-|\w+-)?web-dropoff))/gi;
-            let match;
-            while ((match = regex.exec(line)) !== null) {
-                const value = match[1];
-                // Use the more specific context for stats
-                const context = (match[3] || 'web-dropoff').toLowerCase();
-                if (!matches.has(value)) {
-                    matches.set(value, { value, context });
-                }
-            }
-        } else {
-            // Fallback for direct 7-digit codes if needed (when not in 'inship' context)
-            const regex = /\b(\d{7})\b/g;
-            let match;
-            while ((match = regex.exec(line)) !== null) {
-                const value = match[1];
-                if (!matches.has(value)) {
-                    matches.set(value, { value, context: 'direct' });
-                }
-            }
-        }
+      }
     }
     
     return Array.from(matches.values());
   }, [debouncedValue, isCustomMode]);
+
 
   useEffect(() => {
     if (parsedBarcodes.length > 0 && !isTeamWorkActive) {
@@ -883,7 +891,7 @@ export function BarcodeGridGenerator({
                 variant={isCustomMode ? "default" : "outline"}
                 size="icon"
                 className="absolute -top-4 right-2 z-10 h-8 w-8"
-                onClick={() => setIsCustomMode(prev => !prev)}
+                onClick={toggleCustomMode}
               >
                 <Wand2 className="h-4 w-4" />
                 <span className="sr-only">Toggle Custom Input</span>
