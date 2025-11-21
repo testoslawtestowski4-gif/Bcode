@@ -8,11 +8,12 @@ import { SettingsSheet } from "@/components/settings-sheet";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { DraggableBarcode } from '@/components/draggable-barcode';
 import { Button } from '@/components/ui/button';
-import { Barcode, ArrowUp, Mail } from 'lucide-react';
+import { Barcode, ArrowUp, Mail, Play } from 'lucide-react';
 import { MainLayout } from '@/components/main-layout';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/context/settings-context';
 import { format } from 'date-fns';
+import { consignmentDemoData, containerDemoData } from '@/lib/demo-data';
 
 export default function Home() {
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
@@ -96,12 +97,17 @@ export default function Home() {
       setActiveConsignmentBarcode(newActiveId);
     }
   };
+
+  const handleDemoClick = () => {
+    setConsignmentInputValue(consignmentDemoData);
+    setContainerInputValue(containerDemoData);
+  }
   
   const activeConsignmentCodeValue = allConsignmentBarcodes.find(b => b.id === activeConsignmentBarcode)?.value || null;
   
   return (
     <>
-      <div className="flex flex-col min-h-screen bg-background text-foreground relative z-0">
+      <div className="flex flex-col min-h-screen bg-background text-foreground relative">
         <header className={cn(
             "w-full bg-background/95 backdrop-blur-sm z-10 border-b border-border"
         )}>
@@ -117,6 +123,10 @@ export default function Home() {
               </div>
 
               <div className="flex items-center gap-2">
+                  <Button variant="outline" size="icon" onClick={handleDemoClick} title="Load Demo Data">
+                    <Play className="h-4 w-4" />
+                    <span className="sr-only">Load Demo Data</span>
+                  </Button>
                   <Button variant="outline" size="icon" onClick={() => setShowDraggableBarcode(!showDraggableBarcode)}>
                     <Barcode className="h-4 w-4" />
                     <span className="sr-only">Show Draggable Barcode</span>
@@ -126,7 +136,7 @@ export default function Home() {
               </div>
           </div>
         </header>
-        <main className={cn("flex-grow container mx-auto p-4 sm:p-6 md:p-8 z-10", showDraggableBarcode && "pt-44")}>
+        <main className={cn("flex-grow container mx-auto p-4 sm:p-6 md:p-8 z-0", showDraggableBarcode && "pt-44")}>
             <MainLayout isTeamWorkActive={isTeamWorkActive}>
                 <BarcodeColumnGenerator 
                     inputValue={consignmentInputValue}
@@ -150,7 +160,7 @@ export default function Home() {
                 />
             </MainLayout>
         </main>
-        <footer className="mt-12 py-6 border-t z-10">
+        <footer className="mt-12 py-6 border-t z-0">
           <div className="container flex flex-col items-center justify-center gap-2 text-center">
               <p className="text-sm text-muted-foreground">
                 Created by Damian Suchecki
