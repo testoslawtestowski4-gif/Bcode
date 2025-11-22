@@ -73,28 +73,22 @@ export default function Home() {
 
   const handleConsignmentCodeDetected = (code: string) => {
     if (!isValidBarcode(code)) return;
-
-    let newActiveId = null;
-
+  
     setAllConsignmentBarcodes(prevBarcodes => {
       const existingBarcode = prevBarcodes.find(b => b.value === code);
       let newBarcodes = [...prevBarcodes];
-
+  
       if (existingBarcode) {
         newBarcodes = newBarcodes.filter(b => b.id !== existingBarcode.id);
         newBarcodes.unshift(existingBarcode);
-        newActiveId = existingBarcode.id;
+        setActiveConsignmentBarcode(existingBarcode.id);
       } else {
         const newBarcode: BarcodeData = { id: `${code}-${Date.now()}`, value: code };
         newBarcodes.unshift(newBarcode);
-        newActiveId = newBarcode.id;
+        setActiveConsignmentBarcode(newBarcode.id);
       }
       return newBarcodes;
     });
-
-    if (newActiveId) {
-      setActiveConsignmentBarcode(newActiveId);
-    }
   };
   
   const activeConsignmentCodeValue = allConsignmentBarcodes.find(b => b.id === activeConsignmentBarcode)?.value || null;
