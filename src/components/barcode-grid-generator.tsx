@@ -119,11 +119,6 @@ export function BarcodeGridGenerator({
     for (const line of lines) {
       const trimmedLine = line.trim();
       
-      // Universal exclusion rule
-      if (/webhang/i.test(trimmedLine)) {
-        continue;
-      }
-      
       // Condition: Line is ONLY a 7-digit number
       if (/^\d{7}$/.test(trimmedLine)) {
         if (!matches.has(trimmedLine)) {
@@ -775,6 +770,7 @@ export function BarcodeGridGenerator({
   const detectConsignmentCode = (text: string) => {
     if (isCustomMode) return;
     const firstLine = text.split('\n')[0].trim();
+    // Look for the first word that matches the consignment pattern.
     const match = firstLine.match(/(^[a-zA-Z]+\d{3,5})\b/);
     if (match && isValidBarcode(match[1])) {
       onConsignmentCodeDetected(match[1]);
