@@ -112,12 +112,18 @@ export function BarcodeColumnGenerator({
         });
       }
     } catch (err) {
-      console.error('Failed to read clipboard contents: ', err);
-      toast({
-        variant: 'destructive',
-        title: "Paste failed",
-        description: "Could not read clipboard contents. Please grant permission.",
-      });
+      if (err instanceof Error && err.name === 'NotAllowedError') {
+        // This error is common if the user denies clipboard access, so we can ignore it
+        // or show a less intrusive notification.
+        console.warn('Clipboard access denied.');
+      } else {
+        console.error('Failed to read clipboard contents: ', err);
+        toast({
+          variant: 'destructive',
+          title: "Paste failed",
+          description: "Could not read clipboard contents. Please grant permission.",
+        });
+      }
     }
   };
 

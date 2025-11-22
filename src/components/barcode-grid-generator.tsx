@@ -118,7 +118,11 @@ export function BarcodeGridGenerator({
 
     for (const line of lines) {
       const trimmedLine = line.trim();
-      const sevenDigitRegex = /\b(\d{7})\b/g;
+      
+      // Universal exclusion rule
+      if (/webhang/i.test(trimmedLine)) {
+        continue;
+      }
       
       // Condition: Line is ONLY a 7-digit number
       if (/^\d{7}$/.test(trimmedLine)) {
@@ -130,6 +134,7 @@ export function BarcodeGridGenerator({
       
       // Condition: Line contains 'web-dropoff' but not 'Container'
       if (/web-dropoff/i.test(trimmedLine) && !/Container/i.test(trimmedLine)) {
+        const sevenDigitRegex = /\b(\d{7})\b/g;
         let match;
         while ((match = sevenDigitRegex.exec(trimmedLine)) !== null) {
           const value = match[1];
@@ -770,7 +775,6 @@ export function BarcodeGridGenerator({
   const detectConsignmentCode = (text: string) => {
     if (isCustomMode) return;
     const firstLine = text.split('\n')[0].trim();
-    // Look for a word that matches the consignment code pattern.
     const match = firstLine.match(/(^[a-zA-Z]+\d{3,5})\b/);
     if (match && isValidBarcode(match[1])) {
       onConsignmentCodeDetected(match[1]);
@@ -798,18 +802,23 @@ export function BarcodeGridGenerator({
         detectConsignmentCode(text);
       }
     } catch (err) {
-      console.error('Failed to read clipboard contents: ', err);
-      toast({
-        variant: 'destructive',
-        title: "Paste failed",
-        description: "Could not read clipboard contents. Please grant permission.",
-      });
+      if (err instanceof Error && err.name === 'NotAllowedError') {
+        // This error is common if the user denies clipboard access, so we can ignore it
+        // or show a less intrusive notification.
+        console.warn('Clipboard access denied.');
+      } else {
+        console.error('Failed to read clipboard contents: ', err);
+        toast({
+          variant: 'destructive',
+          title: "Paste failed",
+          description: "Could not read clipboard contents. Please grant permission.",
+        });
+      }
     }
   };
   
   const handlePaste = (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
     const text = event.clipboardData.getData('text');
-    setInputValue(text);
     detectConsignmentCode(text);
   }
 
@@ -1090,5 +1099,3 @@ export function BarcodeGridGenerator({
     </Card>
   );
 }
-
-    
