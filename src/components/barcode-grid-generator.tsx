@@ -767,16 +767,20 @@ export function BarcodeGridGenerator({
     }
   }, [focusedRowRight, isFocusMode, isTeamWorkActive, focusModeVisibleRows]);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement> | React.ClipboardEvent<HTMLTextAreaElement>) => {
-    const value = 'target' in event ? event.target.value : event.clipboardData.getData('text');
-    setInputValue(value);
-
+  const detectConsignmentCode = (text: string) => {
     if (isCustomMode) return;
-
-    const firstLine = value.split('\n')[0].trim();
-    if (isValidBarcode(firstLine)) {
-        onConsignmentCodeDetected(firstLine);
+    const firstLine = text.split('\n')[0].trim();
+    // Look for a word that matches the consignment code pattern.
+    const match = firstLine.match(/(^[a-zA-Z]+\d{3,5})\b/);
+    if (match && isValidBarcode(match[1])) {
+      onConsignmentCodeDetected(match[1]);
     }
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = event.target.value;
+    setInputValue(value);
+    detectConsignmentCode(value);
   };
 
   const handleTextareaClick = async () => {
@@ -791,13 +795,7 @@ export function BarcodeGridGenerator({
           title: "Pasted from clipboard",
           description: `Pasted ${text.length} characters into 'Container' field.`,
         });
-
-        if (!isCustomMode) {
-          const firstLine = text.split('\n')[0].trim();
-          if (isValidBarcode(firstLine)) {
-              onConsignmentCodeDetected(firstLine);
-          }
-        }
+        detectConsignmentCode(text);
       }
     } catch (err) {
       console.error('Failed to read clipboard contents: ', err);
@@ -808,6 +806,12 @@ export function BarcodeGridGenerator({
       });
     }
   };
+  
+  const handlePaste = (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const text = event.clipboardData.getData('text');
+    setInputValue(text);
+    detectConsignmentCode(text);
+  }
 
   const currentGridHeight = gridColumns === 1 ? 86 : gridHeight;
   const teamWorkGridColumns = 4; // Hardcode to 4 for Team Work mode
@@ -901,7 +905,7 @@ export function BarcodeGridGenerator({
                 value={inputValue}
                 onChange={handleInputChange}
                 onClick={handleTextareaClick}
-                onPaste={handleInputChange}
+                onPaste={handlePaste}
               />
             </div>
             {!isTeamWorkActive && activeConsignmentCodeValue && (
@@ -1041,7 +1045,7 @@ export function BarcodeGridGenerator({
                               onClick={() => isFocusMode && setFocusedRowRight(focusChunkIndex)}
                             />
                           );
-                        })}
+})}
                       </div>
                     </div>
                   </div>
@@ -1086,3 +1090,5 @@ export function BarcodeGridGenerator({
     </Card>
   );
 }
+
+    
