@@ -1,7 +1,7 @@
 
 'use client';
 
-import { BarChart2, Info, Settings } from 'lucide-react';
+import { BarChart2, Info, Settings, Snowflake } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -35,6 +35,7 @@ export function SettingsSheet() {
     gamificationEnabled, setGamificationEnabled,
     totalConsignmentBarcodes, totalContainerBarcodes,
     firstGenerationDate,
+    snowEffectEnabled, setSnowEffectEnabled
   } = useSettings();
 
   return (
@@ -175,6 +176,25 @@ export function SettingsSheet() {
                       <Label htmlFor="gamification-switch" className={!teamWorkEnabled ? 'text-muted-foreground' : ''}>
                         Enable Gamification
                       </Label>
+                  </div>
+                </div>
+            </div>
+
+            <Separator />
+            
+            <div>
+                <h4 className="text-lg font-medium mb-4 flex items-center gap-2">
+                    <Snowflake className='w-5 h-5'/>
+                    Seasonal
+                </h4>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                      <Switch
+                          id="snow-effect-switch"
+                          checked={snowEffectEnabled}
+                          onCheckedChange={setSnowEffectEnabled}
+                      />
+                      <Label htmlFor="snow-effect-switch">Enable Snow Effect</Label>
                   </div>
                 </div>
             </div>

@@ -53,6 +53,11 @@ interface SettingsContextType {
   setTotalContainerBarcodes: Dispatch<SetStateAction<number>>;
   firstGenerationDate: string | null;
   setFirstGenerationDate: (date: string) => void;
+
+  // Seasonal
+  snowEffectEnabled: boolean;
+  setSnowEffectEnabled: (enabled: boolean) => void;
+  isSnowActive: boolean;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -89,6 +94,11 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const [totalContainerBarcodes, setTotalContainerBarcodes] = useState(0);
   const [firstGenerationDate, _setFirstGenerationDate] = useState<string | null>(null);
 
+  // Seasonal
+  const [snowEffectEnabled, _setSnowEffectEnabled] = useState(false);
+  const [lastDisabledYear, _setLastDisabledYear] = useState<number | null>(null);
+  const [isSnowActive, setIsSnowActive] = useState(false);
+
   useEffect(() => {
     const storedTheme = localStorage.getItem('app-theme') || 'light';
     const storedPasteOnFocus = localStorage.getItem('paste-on-focus');
@@ -107,6 +117,8 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     const storedTotalConsignment = localStorage.getItem('total-consignment-barcodes');
     const storedTotalContainer = localStorage.getItem('total-container-barcodes');
     const storedFirstDate = localStorage.getItem('first-generation-date');
+    const storedSnowEffect = localStorage.getItem('snow-effect-enabled');
+    const storedLastDisabledYear = localStorage.getItem('snow-last-disabled-year');
 
     _setTheme(storedTheme);
     if (storedPasteOnFocus !== null) _setPasteOnFocus(storedPasteOnFocus === 'true');
@@ -125,6 +137,9 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     if (storedTotalConsignment !== null) setTotalConsignmentBarcodes(Number(storedTotalConsignment));
     if (storedTotalContainer !== null) setTotalContainerBarcodes(Number(storedTotalContainer));
     if (storedFirstDate !== null) _setFirstGenerationDate(storedFirstDate);
+    if (storedSnowEffect !== null) _setSnowEffectEnabled(storedSnowEffect === 'true');
+    if (storedLastDisabledYear !== null) _setLastDisabledYear(Number(storedLastDisabledYear));
+
   }, []);
 
   useEffect(() => {
@@ -135,7 +150,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('total-container-barcodes', String(totalContainerBarcodes));
   }, [totalContainerBarcodes]);
 
-  // Safely update focus mode based on total barcodes
   useEffect(() => {
     if (autoManagedFocusMode) {
       if (totalContainerBarcodes >= focusModeThreshold) {
@@ -145,6 +159,44 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       }
     }
   }, [totalContainerBarcodes, focusModeThreshold, autoManagedFocusMode, isFocusMode]);
+
+  // Seasonal Snow Effect Logic
+  useEffect(() => {
+    const today = new Date();
+    const month = today.getMonth(); // 0-11
+    const day = today.getDate();
+    const year = today.getFullYear();
+
+    const isSeason = (month === 11) || (month === 0) || (month === 1 && day === 1);
+
+    if (isSeason) {
+      if (lastDisabledYear !== year) {
+        setIsSnowActive(true);
+        _setSnowEffectEnabled(true);
+      } else {
+        setIsSnowActive(snowEffectEnabled);
+      }
+    } else {
+      setIsSnowActive(snowEffectEnabled);
+    }
+  }, [snowEffectEnabled, lastDisabledYear]);
+
+  const setSnowEffectEnabled = (enabled: boolean) => {
+    const today = new Date();
+    const month = today.getMonth();
+    const day = today.getDate();
+    const year = today.getFullYear();
+    const isSeason = (month === 11) || (month === 0) || (month === 1 && day === 1);
+
+    localStorage.setItem('snow-effect-enabled', String(enabled));
+    _setSnowEffectEnabled(enabled);
+
+    if (!enabled && isSeason) {
+        localStorage.setItem('snow-last-disabled-year', String(year));
+        _setLastDisabledYear(year);
+    }
+  };
+
 
   const createSetter = useCallback(<T,>(setter: Dispatch<SetStateAction<T>>, key: string) => {
     return (value: T) => {
@@ -202,6 +254,8 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       totalConsignmentBarcodes, setTotalConsignmentBarcodes,
       totalContainerBarcodes, setTotalContainerBarcodes,
       firstGenerationDate, setFirstGenerationDate,
+      snowEffectEnabled, setSnowEffectEnabled,
+      isSnowActive
     }}>
       {children}
     </SettingsContext.Provider>

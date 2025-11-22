@@ -13,6 +13,7 @@ import { MainLayout } from '@/components/main-layout';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/context/settings-context';
 import { format } from 'date-fns';
+import { SnowEffect } from '@/components/snow-effect';
 
 export default function Home() {
   const [showDraggableBarcode, setShowDraggableBarcode] = useState(false);
@@ -33,6 +34,7 @@ export default function Home() {
     setTotalContainerBarcodes,
     firstGenerationDate,
     setFirstGenerationDate,
+    isSnowActive
   } = useSettings();
 
   useEffect(() => {
@@ -77,16 +79,19 @@ export default function Home() {
     setAllConsignmentBarcodes(prevBarcodes => {
       const existingBarcode = prevBarcodes.find(b => b.value === code);
       let newBarcodes = [...prevBarcodes];
+      let newActiveId: string;
   
       if (existingBarcode) {
         newBarcodes = newBarcodes.filter(b => b.id !== existingBarcode.id);
         newBarcodes.unshift(existingBarcode);
-        setActiveConsignmentBarcode(existingBarcode.id);
+        newActiveId = existingBarcode.id;
       } else {
         const newBarcode: BarcodeData = { id: `${code}-${Date.now()}`, value: code };
         newBarcodes.unshift(newBarcode);
-        setActiveConsignmentBarcode(newBarcode.id);
+        newActiveId = newBarcode.id;
       }
+      
+      setActiveConsignmentBarcode(newActiveId);
       return newBarcodes;
     });
   };
@@ -96,6 +101,7 @@ export default function Home() {
   return (
     <>
       <div className="flex flex-col min-h-screen bg-background text-foreground relative">
+        {isSnowActive && <SnowEffect />}
         <header className={cn(
             "w-full bg-background/95 backdrop-blur-sm z-10 border-b border-border"
         )}>
